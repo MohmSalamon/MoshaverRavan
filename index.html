@@ -376,11 +376,21 @@ body.locked #loginOverlay{display:flex;}
         <button data-r="year">سالانه</button>
       </div>
       <div class="stat-grid">
-        <div class="stat"><div class="num" id="repIncome">۰</div><div class="lbl">مجموع درآمد (تومان)</div></div>
+        <div class="stat"><div class="num" id="repIncome">۰</div><div class="lbl">درآمد ناخالص (تومان)</div></div>
         <div class="stat"><div class="num" id="repCount">۰</div><div class="lbl">تعداد جلسات</div></div>
+        <div class="stat"><div class="num" id="repClinicShare">۰</div><div class="lbl">سهم کلینیک‌ها (تومان)</div></div>
+        <div class="stat" style="background:linear-gradient(135deg,#fff,#f4ede1)"><div class="num" id="repNet" style="color:var(--amber)">۰</div><div class="lbl">سهم خالص شما (تومان)</div></div>
       </div>
+
+      <div class="section-divider">سهم هر کلینیک</div>
       <table class="rep">
-        <thead><tr><th>تاریخ</th><th>مراجع</th><th>کلینیک</th><th>مبلغ</th></tr></thead>
+        <thead><tr><th>کلینیک</th><th>سهم کلینیک</th><th>جلسات</th><th>ناخالص</th><th>سهم کلینیک</th><th>سهم شما</th></tr></thead>
+        <tbody id="repByClinic"></tbody>
+      </table>
+
+      <div class="section-divider">جزئیات نوبت‌ها</div>
+      <table class="rep">
+        <thead><tr><th>تاریخ</th><th>مراجع</th><th>کلینیک</th><th>مبلغ</th><th>سهم شما</th></tr></thead>
         <tbody id="repTable"></tbody>
       </table>
     </div>
@@ -402,7 +412,8 @@ body.locked #loginOverlay{display:flex;}
       <h2>🏥 اطلاعات کلینیک‌ها و ساعت کاری</h2>
       <label>نام درمانگر</label>
       <input type="text" id="setDrName" placeholder="دکتر ...">
-      <div class="section-divider">۵ کلینیک</div>
+      <div class="section-divider">۵ کلینیک و درصد سهم هرکدام</div>
+      <p class="hint">درصدی که وارد می‌کنید همان سهمی است که آن کلینیک از هزینهٔ هر جلسه برمی‌دارد؛ باقی‌مانده به‌عنوان سهم خالص شما در گزارش درآمد محاسبه می‌شود.</p>
       <div id="clinicInputs"></div>
       <div class="section-divider">ساعات کاری</div>
       <div class="row2">
@@ -532,11 +543,25 @@ const LS = {
 let clients = LS.get('clients', []);        // {code, name, phone}
 let appts   = LS.get('appts', []);           // {id, code, name, phone, clinic, date, time, dur, fee, note, done}
 let settings = LS.get('settings', {
-  drName:'', clinics:['کلینیک ۱','کلینیک ۲','کلینیک ۳','کلینیک ۴','کلینیک ۵'],
+  drName:'', clinics:[
+    {name:'کلینیک ۱', commission:0}, {name:'کلینیک ۲', commission:0}, {name:'کلینیک ۳', commission:0},
+    {name:'کلینیک ۴', commission:0}, {name:'کلینیک ۵', commission:0}
+  ],
   morningStart:'08:00', morningEnd:'13:00',
   eveningStart:'16:00', eveningEnd:'20:00',
   dayOff:5
 });
+// migrate old versions where clinics was a plain array of name strings (local device, and also re-run after cloud pulls)
+function migrateClinicsShape(){
+  if(Array.isArray(settings.clinics) && settings.clinics.length && typeof settings.clinics[0]==='string'){
+    settings.clinics = settings.clinics.map(name=>({name, commission:0}));
+  }
+}
+migrateClinicsShape();
+function getClinicCommission(name){
+  const c = settings.clinics.find(x=>x.name===name);
+  return c ? Number(c.commission)||0 : 0;
+}
 let reminderSettings = LS.get('reminderSettings', {tgToken:'', tgChatId:'', smsWebhook:''});
 let supaConfig = LS.get('supaConfig', null);
 let supa = null;
@@ -666,6 +691,7 @@ async function pullSettingsRows(){
   LS.set('reminderSettings', reminderSettings);
   LS.set('appUsers', appUsers);
   LS.set('gcalClientId', gcalClientId);
+  migrateClinicsShape();
   fillClinicSettingInputs();
   loadSettingsToUI();
   fillClinicSelects();
@@ -759,7 +785,7 @@ function subscribeRealtime(){
       if(!row || !row.key) return;
       try{
         const val = JSON.parse(row.value);
-        if(row.key==='settings'){ settings=val; LS.set('settings',settings); fillClinicSettingInputs(); loadSettingsToUI(); fillClinicSelects(); }
+        if(row.key==='settings'){ settings=val; migrateClinicsShape(); LS.set('settings',settings); fillClinicSettingInputs(); loadSettingsToUI(); fillClinicSelects(); }
         if(row.key==='reminderSettings'){ reminderSettings=val; LS.set('reminderSettings',reminderSettings); loadSettingsToUI(); }
         if(row.key==='appUsers'){ appUsers=val; LS.set('appUsers',appUsers); renderUsersList(); }
         if(row.key==='gcalClientId'){ gcalClientId=val; LS.set('gcalClientId',gcalClientId); document.getElementById('gcalClientId').value=gcalClientId||''; }
@@ -943,14 +969,17 @@ function timeToMin(t){ const [h,m]=t.split(':').map(Number); return h*60+m; }
 
 /* ================= INIT UI ================= */
 function fillClinicSelects(){
-  const opts = settings.clinics.map(c=>`<option>${c}</option>`).join('');
+  const opts = settings.clinics.map(c=>`<option>${c.name}</option>`).join('');
   document.getElementById('fClinic').innerHTML = opts;
   document.getElementById('filClinic').innerHTML = '<option value="">همه کلینیک‌ها</option>' + opts;
 }
 function fillClinicSettingInputs(){
   const wrap = document.getElementById('clinicInputs');
   wrap.innerHTML = settings.clinics.map((c,i)=>
-    `<input type="text" style="margin-top:8px" value="${c}" data-ci="${i}">`).join('');
+    `<div class="row2" style="margin-top:8px">
+       <input type="text" value="${c.name}" data-ci="${i}" data-f="name" placeholder="نام کلینیک">
+       <input type="number" value="${c.commission}" data-ci="${i}" data-f="commission" placeholder="درصد کلینیک" min="0" max="100">
+     </div>`).join('');
 }
 function loadSettingsToUI(){
   document.getElementById('setDrName').value = settings.drName||'';
@@ -972,7 +1001,12 @@ function loadSettingsToUI(){
 
 function saveSettings(){
   settings.drName = document.getElementById('setDrName').value.trim();
-  settings.clinics = Array.from(document.querySelectorAll('[data-ci]')).map(i=>i.value.trim()||'کلینیک');
+  const nameInputs = document.querySelectorAll('#clinicInputs [data-f="name"]');
+  settings.clinics = Array.from(nameInputs).map(el=>{
+    const i = el.dataset.ci;
+    const commEl = document.querySelector(`#clinicInputs [data-ci="${i}"][data-f="commission"]`);
+    return { name: el.value.trim()||'کلینیک', commission: Math.max(0, Math.min(100, Number(commEl.value)||0)) };
+  });
   settings.morningStart = document.getElementById('setMorningStart').value;
   settings.morningEnd = document.getElementById('setMorningEnd').value;
   settings.eveningStart = document.getElementById('setEveningStart').value;
@@ -1433,12 +1467,39 @@ function renderReport(){
     filtered = appts.filter(a=>a.date.slice(0,4)===y);
   }
   const total = filtered.reduce((s,a)=>s+Number(a.fee||0),0);
+  const clinicShareTotal = filtered.reduce((s,a)=>s+Number(a.fee||0)*getClinicCommission(a.clinic)/100, 0);
+  const netTotal = total - clinicShareTotal;
+
   document.getElementById('repIncome').textContent = total.toLocaleString('fa-IR');
   document.getElementById('repCount').textContent = faDigits(filtered.length);
+  document.getElementById('repClinicShare').textContent = Math.round(clinicShareTotal).toLocaleString('fa-IR');
+  document.getElementById('repNet').textContent = Math.round(netTotal).toLocaleString('fa-IR');
+
+  /* per-clinic breakdown */
+  const byClinic = {};
+  filtered.forEach(a=>{
+    if(!byClinic[a.clinic]) byClinic[a.clinic] = {count:0, gross:0};
+    byClinic[a.clinic].count++;
+    byClinic[a.clinic].gross += Number(a.fee||0);
+  });
+  const clinicRows = Object.keys(byClinic).sort();
+  document.getElementById('repByClinic').innerHTML = clinicRows.map(name=>{
+    const comm = getClinicCommission(name);
+    const g = byClinic[name].gross;
+    const share = g*comm/100;
+    const net = g-share;
+    return `<tr><td>${name}</td><td>${faDigits(comm)}٪</td><td>${faDigits(byClinic[name].count)}</td><td>${g.toLocaleString('fa-IR')}</td><td>${Math.round(share).toLocaleString('fa-IR')}</td><td>${Math.round(net).toLocaleString('fa-IR')}</td></tr>`;
+  }).join('') || '<tr><td colspan="6" style="padding:16px;color:#93a09e">داده‌ای موجود نیست</td></tr>';
+
+  /* per-appointment detail */
   document.getElementById('repTable').innerHTML = filtered
     .sort((a,b)=>b.date.localeCompare(a.date))
-    .map(a=>`<tr><td>${formatFaDate(a.date)}</td><td>${a.name}</td><td>${a.clinic}</td><td>${Number(a.fee||0).toLocaleString('fa-IR')}</td></tr>`)
-    .join('') || '<tr><td colspan="4" style="padding:16px;color:#93a09e">داده‌ای موجود نیست</td></tr>';
+    .map(a=>{
+      const fee = Number(a.fee||0);
+      const net = fee - (fee*getClinicCommission(a.clinic)/100);
+      return `<tr><td>${formatFaDate(a.date)}</td><td>${a.name}</td><td>${a.clinic}</td><td>${fee.toLocaleString('fa-IR')}</td><td>${Math.round(net).toLocaleString('fa-IR')}</td></tr>`;
+    })
+    .join('') || '<tr><td colspan="5" style="padding:16px;color:#93a09e">داده‌ای موجود نیست</td></tr>';
 }
 
 /* ================= EXPORT / IMPORT ================= */
