@@ -740,7 +740,16 @@ async function pullSettlementsFromSupabase(){
 
 let supaApptChannel = null, supaClientChannel = null, supaSettingsChannel = null, supaSettlementChannel = null;
 
+/* Guards against a race where an older in-flight fetch (or a realtime echo of our own write)
+   lands right after a local save and overwrites the value the person just typed. */
+let recentLocalPushes = {};
+function markLocalPush(key){ recentLocalPushes[key] = Date.now(); }
+function isRecentLocalPush(key, windowMs=6000){
+  return !!recentLocalPushes[key] && (Date.now() - recentLocalPushes[key] < windowMs);
+}
+
 async function pushSettingsRow(key, value){
+  markLocalPush(key);
   if(!supa) return;
   const { error } = await supa.from('app_settings').upsert({key, value: JSON.stringify(value)});
   if(error) toast('❌ ذخیرهٔ آنلاین تنظیمات ناموفق بود: '+error.message);
@@ -750,6 +759,7 @@ async function pullSettingsRows(){
   const { data, error } = await supa.from('app_settings').select('*');
   if(error || !data) return;
   data.forEach(row=>{
+    if(isRecentLocalPush(row.key)) return; // keep the value just saved locally, ignore stale/echoed data
     try{
       const val = JSON.parse(row.value);
       if(row.key==='settings') settings = val;
@@ -856,6 +866,7 @@ function subscribeRealtime(){
     .on('postgres_changes', {event:'*', schema:'public', table:'app_settings'}, payload=>{
       const row = payload.new || payload.old;
       if(!row || !row.key) return;
+      if(isRecentLocalPush(row.key)) return; // this is just the echo of our own recent save — ignore
       try{
         const val = JSON.parse(row.value);
         if(row.key==='settings'){ settings=val; migrateClinicsShape(); LS.set('settings',settings); fillClinicSettingInputs(); loadSettingsToUI(); fillClinicSelects(); }
