@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ارسال پیام واتساپ</title>
+</head>
+<body>
+    <h2>ارسال پیام واتساپ</h2>
+    <input type="text" id="apiKey" placeholder="API Key">
+    <input type="text" id="phoneNumber" placeholder="شماره مقصد (مثلا 98912...)">
+    <textarea id="messageText" placeholder="متن پیام"></textarea>
+    <button onclick="sendMessage()">ارسال پیام</button>
+    <p id="responseMessage"></p>
+
+    <script>
+        async function sendMessage() {
+            const apiKey = document.getElementById('apiKey').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const messageText = document.getElementById('messageText').value;
+            const apiUrl = 'https://w1.endlessmessages.com/send_message';
+
+            const payload = { apikey: apiKey, number: phoneNumber, text: messageText };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    document.getElementById('responseMessage').innerText = 'پیام با موفقیت ارسال شد: ' + result.message_id;
+                } else {
+                    document.getElementById('responseMessage').innerText = 'خطا: ' + result.message;
+                }
+            } catch (error) {
+                document.getElementById('responseMessage').innerText = 'خطا: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
