@@ -1122,9 +1122,14 @@ function saveSupabase(){
   initSupabase();
 }
 function saveReminderSettings(){
+  const newToken = document.getElementById('tgToken').value.trim();
+  const newChatId = document.getElementById('tgChatId').value.trim();
+  if(reminderSettings.tgToken && !newToken){
+    if(!confirm('فیلد توکن ربات تلگرام خالی است. با ادامه، توکن ذخیره‌شده برای همهٔ ۴ کاربر پاک خواهد شد. مطمئن هستید؟')) return;
+  }
   reminderSettings = {
-    tgToken: document.getElementById('tgToken').value.trim(),
-    tgChatId: document.getElementById('tgChatId').value.trim(),
+    tgToken: newToken,
+    tgChatId: newChatId,
     smsWebhook: document.getElementById('smsWebhook').value.trim()
   };
   LS.set('reminderSettings', reminderSettings);
