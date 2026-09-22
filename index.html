@@ -270,9 +270,9 @@ textarea{resize:vertical;min-height:60px;}
 .empty{text-align:center;color:#93a09e;font-size:13px;padding:26px 10px;}
 
 /* reports */
-.report-tabs{display:flex;gap:6px;margin-bottom:12px;}
+.report-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
 .report-tabs button{
-  flex:1;padding:9px;border-radius:9px;border:1.5px solid var(--teal);
+  flex:1;min-width:110px;padding:9px;border-radius:9px;border:1.5px solid var(--teal);
   background:#e3efee;color:var(--teal-dark);font-size:12.5px;font-weight:700;
 }
 .report-tabs button.active{background:var(--teal);border-color:var(--teal);color:#fff;}
@@ -483,6 +483,7 @@ body.locked #loginOverlay{display:flex;}
     <div class="report-tabs" style="margin-bottom:14px">
       <button data-lg="confirmed" class="active" onclick="switchListGroup('confirmed')">✅ ثبت‌شده</button>
       <button data-lg="requests" onclick="switchListGroup('requests')">📥 درخواست از تلگرام <span id="bookingReqBadge" style="display:none"></span></button>
+      <button data-lg="requestsBale" onclick="switchListGroup('requestsBale')">📥 درخواست از بله <span id="bookingReqBaleBadge" style="display:none"></span></button>
     </div>
 
     <div id="listGroupRequests" style="display:none">
@@ -490,6 +491,14 @@ body.locked #loginOverlay{display:flex;}
       <h2>📥 درخواست‌های نوبت از تلگرام <span class="tag" id="bookingReqCount">۰</span></h2>
       <p class="hint">این درخواست‌ها را مراجعین مستقیم از داخل ربات تلگرام ثبت کرده‌اند و در انتظار تأیید شما هستند.</p>
       <div id="bookingRequestsList"></div>
+    </div>
+    </div>
+
+    <div id="listGroupRequestsBale" style="display:none">
+    <div class="card" id="bookingRequestsBaleCard">
+      <h2>📥 درخواست‌های نوبت از بله <span class="tag" id="bookingReqBaleCount">۰</span></h2>
+      <p class="hint">این درخواست‌ها را مراجعین مستقیم از داخل ربات بله ثبت کرده‌اند و در انتظار تأیید شما هستند.</p>
+      <div id="bookingRequestsBaleList"></div>
     </div>
     </div>
 
@@ -775,6 +784,7 @@ body.locked #loginOverlay{display:flex;}
       <label>Chat ID شما (بله)</label>
       <input type="text" id="baleChatId" placeholder="مثلاً 123456789">
       <button class="btn secondary" onclick="testBale()">ارسال پیام آزمایشی</button>
+      <p class="hint">📥 اگر ربات بله شما امکان ثبت نوبت مستقیم توسط مراجع (مشابه ربات تلگرام) را هم دارد، کافی است ربات نوبت‌های درخواستی را در جدول جداگانهٔ <code>bale_booking_requests</code> در Supabase ثبت کند (بدون نیاز به تغییر جدول <code>booking_requests</code> تلگرام). این درخواست‌ها زیرِ تب «لیست نوبت‌ها › درخواست از بله» برای تأیید/رد شما نمایش داده می‌شوند.</p>
 
       <div class="section-divider">پیامک (SMS)</div>
       <p class="hint">✅ ارسال پیامک از طریق اپ پیامک خود گوشی از هم‌اکنون فعال است و نیازی به تنظیم ندارد — با زدن دکمه «پیامک از گوشی» روی هر نوبت، اپ پیامک گوشی با متن یادآوری آماده باز می‌شود و فقط کافی است ارسال را بزنید.</p>
@@ -945,7 +955,8 @@ applyTheme(LS.get('appTheme','classic'));
 let clients = LS.get('clients', []);        // {code, name, phone}
 let appts   = LS.get('appts', []);           // {id, code, name, phone, clinic, date, time, dur, fee, note, done}
 let settlements = LS.get('settlements', []); // {id, clinic, date, amount, method, trackingCode, note}
-let bookingRequests = LS.get('bookingRequests', []); // {id, chat_id, name, phone, clinic, date, time, status, created_at} — from Telegram booking bot
+let bookingRequests = LS.get('bookingRequests', []); // {id, chat_id, name, phone, clinic, date, time, status, created_at} — from Telegram booking bot, table booking_requests
+let bookingRequestsBale = LS.get('bookingRequestsBale', []); // same shape, from Bale booking bot, separate table bale_booking_requests (no schema change to the Telegram table)
 let sessionNotes = LS.get('sessionNotes', []); // {id, apptId, phone, clientName, date, summary, diagnosis, progress, clientSat, therapistSat, note}
 let settings = LS.get('settings', {
   drName:'', clinics:[
@@ -1173,7 +1184,7 @@ async function pullSessionNotesFromSupabase(){
   LS.set('sessionNotes', sessionNotes);
 }
 
-/* ---- Telegram self-booking requests (client picks clinic/date/time from bot buttons) ---- */
+/* ---- Telegram / Bale self-booking requests (client picks clinic/date/time from bot buttons) ---- */
 async function pullBookingRequests(){
   if(!supa) return;
   const { data, error } = await supa.from('booking_requests').select('*').eq('status','pending').order('created_at',{ascending:true});
@@ -1182,21 +1193,29 @@ async function pullBookingRequests(){
   LS.set('bookingRequests', bookingRequests);
   renderBookingRequests();
 }
-function renderBookingRequests(){
-  const card = document.getElementById('bookingRequestsCard');
-  const wrap = document.getElementById('bookingRequestsList');
-  const countEl = document.getElementById('bookingReqCount');
-  const badge = document.getElementById('bookingReqBadge');
+async function pullBookingRequestsBale(){
+  if(!supa) return;
+  const { data, error } = await supa.from('bale_booking_requests').select('*').eq('status','pending').order('created_at',{ascending:true});
+  if(error || !data) return; // table missing/not created yet → silently skip, tab just stays empty
+  bookingRequestsBale = data;
+  LS.set('bookingRequestsBale', bookingRequestsBale);
+  renderBookingRequestsBale();
+}
+function renderBookingRequestsGroup(list, cardId, wrapId, countId, badgeId, acceptFn, rejectFn){
+  const card = document.getElementById(cardId);
+  const wrap = document.getElementById(wrapId);
+  const countEl = document.getElementById(countId);
+  const badge = document.getElementById(badgeId);
   if(!card || !wrap) return;
-  if(!bookingRequests.length){
+  if(!list.length){
     card.style.display='none';
     if(badge) badge.style.display='none';
     return;
   }
   card.style.display='block';
-  countEl.textContent = faDigits(bookingRequests.length);
-  if(badge){ badge.style.display='inline-block'; badge.textContent = bookingRequests.length; badge.style.cssText='display:inline-block;background:var(--danger);color:#fff;border-radius:20px;padding:1px 7px;font-size:10px;margin-right:4px;'; }
-  wrap.innerHTML = bookingRequests.map(r=>{
+  countEl.textContent = faDigits(list.length);
+  if(badge){ badge.style.display='inline-block'; badge.textContent = list.length; badge.style.cssText='display:inline-block;background:var(--danger);color:#fff;border-radius:20px;padding:1px 7px;font-size:10px;margin-right:4px;'; }
+  wrap.innerHTML = list.map(r=>{
     const conflict = checkConflict(r.clinic, r.date, r.time, 50, null);
     return `<div class="appt ${conflict?'conflict':''}">
       <div class="appt-top">
@@ -1210,56 +1229,92 @@ function renderBookingRequests(){
       </div>
       ${conflict? `<div class="appt-meta"><span style="background:#fdecea;color:var(--danger)">⚠️ این ساعت با نوبت دیگری تداخل دارد</span></div>`:''}
       <div class="appt-actions">
-        <button class="done" onclick="acceptBookingRequest('${r.id}')">✅ تأیید</button>
-        <button class="del" onclick="rejectBookingRequest('${r.id}')">❌ رد</button>
+        <button class="done" onclick="${acceptFn}('${r.id}')">✅ تأیید</button>
+        <button class="del" onclick="${rejectFn}('${r.id}')">❌ رد</button>
       </div>
     </div>`;
   }).join('');
 }
-async function acceptBookingRequest(id){
-  const r = bookingRequests.find(x=>x.id===id);
-  if(!r) return;
+function renderBookingRequests(){
+  renderBookingRequestsGroup(bookingRequests, 'bookingRequestsCard', 'bookingRequestsList', 'bookingReqCount', 'bookingReqBadge', 'acceptBookingRequest', 'rejectBookingRequest');
+}
+function renderBookingRequestsBale(){
+  renderBookingRequestsGroup(bookingRequestsBale, 'bookingRequestsBaleCard', 'bookingRequestsBaleList', 'bookingReqBaleCount', 'bookingReqBaleBadge', 'acceptBookingRequestBale', 'rejectBookingRequestBale');
+}
+async function acceptBookingRequestCore(r, opts){
   if(checkConflict(r.clinic, r.date, r.time, 50, null)){
-    if(!confirm('⚠️ این ساعت با نوبت دیگری تداخل دارد. آیا مطمئناً تأیید می‌کنید؟')) return;
+    if(!confirm('⚠️ این ساعت با نوبت دیگری تداخل دارد. آیا مطمئناً تأیید می‌کنید؟')) return false;
   }
-  if(!confirm('نوبت «'+r.name+'» در '+formatFaDate(r.date)+' ساعت '+r.time+' تأیید شود؟')) return;
+  if(!confirm('نوبت «'+r.name+'» در '+formatFaDate(r.date)+' ساعت '+r.time+' تأیید شود؟')) return false;
 
   let c = clients.find(x=>x.phone===r.phone);
-  if(!c){ c = { code: generateClientCode(), phone: r.phone, name: r.name||'', tgChatId: r.chat_id||'', baleChatId:'' }; clients.push(c); }
-  else if(!c.tgChatId && r.chat_id){ c.tgChatId = r.chat_id; }
+  if(!c){
+    c = { code: generateClientCode(), phone: r.phone, name: r.name||'', tgChatId:'', baleChatId:'' };
+    c[opts.chatField] = r.chat_id||'';
+    clients.push(c);
+  } else if(!c[opts.chatField] && r.chat_id){
+    c[opts.chatField] = r.chat_id;
+  }
   LS.set('clients', clients);
   pushClientToSupabase(c);
 
-  const appt = { id: uid(), code:c.code, name: r.name, phone: r.phone, clinic: r.clinic, date: r.date, time: r.time, dur:50, fee:0, note:'ثبت‌شده از طریق ربات تلگرام', done:false };
+  const appt = { id: uid(), code:c.code, name: r.name, phone: r.phone, clinic: r.clinic, date: r.date, time: r.time, dur:50, fee:0, note: opts.note, done:false };
   appts.push(appt);
   LS.set('appts', appts);
   pushToSupabase(appt);
 
-  if(r.chat_id && reminderSettings.tgToken){
-    tgSend(r.chat_id, `✅ نوبت شما تأیید شد:\nکلینیک: ${r.clinic}\nتاریخ: ${formatFaDate(r.date)}\nساعت: ${r.time}`);
+  if(r.chat_id && opts.token){
+    opts.sendFn(r.chat_id, `✅ نوبت شما تأیید شد:\nکلینیک: ${r.clinic}\nتاریخ: ${formatFaDate(r.date)}\nساعت: ${r.time}`);
   }
-
+  if(supa) await supa.from(opts.table).delete().eq('id', r.id);
+  renderAll();
+  toast('✅ نوبت تأیید و ثبت شد');
+  return true;
+}
+async function rejectBookingRequestCore(r, opts){
+  if(!confirm('درخواست نوبت «'+r.name+'» رد شود؟')) return false;
+  if(r.chat_id && opts.token){
+    opts.sendFn(r.chat_id, `❌ متأسفانه ساعت درخواستی شما (${formatFaDate(r.date)} - ${r.time}) در دسترس نیست.\nلطفاً دوباره با ارسال /book زمان دیگری انتخاب کنید.`);
+  }
+  if(supa) await supa.from(opts.table).delete().eq('id', r.id);
+  toast('درخواست رد شد');
+  return true;
+}
+async function acceptBookingRequest(id){
+  const r = bookingRequests.find(x=>x.id===id);
+  if(!r) return;
+  const ok = await acceptBookingRequestCore(r, {chatField:'tgChatId', note:'ثبت‌شده از طریق ربات تلگرام', token:reminderSettings.tgToken, sendFn:tgSend, table:'booking_requests'});
+  if(!ok) return;
   bookingRequests = bookingRequests.filter(x=>x.id!==id);
   LS.set('bookingRequests', bookingRequests);
   renderBookingRequests();
-  if(supa) await supa.from('booking_requests').delete().eq('id', id);
-  renderAll();
-  toast('✅ نوبت تأیید و ثبت شد');
 }
 async function rejectBookingRequest(id){
   const r = bookingRequests.find(x=>x.id===id);
   if(!r) return;
-  if(!confirm('درخواست نوبت «'+r.name+'» رد شود؟')) return;
-
-  if(r.chat_id && reminderSettings.tgToken){
-    tgSend(r.chat_id, `❌ متأسفانه ساعت درخواستی شما (${formatFaDate(r.date)} - ${r.time}) در دسترس نیست.\nلطفاً دوباره با ارسال /book زمان دیگری انتخاب کنید.`);
-  }
-
+  const ok = await rejectBookingRequestCore(r, {token:reminderSettings.tgToken, sendFn:tgSend, table:'booking_requests'});
+  if(!ok) return;
   bookingRequests = bookingRequests.filter(x=>x.id!==id);
   LS.set('bookingRequests', bookingRequests);
   renderBookingRequests();
-  if(supa) await supa.from('booking_requests').delete().eq('id', id);
-  toast('درخواست رد شد');
+}
+async function acceptBookingRequestBale(id){
+  const r = bookingRequestsBale.find(x=>x.id===id);
+  if(!r) return;
+  const ok = await acceptBookingRequestCore(r, {chatField:'baleChatId', note:'ثبت‌شده از طریق ربات بله', token:reminderSettings.baleToken, sendFn:baSend, table:'bale_booking_requests'});
+  if(!ok) return;
+  bookingRequestsBale = bookingRequestsBale.filter(x=>x.id!==id);
+  LS.set('bookingRequestsBale', bookingRequestsBale);
+  renderBookingRequestsBale();
+}
+async function rejectBookingRequestBale(id){
+  const r = bookingRequestsBale.find(x=>x.id===id);
+  if(!r) return;
+  const ok = await rejectBookingRequestCore(r, {token:reminderSettings.baleToken, sendFn:baSend, table:'bale_booking_requests'});
+  if(!ok) return;
+  bookingRequestsBale = bookingRequestsBale.filter(x=>x.id!==id);
+  LS.set('bookingRequestsBale', bookingRequestsBale);
+  renderBookingRequestsBale();
 }
 
 /* ---- Reminder send-status log (manual sends from the app + scheduled sends from Apps Script) ---- */
@@ -1345,7 +1400,7 @@ async function clearAllReminderLog(){
   toast('کل گزارش پاک شد');
 }
 
-let supaApptChannel = null, supaClientChannel = null, supaSettingsChannel = null, supaSettlementChannel = null, supaReminderLogChannel = null, supaSessionNoteChannel = null, supaBookingChannel = null;
+let supaApptChannel = null, supaClientChannel = null, supaSettingsChannel = null, supaSettlementChannel = null, supaReminderLogChannel = null, supaSessionNoteChannel = null, supaBookingChannel = null, supaBookingBaleChannel = null;
 
 /* Guards against a race where an older in-flight fetch (or a realtime echo of our own write)
    lands right after a local save and overwrites the value the person just typed. */
@@ -1398,6 +1453,7 @@ function initSupabase(){
     pullReminderLog();
     pullSessionNotesFromSupabase();
     pullBookingRequests();
+    pullBookingRequestsBale();
     subscribeRealtime();
   }catch(e){
     document.getElementById('supaStatus').textContent = '❌ خطا در اتصال: ' + e.message;
@@ -1658,6 +1714,20 @@ function subscribeRealtime(){
     })
     .subscribe();
 
+  supaBookingBaleChannel = supa.channel('booking-requests-bale-live')
+    .on('postgres_changes', {event:'*', schema:'public', table:'bale_booking_requests'}, payload=>{
+      if(payload.eventType==='DELETE'){
+        bookingRequestsBale = bookingRequestsBale.filter(r=>r.id !== payload.old.id);
+      }else if(payload.new && payload.new.status==='pending'){
+        const idx = bookingRequestsBale.findIndex(x=>x.id===payload.new.id);
+        if(idx>=0) bookingRequestsBale[idx]=payload.new; else bookingRequestsBale.push(payload.new);
+        if(idx<0) toast('📥 یک درخواست نوبت جدید از بله رسید');
+      }
+      LS.set('bookingRequestsBale', bookingRequestsBale);
+      renderBookingRequestsBale();
+    })
+    .subscribe();
+
   supaReminderLogChannel = supa.channel('reminderlog-live')
     .on('postgres_changes', {event:'*', schema:'public', table:'reminder_log'}, payload=>{
       if(payload.eventType==='DELETE'){
@@ -1703,6 +1773,7 @@ function manualRefresh(){
   pullReminderLog();
   pullSessionNotesFromSupabase();
   pullBookingRequests();
+  pullBookingRequestsBale();
 }
 
 /* ================= PERSIAN DATE (Jalali) ================= */
@@ -2656,19 +2727,16 @@ function switchSettingsGroup(which){
   });
 }
 function switchListGroup(which){
-  const confirmedBtn = document.querySelector('[data-lg="confirmed"]');
-  const requestsBtn = document.querySelector('[data-lg="requests"]');
-  const confirmedGroup = document.getElementById('listGroupConfirmed');
-  const requestsGroup = document.getElementById('listGroupRequests');
-  confirmedGroup.style.display='none'; requestsGroup.style.display='none';
-  confirmedBtn.classList.remove('active'); requestsBtn.classList.remove('active');
-  if(which==='requests'){
-    requestsGroup.style.display=''; requestsBtn.classList.add('active');
-    renderBookingRequests();
-  }else{
-    confirmedGroup.style.display=''; confirmedBtn.classList.add('active');
-    renderList();
-  }
+  const groups = {confirmed:'listGroupConfirmed', requests:'listGroupRequests', requestsBale:'listGroupRequestsBale'};
+  Object.keys(groups).forEach(key=>{
+    const el = document.getElementById(groups[key]);
+    const btn = document.querySelector('[data-lg="'+key+'"]');
+    if(el) el.style.display = (key===which) ? '' : 'none';
+    if(btn) btn.classList.toggle('active', key===which);
+  });
+  if(which==='requests') renderBookingRequests();
+  else if(which==='requestsBale') renderBookingRequestsBale();
+  else renderList();
 }
 function switchReportGroup(which){
   const incomeBtn = document.querySelector('[data-rg="income"]');
@@ -3310,6 +3378,7 @@ function renderAll(){
   fillTreatmentClientSelect();
   renderClientsManagement();
   renderBookingRequests();
+  renderBookingRequestsBale();
   renderHeader();
   renderRecordCounter();
 }
