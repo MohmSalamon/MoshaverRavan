@@ -162,7 +162,7 @@ input[type=text],input[type=tel],input[type=password],input[type=number],input[t
 }
 input:focus,select:focus,textarea:focus{border-color:var(--teal);background:#fff;}
 textarea{resize:vertical;min-height:60px;}
-#fClinic,#fDateDisplay,#fTime,#filClinic,#filDateDisplay{
+#fClinic,#fTherapist,#fDateDisplay,#fTime,#filClinic,#filTherapist,#filDateDisplay{
   background:#e3efee;border-color:var(--teal);color:var(--teal-dark);font-weight:700;
 }
 .row2{display:flex;gap:10px;}
@@ -202,7 +202,12 @@ textarea{resize:vertical;min-height:60px;}
 @media print{
   body *{visibility:hidden;}
   #treatmentPrintArea, #treatmentPrintArea *{visibility:visible;}
-  #treatmentPrintArea{display:block;position:absolute;top:0;left:0;width:100%;}
+  body > *:not(main){display:none !important;}
+  main > *:not(#treatmentPrintArea){display:none !important;}
+  html, body{background:#fff !important;height:auto !important;overflow:visible !important;margin:0 !important;padding:0 !important;}
+  main{padding:0 !important;margin:0 !important;max-width:none !important;width:100% !important;}
+  #treatmentPrintArea{display:block;position:static;width:100%;}
+  .tr-page{page-break-after:auto;}
   @page{margin:0;}
 }
 @page a4-size{size:A4;}
@@ -257,6 +262,43 @@ textarea{resize:vertical;min-height:60px;}
 }
 .appt-meta{font-size:12px;color:#6d7977;margin-top:6px;display:flex;flex-wrap:wrap;gap:8px;}
 .appt-meta span{background:#f1f4f3;padding:2px 8px;border-radius:8px;}
+.appt-meta span.th-chip{background:#e3efee;color:var(--teal-dark);font-weight:700;}
+.appt-meta span.th-chip.none{background:#f1f4f3;color:#93a09e;font-weight:400;}
+details.tn-sec{border:1.5px solid var(--line);border-radius:12px;margin:10px 0;background:#fff;}
+details.tn-sec>summary{padding:11px 12px;font-weight:700;font-size:14px;cursor:pointer;color:var(--teal-dark);list-style:none;}
+details.tn-sec>summary::-webkit-details-marker{display:none;}
+details.tn-sec>div.tn-body{padding:0 12px 12px;}
+.tn-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:6px;align-items:center;margin-bottom:6px;}
+.tn-grid .tn-h{font-size:11.5px;color:#6d7977;font-weight:700;}
+.tn-chk{display:flex;align-items:center;gap:8px;margin:7px 0;font-weight:400;font-size:13.5px;cursor:pointer;}
+.tn-chk input{width:18px;height:18px;flex-shrink:0;}
+.tn-hw{border:1px dashed var(--line);border-radius:10px;padding:8px;margin-bottom:8px;}
+.tn-meta{background:#f1f4f3;border-radius:10px;padding:9px 11px;font-size:13px;line-height:1.9;}
+
+/* ---- coloured form sections ---- */
+details.tn-sec{border-color:var(--sc,var(--line));border-right-width:5px;}
+details.tn-sec>summary{color:var(--sc,var(--teal-dark));background:var(--st,#fff);border-radius:10px;}
+details.tn-sec[open]>summary{border-bottom:1.5px solid var(--sc,var(--line));border-radius:10px 10px 0 0;}
+details.tn-sec>div.tn-body>label:not(.tn-chk), details.tn-sec .row2 label:not(.tn-chk){color:var(--sc,#5c6c6a);}
+details.tn-sec input[type=checkbox], details.tn-sec input[type=radio]{accent-color:var(--sc,var(--teal));}
+details.tn-sec input:focus, details.tn-sec textarea:focus, details.tn-sec select:focus{border-color:var(--sc,var(--teal))!important;box-shadow:0 0 0 3px var(--st,#e3efee);outline:none;}
+details.tn-sec .tn-hw{border-color:var(--sc,var(--line));background:var(--st,#fff);}
+details.tn-sec select.sev-g{background:#e6f4ea;border-color:#66bb6a;color:#1b5e20;}
+details.tn-sec select.sev-y{background:#fffde7;border-color:#e6c200;color:#7a6200;}
+details.tn-sec select.sev-o{background:#fff3e0;border-color:#f0a030;color:#8a4b00;}
+details.tn-sec select.sev-r{background:#ffebee;border-color:#e57373;color:#b71c1c;}
+/* ---- full session report (preview + print) ---- */
+.tn-rep{margin:0 0 14px;border-radius:8px;}
+.tn-rep-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;font-size:13px;padding:7px 10px;background:#263238;color:#fff;border-radius:8px 8px 0 0;cursor:pointer;list-style:none;}
+details.tn-rep>summary::-webkit-details-marker{display:none;}
+.tn-chip{display:inline-block;background:#fff;color:#263238;border-radius:8px;padding:1px 8px;font-size:11px;margin-right:4px;}
+.tn-rep-sec{margin:0 0 6px;border-right:5px solid #999;page-break-inside:avoid;}
+.tn-rep-st{font-size:12px;font-weight:700;padding:4px 9px;}
+table.tn-kv{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;}
+table.tn-kv td{border:1px solid #c9c9c9;padding:4px 7px;vertical-align:top;text-align:right;word-wrap:break-word;overflow-wrap:break-word;}
+table.tn-kv td.k{width:28%;font-weight:700;background:#fafafa;}
+table.tn-kv th{border:1px solid #c9c9c9;padding:4px 6px;font-size:11px;background:#f1f1f1;text-align:right;}
+.tn-rep-sec, .tn-rep-st, .tn-rep-head, .tn-chip{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 .appt-actions{display:flex;gap:7px;margin-top:10px;flex-wrap:wrap;}
 .appt-actions button{
   flex:1;min-width:90px;
@@ -440,6 +482,9 @@ body.locked #loginOverlay{display:flex;}
       <label>کلینیک</label>
       <select id="fClinic"></select>
 
+      <label>درمانگر</label>
+      <select id="fTherapist"></select>
+
       <div class="row2">
         <div>
           <label>تاریخ نوبت (شمسی)</label>
@@ -452,6 +497,7 @@ body.locked #loginOverlay{display:flex;}
         </div>
       </div>
       <div id="gcalConflictWarn" class="warn-box">⚠️ در همین بازه، رویدادی در Google Calendar شما ثبت شده است.</div>
+      <div id="therapistBusyHint" class="hint"></div>
 
       <div class="row2">
         <div>
@@ -467,13 +513,13 @@ body.locked #loginOverlay{display:flex;}
       <label>یادداشت (اختیاری)</label>
       <textarea id="fNote" placeholder="نوع مشاوره، جلسه چندم، توضیحات..."></textarea>
 
-      <div id="conflictWarn" class="warn-box">⚠️ تداخل زمانی با نوبت دیگری در همین کلینیک وجود دارد.</div>
+      <div id="conflictWarn" class="warn-box">⚠️ این درمانگر در همین بازهٔ زمانی نوبت دیگری دارد (یا برای نوبت‌های بدون درمانگر: تداخل در همین کلینیک).</div>
       <div id="outsideWarn" class="warn-box">⚠️ این ساعت خارج از بازه کاری تعریف‌شده است.</div>
       <div id="savedOk" class="ok-box">✅ نوبت با موفقیت ثبت شد.</div>
 
       <button class="btn" id="saveBtn">ثبت نوبت</button>
       <button class="btn ghost" id="cancelEditBtn" style="display:none" onclick="cancelEdit()">لغو ویرایش</button>
-      <div class="hint">کد مراجع به‌صورت خودکار بر اساس شماره موبایل ساخته یا بازیابی می‌شود. تداخل ساعت در همان کلینیک و تاریخ به‌طور خودکار بررسی می‌شود.</div>
+      <div class="hint">کد مراجع به‌صورت خودکار بر اساس شماره موبایل ساخته یا بازیابی می‌شود. تداخل ساعت برای همان درمانگر در همان تاریخ به‌طور خودکار بررسی می‌شود.</div>
     </div>
   </section>
 
@@ -484,6 +530,8 @@ body.locked #loginOverlay{display:flex;}
       <button data-lg="confirmed" class="active" onclick="switchListGroup('confirmed')">✅ ثبت‌شده</button>
       <button data-lg="requests" onclick="switchListGroup('requests')">📥 درخواست از تلگرام <span id="bookingReqBadge" style="display:none"></span></button>
       <button data-lg="requestsBale" onclick="switchListGroup('requestsBale')">📥 درخواست از بله <span id="bookingReqBaleBadge" style="display:none"></span></button>
+      <button data-lg="notes" onclick="switchListGroup('notes')">🩺 شرح درمان</button>
+      <button data-lg="screenings" onclick="switchListGroup('screenings')">🧠 ارزیابی‌ها <span id="scrBadge" style="display:none"></span></button>
     </div>
 
     <div id="listGroupRequests" style="display:none">
@@ -502,11 +550,46 @@ body.locked #loginOverlay{display:flex;}
     </div>
     </div>
 
+    <div id="listGroupScreenings" style="display:none">
+    <div class="card">
+      <h2>🧠 ارزیابی و پایش سلامت روان</h2>
+      <p class="hint">نتیجهٔ پرسشنامه‌هایی که مراجعین در ربات‌های تلگرام و بله تکمیل می‌کنند (از منوی «ارزیابی و پایش سلامت روان» یا با دستور مستقیم مثل /GAD) اینجا می‌آید. «ثبت در پرونده» نتیجه را به پروندهٔ مراجع وصل می‌کند و در گزارش درمان و فرم شرح درمان قابل‌استفاده است. اینها نتیجهٔ غربالگری‌اند و تشخیص نیستند.</p>
+      <p class="hint" id="scrDefsLine"></p>
+      <div class="row2">
+        <select id="scrFilter" onchange="renderScreenings()"><option value="new">🆕 جدید</option><option value="urgent">🚨 اولویت بالا</option><option value="filed">✅ ثبت‌شده در پرونده</option><option value="all">همه</option></select>
+        <input type="text" id="scrSearch" placeholder="🔍 نام یا موبایل" oninput="renderScreenings()">
+      </div>
+      <div id="scrList"></div>
+    </div>
+    </div>
+
+    <div id="listGroupNotes" style="display:none">
+    <div class="card" id="tnListCard">
+      <h2>🩺 شرح درمان</h2>
+      <p class="hint">یک جلسه را انتخاب کنید و گزارش آن را بنویسید. فرم ۱۰ بخشی و همسو با DSM-5-TR است (سنجش نشانه‌ها، MSE، ارزیابی خطر، تشخیص و فرمول‌بندی، مداخلات و برنامهٔ درمان). نتیجه در «گزارشات ← درمان» و چاپ/اکسل می‌آید.</p>
+      <input type="text" id="tnSearch" placeholder="🔍 جستجوی مراجع (نام، موبایل یا کد)" oninput="renderNoteList()">
+      <label class="tn-chk"><input type="checkbox" id="tnOnlyMissing" onchange="renderNoteList()"> فقط جلساتی که هنوز شرح ندارند</label>
+      <div id="tnApptList"></div>
+    </div>
+
+    <div class="card" id="tnFormCard" style="display:none">
+      <h2>📝 گزارش جلسه</h2>
+      <div class="tn-meta" id="tnHeader"></div>
+      <div id="tnScreenBox"></div>
+
+      <div id="tnSections"></div>
+
+      <button class="btn" onclick="saveNoteForm()">💾 ذخیرهٔ گزارش جلسه</button>
+      <button class="btn ghost" onclick="closeNoteEditor()">↩ بازگشت به فهرست</button>
+    </div>
+    </div>
+
     <div id="listGroupConfirmed">
     <div class="card">
       <h2>لیست نوبت‌ها <button class="btn ghost small" style="display:inline-block;width:auto;margin:0 0 0 8px;padding:6px 10px" onclick="manualRefresh()">🔄 بروزرسانی</button></h2>
       <div class="filter-row">
         <select id="filClinic"><option value="">🏥 همه</option></select>
+        <select id="filTherapist"><option value="">👨‍⚕️ همه</option></select>
         <input type="hidden" id="filDate">
         <input type="text" id="filDateDisplay" readonly placeholder="📅 تاریخ" style="cursor:pointer" onclick="openJalaliPicker('filDate','filDateDisplay')">
         <button class="btn ghost small" style="margin:0;width:auto;padding:9px 12px" onclick="clearFilters()" title="پاک کردن فیلترها">🧹</button>
@@ -515,7 +598,7 @@ body.locked #loginOverlay{display:flex;}
       <div id="apptList"></div>
       <div id="apptTableWrap" style="display:none;overflow-x:auto">
         <table class="rep">
-          <thead><tr><th>تاریخ</th><th>ساعت</th><th>مراجع</th><th>کد</th><th>کلینیک</th><th>مبلغ</th><th>وضعیت</th></tr></thead>
+          <thead><tr><th>تاریخ</th><th>ساعت</th><th>مراجع</th><th>کد</th><th>کلینیک</th><th>درمانگر</th><th>مبلغ</th><th>وضعیت</th></tr></thead>
           <tbody id="apptTableBody"></tbody>
         </table>
       </div>
@@ -535,7 +618,9 @@ body.locked #loginOverlay{display:flex;}
     <div id="reportsIncomeGroup">
     <div class="card">
       <h2>گزارش درآمد</h2>
-      <div class="report-tabs period-tabs">
+      <label>درمانگر</label>
+      <select id="repFilTherapist" onchange="renderReport()"><option value="">همهٔ درمانگران</option></select>
+      <div class="report-tabs period-tabs" style="margin-top:10px">
         <button data-r="day" class="active">روزانه</button>
         <button data-r="week">هفتگی</button>
         <button data-r="month">ماهانه</button>
@@ -554,14 +639,20 @@ body.locked #loginOverlay{display:flex;}
         <tbody id="repByClinic"></tbody>
       </table>
 
+      <div class="section-divider">سهم هر درمانگر</div>
+      <table class="rep">
+        <thead><tr><th>درمانگر</th><th>جلسات</th><th>ناخالص</th><th>سهم کلینیک</th><th>خالص</th></tr></thead>
+        <tbody id="repByTherapist"></tbody>
+      </table>
+
       <div class="section-divider">جزئیات نوبت‌ها</div>
       <table class="rep">
-        <thead><tr><th>تاریخ</th><th>مراجع</th><th>کلینیک</th><th>مبلغ</th><th>سهم شما</th></tr></thead>
+        <thead><tr><th>تاریخ</th><th>مراجع</th><th>کلینیک</th><th>درمانگر</th><th>مبلغ</th><th>سهم خالص</th></tr></thead>
         <tbody id="repTable"></tbody>
       </table>
     </div>
 
-    <div class="card">
+    <div class="card" id="settlementCard">
       <h2>🧾 تسویه‌حساب با کلینیک‌ها</h2>
       <p class="hint">برای هر کلینیک، سهم انباشتهٔ شما (از همهٔ نوبت‌های ثبت‌شدهٔ آن کلینیک) با جمع پرداخت‌هایی که تاکنون از آن کلینیک دریافت کرده‌اید مقایسه می‌شود تا باقی‌ماندهٔ طلب شما مشخص باشد.</p>
       <label>انتخاب کلینیک</label>
@@ -628,6 +719,9 @@ body.locked #loginOverlay{display:flex;}
       <p class="hint">یک مراجع را انتخاب کنید تا خلاصهٔ همهٔ جلسات ثبت‌شدهٔ او (تاریخ، تشخیص، شرح درمان) آماده و برای چاپ روی کاغذ A4 یا A5 نمایش داده شود.</p>
       <label>انتخاب مراجع</label>
       <select id="trClientSelect" onchange="renderTreatmentReport()"></select>
+
+      <label>درمانگر (اختیاری)</label>
+      <select id="trTherapistFilter" onchange="renderTreatmentReport()"><option value="">همهٔ درمانگران</option></select>
 
       <div class="row2">
         <div>
@@ -700,9 +794,10 @@ body.locked #loginOverlay{display:flex;}
     <div id="settingsGroupUsers" style="display:none">
     <div class="card" id="usersCard">
       <h2>👥 کاربران و دسترسی</h2>
-      <p class="hint">حداقل ۴ نفر (درمانگر، منشی، مدیر، معاون) می‌توانند با نام کاربری و رمز عبور جداگانه وارد اپ شوند. نقش «دسترسی کامل» همهٔ تب‌ها از جمله گزارش درآمد و تنظیمات را می‌بیند؛ نقش «فقط نوبت‌دهی» فقط ثبت و مشاهدهٔ نوبت‌ها را می‌بیند (بدون گزارش درآمد و بدون تنظیمات).</p>
+      <p class="hint">برای هر کاربر مشخص کنید کدام منوها را ببیند (نوبت جدید، لیست نوبت‌ها، گزارشات، تنظیمات) و آیا به «شرح درمان» (اطلاعات بالینی) دسترسی دارد. اگر «درمانگر مرتبط» انتخاب شود، آن کاربر فقط نوبت‌ها، مراجعین، پیام‌ها و شرح درمانِ همان درمانگر را می‌بیند و فقط برای او نوبت ثبت می‌کند. برای هر درمانگر یک حساب جدا (نام کاربری و رمز مخصوص خودش) بسازید.</p>
       <div id="usersList"></div>
       <button class="btn ghost" onclick="addUserRow()">➕ افزودن کاربر</button>
+      <button class="btn ghost" onclick="createTherapistAccounts()">👨‍⚕️ ساخت حساب برای درمانگرانِ بدون حساب</button>
       <button class="btn secondary" onclick="saveUsers()">ذخیره کاربران</button>
       <p class="hint">⚠️ این یک لایهٔ حفاظتی سبک برای جلوگیری از دسترسی افراد غیرمرتبط است، نه رمزنگاری امنیتی سطح‌بالا (رمزها به‌صورت ساده روی همین دستگاه ذخیره می‌شوند). رمزهای پیش‌فرض را همین حالا تغییر دهید و آن‌ها را محرمانه نگه دارید.</p>
     </div>
@@ -722,6 +817,10 @@ body.locked #loginOverlay{display:flex;}
       <div class="section-divider">۵ کلینیک و درصد سهم هرکدام</div>
       <p class="hint">درصدی که وارد می‌کنید همان سهمی است که آن کلینیک از هزینهٔ هر جلسه برمی‌دارد؛ باقی‌مانده به‌عنوان سهم خالص شما در گزارش درآمد محاسبه می‌شود.</p>
       <div id="clinicInputs"></div>
+      <div class="section-divider">👨‍⚕️ درمانگران</div>
+      <p class="hint">نام، تخصص و راه‌های ارتباطی (موبایل، Chat ID تلگرام و بله) هر درمانگر را وارد کنید؛ پس از ثبت یا تأیید نهایی نوبت، خبر آن به همان درمانگر هم ارسال می‌شود. همین فهرست در فرم ثبت نوبت، فیلتر لیست، گزارش‌ها و ربات‌های تلگرام/بله نمایش داده می‌شود. اگر نام یک درمانگر را تغییر دهید، می‌توانید نوبت‌های قبلی او را هم به نام جدید تغییر دهید.</p>
+      <div id="therapistInputs"></div>
+      <button class="btn ghost small" onclick="addTherapistRow()">➕ افزودن درمانگر</button>
       <div class="section-divider">ساعات کاری</div>
       <div class="row2">
         <div><label>شروع صبح</label><input type="time" id="setMorningStart" value="08:00"></div>
@@ -816,13 +915,22 @@ body.locked #loginOverlay{display:flex;}
     </div>
 
     <div class="card">
+      <h2>🛡️ پشتیبان کامل (با کاربران)</h2>
+      <p class="hint">همهٔ اطلاعات دیتابیس در یک فایل: نوبت‌ها، مراجعین، شرح درمان (فرم کامل)، تسویه‌ها، درخواست‌های ربات‌ها، گزارش پیام‌ها، تنظیمات، درمانگران، <b>کاربران با نام کاربری و رمز</b> و تنظیمات پیامک/ربات. اطلاعات مستقیماً از Supabase خوانده می‌شود (همهٔ ردیف‌ها، حتی بیش از هزار).</p>
+      <p class="hint" style="color:#b3402a">⚠️ این فایل شامل رمزها و توکن‌هاست. آن را فقط در جای امن نگه دارید و ترجیحاً هنگام ذخیره یک رمز محافظ بگذارید (در صورت فراموشی رمز، فایل قابل بازیابی نیست).</p>
+      <button class="btn" onclick="exportFullBackup()">⬇️ گرفتن پشتیبان کامل</button>
+      <button class="btn ghost" onclick="document.getElementById('importFullFile').click()">⬆️ بازیابی پشتیبان کامل (ادغام)</button>
+      <input type="file" id="importFullFile" accept=".json,application/json" style="display:none">
+    </div>
+
+    <div class="card">
       <h2>💾 پشتیبان‌گیری دستی</h2>
       <button class="btn secondary" onclick="exportData()">خروجی گرفتن از داده‌ها (JSON)</button>
       <button class="btn ghost" onclick="document.getElementById('importFile').click()">وارد کردن فایل پشتیبان (JSON)</button>
       <input type="file" id="importFile" accept=".json" style="display:none">
       <div class="section-divider">اکسل</div>
-      <button class="btn secondary" onclick="exportExcel()">خروجی گرفتن از نوبت‌ها (Excel)</button>
-      <button class="btn ghost" onclick="document.getElementById('importExcelFile').click()">وارد کردن فایل Excel</button>
+      <button class="btn secondary" onclick="exportExcel()">خروجی کامل Excel (نوبت‌ها، مراجعین، شرح درمان، تسویه‌ها، تنظیمات)</button>
+      <button class="btn ghost" onclick="document.getElementById('importExcelFile').click()">بازیابی از فایل Excel (ادغام)</button>
       <input type="file" id="importExcelFile" accept=".xlsx,.xls" style="display:none">
     </div>
     </div>
@@ -857,51 +965,6 @@ body.locked #loginOverlay{display:flex;}
       <button type="button" class="btn secondary small" style="margin:0;flex:1" onclick="jpToday()">امروز</button>
       <button type="button" class="btn ghost small" style="margin:0;flex:1" onclick="closeJalaliPicker()">بستن</button>
     </div>
-  </div>
-</div>
-
-<div id="sessionNoteOverlay" class="modal-overlay">
-  <div class="modal-sheet">
-    <h2 style="margin:0 0 4px">📝 یادداشت جلسه</h2>
-    <p class="hint" id="snClientLabel" style="margin-top:0"></p>
-
-    <label>خلاصهٔ جلسه</label>
-    <textarea id="snSummary" placeholder="آنچه در این جلسه گذشت..." style="min-height:90px"></textarea>
-
-    <label>تشخیص</label>
-    <input type="text" id="snDiagnosis" placeholder="مثلاً: اختلال اضطراب فراگیر">
-
-    <label>درصد پیشرفت درمان: <b id="snProgressVal">۰٪</b></label>
-    <input type="range" id="snProgress" min="0" max="100" step="5" value="0" style="width:100%" oninput="document.getElementById('snProgressVal').textContent=faDigits(this.value)+'٪'">
-
-    <div class="row2" style="margin-top:10px">
-      <div>
-        <label>رضایت مراجع</label>
-        <select id="snClientSat">
-          <option value="5">★★★★★ عالی</option>
-          <option value="4">★★★★ خوب</option>
-          <option value="3">★★★ متوسط</option>
-          <option value="2">★★ ضعیف</option>
-          <option value="1">★ خیلی ضعیف</option>
-        </select>
-      </div>
-      <div>
-        <label>رضایت درمانگر</label>
-        <select id="snTherapistSat">
-          <option value="5">★★★★★ عالی</option>
-          <option value="4">★★★★ خوب</option>
-          <option value="3">★★★ متوسط</option>
-          <option value="2">★★ ضعیف</option>
-          <option value="1">★ خیلی ضعیف</option>
-        </select>
-      </div>
-    </div>
-
-    <label>یادداشت تکمیلی (اختیاری)</label>
-    <textarea id="snNote" placeholder="هر نکتهٔ دیگری که لازم می‌دانید..."></textarea>
-
-    <button class="btn" onclick="saveSessionNote()">ذخیرهٔ یادداشت</button>
-    <button class="btn ghost" onclick="closeSessionNote()">انصراف</button>
   </div>
 </div>
 
@@ -963,6 +1026,10 @@ let settings = LS.get('settings', {
     {name:'کلینیک ۱', commission:0}, {name:'کلینیک ۲', commission:0}, {name:'کلینیک ۳', commission:0},
     {name:'کلینیک ۴', commission:0}, {name:'کلینیک ۵', commission:0}
   ],
+  therapists:[
+    {name:'درمانگر ۱', specialty:''}, {name:'درمانگر ۲', specialty:''},
+    {name:'درمانگر ۳', specialty:''}, {name:'درمانگر ۴', specialty:''}
+  ],
   morningStart:'08:00', morningEnd:'13:00',
   eveningStart:'16:00', eveningEnd:'20:00',
   dayOff:5
@@ -972,6 +1039,22 @@ function migrateClinicsShape(){
   if(Array.isArray(settings.clinics) && settings.clinics.length && typeof settings.clinics[0]==='string'){
     settings.clinics = settings.clinics.map(name=>({name, commission:0}));
   }
+  // therapists: added in the multi-therapist version — older saved/cloud settings don't have the list yet
+  if(!Array.isArray(settings.therapists)){
+    settings.therapists = [1,2,3,4].map(n=>({name:'درمانگر '+faDigits(n), specialty:''}));
+  } else if(settings.therapists.length && typeof settings.therapists[0]==='string'){
+    settings.therapists = settings.therapists.map(name=>({name, specialty:'', phone:'', tgChatId:'', baleChatId:''}));
+  }
+}
+function getTherapist(name){ return (settings.therapists||[]).find(t=>t.name===name) || null; }
+function therapistNames(){ return (settings.therapists||[]).map(t=>t.name).filter(Boolean); }
+function escAttr(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+/* always shown on cards; old appointments created before therapists existed show a muted placeholder (fix via ✏️ ویرایش) */
+function therapistChip(a){
+  if(!a) return '';
+  return a.therapist
+    ? `<span class="th-chip">👨‍⚕️ ${a.therapist}</span>`
+    : `<span class="th-chip none">👨‍⚕️ درمانگر: انتخاب نشده</span>`;
 }
 migrateClinicsShape();
 function getClinicCommission(name){
@@ -991,6 +1074,63 @@ let appUsers = LS.get('appUsers', [
   {username:'secretary', password:'1234', name:'منشی',     role:'scheduler', phone:'', tgChatId:'', baleChatId:''}
 ]);
 let currentUser = (()=>{ try{ return JSON.parse(sessionStorage.getItem('session')); }catch(e){ return null; } })();
+
+/* Access levels per user: one flag for each of the 4 main menus + one for clinical notes (شرح درمان).
+   A user linked to a therapist ("درمانگر مرتبط") only sees that therapist's appointments, clients and notes. */
+const ACCESS_KEYS = [['new','➕ نوبت جدید'],['list','📅 لیست نوبت‌ها'],['report','📊 گزارشات'],['settings','⚙️ تنظیمات'],['clinical','🩺 شرح درمان']];
+function normalizeUsers(){
+  if(!Array.isArray(appUsers)) appUsers = [];
+  appUsers.forEach(u=>{
+    if(!u.access || typeof u.access!=='object'){
+      const full = u.role==='full';
+      u.access = {new:true, list:true, report:full, settings:full, clinical:full};
+    }
+    ['new','list','report','settings','clinical'].forEach(k=>{ if(u.access[k]===undefined) u.access[k] = (k==='clinical') ? !!(u.access.report && u.access.settings) : false; u.access[k] = !!u.access[k]; });
+    if(typeof u.therapist!=='string') u.therapist = '';
+    u.role = (u.access.new && u.access.list && u.access.report && u.access.settings) ? 'full' : 'scheduler'; // kept for older code paths
+  });
+}
+normalizeUsers();
+function getMe(){
+  if(!currentUser) return null;
+  return appUsers.find(u=>u.username===currentUser.username) || null;
+}
+function canTab(t){ const m = getMe(); return !!(m && m.access && m.access[t]); }
+function canClinical(){ return canTab('clinical'); }
+function myTherapist(){ const m = getMe(); return (m && m.therapist) ? m.therapist : ''; }
+function scopedBy(list, getTh){ const mt = myTherapist(); return mt ? list.filter(x=>getTh(x)===mt) : list; }
+function scopedAppts(){ return scopedBy(appts, a=>a.therapist||''); }
+function scopedRequests(list){ return scopedBy(list, r=>r.therapist||''); }
+function phoneKey(p){
+  return String(p||'').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g,'').slice(-10);
+}
+function escHtml(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function nl2br(s){ return escHtml(s).replace(/\n/g,'<br>'); }
+/* notes are linked to a client by their own stored data first, so they never "disappear" when an appointment was deleted */
+function noteApptOf(s){ return appts.find(x=>x.id===s.apptId) || null; }
+function normName(n){ return String(n||'').replace(/ي/g,'ی').replace(/ك/g,'ک').replace(/\u200c/g,' ').replace(/\s+/g,' ').trim().toLowerCase(); }
+/* A note belongs to a client by (1) its own stored code, (2) its appointment's code, (3) a client with the SAME phone AND name.
+   Phone alone is never used: different people can share one number, and their clinical records must never be mixed. */
+function noteClientCode(s){
+  if(s.clientCode) return s.clientCode;
+  const a = noteApptOf(s);
+  if(a && a.code) return a.code;
+  const k = phoneKey(s.phone), nm = normName(s.clientName);
+  if(k && nm){ const c = clients.find(x=>x.code && phoneKey(x.phone)===k && normName(x.name)===nm); if(c) return c.code; }
+  if(k || nm) return 'NM:'+k+'|'+nm;
+  return 'ID:'+s.id;
+}
+function apptClientKey(a){ return a.code || ('NM:'+phoneKey(a.phone)+'|'+normName(a.name)); }
+function noteTherapist(s){ if(s.therapist) return s.therapist; const a = noteApptOf(s); return a ? (a.therapist||'') : ''; }
+function scopedNotes(){ return scopedBy(sessionNotes, noteTherapist); }
+function scopedClients(){
+  const mt = myTherapist();
+  if(!mt) return clients;
+  const codes = new Set();
+  appts.forEach(a=>{ if(a.therapist===mt && a.code) codes.add(a.code); });
+  sessionNotes.forEach(s=>{ if(noteTherapist(s)===mt) codes.add(noteClientCode(s)); });
+  return clients.filter(c=>codes.has(c.code));
+}
 try{ localStorage.removeItem('session'); }catch(e){} // migrate away from old persistent login (if present)
 
 /* ================= ONLINE/OFFLINE DETECTION (active probe, not just navigator.onLine) =================
@@ -1044,7 +1184,7 @@ function tryLogin(){
   const err = document.getElementById('loginError');
   if(!found){ err.classList.add('show'); return; }
   err.classList.remove('show');
-  currentUser = {username:found.username, name:found.name, role:found.role};
+  currentUser = {username:found.username, name:found.name};
   sessionStorage.setItem('session', JSON.stringify(currentUser));
   document.body.classList.remove('locked');
   document.getElementById('loginUser').value=''; document.getElementById('loginPass').value='';
@@ -1056,12 +1196,39 @@ function logout(){
   location.reload();
 }
 function applyRolePermissions(){
-  const full = !!(currentUser && currentUser.role==='full');
-  const reportBtn = document.querySelector('nav.tabbar button[data-t="report"]');
-  const settingsBtn = document.querySelector('nav.tabbar button[data-t="settings"]');
-  if(reportBtn) reportBtn.style.display = full? '' : 'none';
-  if(settingsBtn) settingsBtn.style.display = full? '' : 'none';
-  document.getElementById('loggedUserName').textContent = currentUser? currentUser.name : '—';
+  const me = getMe();
+  if(currentUser && !me){ // account was deleted/renamed by an admin while logged in
+    toast('حساب شما دیگر وجود ندارد — دوباره وارد شوید');
+    setTimeout(logout, 1200);
+    return;
+  }
+  ['new','list','report','settings'].forEach(t=>{
+    const b = document.querySelector('nav.tabbar button[data-t="'+t+'"]');
+    if(b) b.style.display = canTab(t) ? '' : 'none';
+  });
+  document.getElementById('loggedUserName').textContent = me ? (me.name + (me.therapist ? ' (درمانگر)' : '')) : '—';
+  // clinical notes: sub-menu in the list tab + the treatment report tab
+  const clin = canClinical();
+  const notesBtn = document.querySelector('[data-lg="notes"]'); if(notesBtn) notesBtn.style.display = clin ? '' : 'none';
+  const scrBtn = document.querySelector('[data-lg="screenings"]'); if(scrBtn) scrBtn.style.display = clin ? '' : 'none';
+  if(typeof updateScreeningBadge==='function') updateScreeningBadge();
+  const trBtn = document.querySelector('[data-rg="treatment"]'); if(trBtn) trBtn.style.display = clin ? '' : 'none';
+  // a user linked to a therapist: hide the therapist filters (they only ever see their own) and the clinic-settlement card
+  const mt = myTherapist();
+  ['filTherapist','repFilTherapist','trTherapistFilter'].forEach(id=>{
+    const el = document.getElementById(id); if(!el) return;
+    el.style.display = mt ? 'none' : '';
+    const prev = el.previousElementSibling; if(prev && prev.tagName==='LABEL') prev.style.display = mt ? 'none' : '';
+  });
+  const stCard = document.getElementById('settlementCard'); if(stCard) stCard.style.display = mt ? 'none' : '';
+  if(typeof fillTherapistSelects==='function') fillTherapistSelects();
+  // if the visible tab isn't allowed (or none is active), jump to the first allowed one
+  const activeBtn = document.querySelector('nav.tabbar button.active');
+  if(!activeBtn || !canTab(activeBtn.dataset.t)){
+    const first = ['new','list','report','settings'].find(canTab);
+    if(first) document.querySelector('nav.tabbar button[data-t="'+first+'"]').click();
+    else toast('هیچ سطح دسترسی‌ای برای این حساب تعریف نشده — با مدیر تماس بگیرید');
+  }
 }
 function renderUsersList(){
   const wrap = document.getElementById('usersList');
@@ -1074,10 +1241,15 @@ function renderUsersList(){
       </div>
       <div class="row2" style="margin-top:8px">
         <input type="text" data-f="password" data-i="${i}" value="${u.password}" placeholder="رمز عبور">
-        <select data-f="role" data-i="${i}">
-          <option value="full" ${u.role==='full'?'selected':''}>دسترسی کامل</option>
-          <option value="scheduler" ${u.role==='scheduler'?'selected':''}>فقط نوبت‌دهی</option>
+        <select data-f="therapist" data-i="${i}">
+          <option value="">👥 بدون محدودیت (همهٔ مراجعین)</option>
+          ${therapistNames().map(n=>`<option value="${escAttr(n)}" ${u.therapist===n?'selected':''}>👨‍⚕️ فقط مراجعین ${escHtml(n)}</option>`).join('')}
+          ${u.therapist && !therapistNames().includes(u.therapist) ? `<option value="${escAttr(u.therapist)}" selected>👨‍⚕️ ${escHtml(u.therapist)} (حذف‌شده از فهرست)</option>` : ''}
         </select>
+      </div>
+      <div class="hint" style="margin:8px 0 4px;font-weight:700;color:#5c6c6a">سطح دسترسی</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px 14px">
+        ${ACCESS_KEYS.map(([k,lbl])=>`<label style="display:flex;align-items:center;gap:6px;margin:0;font-weight:400;cursor:pointer"><input type="checkbox" data-acc="${k}" data-i="${i}" ${u.access && u.access[k]?'checked':''} style="width:18px;height:18px"> ${lbl}</label>`).join('')}
       </div>
       <div class="row2" style="margin-top:8px">
         <input type="tel" data-f="phone" data-i="${i}" value="${u.phone||''}" placeholder="موبایل (برای پیامک)">
@@ -1089,25 +1261,59 @@ function renderUsersList(){
     </div>
   `).join('');
 }
+function readUsersFromDOM(){
+  document.querySelectorAll('#usersList [data-f]').forEach(el=>{
+    const u = appUsers[Number(el.dataset.i)]; if(u) u[el.dataset.f] = el.value.trim();
+  });
+  document.querySelectorAll('#usersList [data-acc]').forEach(el=>{
+    const u = appUsers[Number(el.dataset.i)]; if(!u) return;
+    if(!u.access) u.access = {};
+    u.access[el.dataset.acc] = el.checked;
+  });
+  normalizeUsers();
+}
 function addUserRow(){
-  appUsers.push({username:'', password:'', name:'', role:'scheduler', phone:'', tgChatId:'', baleChatId:''});
+  readUsersFromDOM();
+  appUsers.push({username:'', password:'', name:'', role:'scheduler', access:{new:true,list:true,report:false,settings:false,clinical:false}, therapist:'', phone:'', tgChatId:'', baleChatId:''});
   renderUsersList();
 }
 function removeUserRow(i){
+  readUsersFromDOM();
   if(appUsers.length<=1){ toast('حداقل یک کاربر باید باقی بماند'); return; }
   appUsers.splice(i,1);
   renderUsersList();
 }
-function saveUsers(){
-  document.querySelectorAll('#usersList [data-f]').forEach(el=>{
-    appUsers[Number(el.dataset.i)][el.dataset.f] = el.value.trim();
+/* one login per therapist: username/password are generated (change them freely), access = new/list/report/clinical on THEIR clients only */
+function createTherapistAccounts(){
+  readUsersFromDOM();
+  const made = [];
+  therapistNames().forEach((name,idx)=>{
+    if(appUsers.some(u=>u.therapist===name)) return;
+    let un = 'dr'+(idx+1), n = 1;
+    while(appUsers.some(u=>u.username===un)) un = 'dr'+(idx+1)+'_'+(++n);
+    const pw = String(Math.floor(100000+Math.random()*900000));
+    appUsers.push({username:un, password:pw, name:name, role:'scheduler', access:{new:true,list:true,report:true,settings:false,clinical:true}, therapist:name, phone:'', tgChatId:'', baleChatId:''});
+    made.push(name+': '+un+' / '+pw);
   });
+  renderUsersList();
+  if(made.length) alert('حساب‌های ساخته‌شده (بعد از «ذخیره» فعال می‌شوند — این رمزها را یادداشت و به هر درمانگر بدهید):\n\n'+made.join('\n'));
+  else toast('برای همهٔ درمانگران حساب وجود دارد');
+}
+function saveUsers(){
+  readUsersFromDOM();
   if(appUsers.some(u=>!u.username || !u.password || !u.name)){
     toast('نام، نام کاربری و رمز عبور نباید خالی باشد');
     return;
   }
+  const dupU = appUsers.find((u,i)=>appUsers.findIndex(x=>x.username===u.username)!==i);
+  if(dupU){ toast('نام کاربری تکراری است: '+dupU.username); return; }
+  if(!appUsers.some(u=>u.access.settings && !u.therapist)){
+    toast('حداقل یک کاربر بدون محدودیت و با دسترسی «تنظیمات» لازم است (وگرنه دیگر کسی نمی‌تواند تنظیمات را تغییر دهد)');
+    return;
+  }
   LS.set('appUsers', appUsers);
   pushSettingsRow('appUsers', appUsers);
+  applyRolePermissions();
   toast('لیست کاربران ذخیره شد');
 }
 document.getElementById('loginPass').addEventListener('keydown', e=>{ if(e.key==='Enter') tryLogin(); });
@@ -1116,11 +1322,11 @@ document.getElementById('loginUser').addEventListener('keydown', e=>{ if(e.key==
 /* ================= SUPABASE (cloud sync + realtime multi-device) ================= */
 function apptToRow(a){
   return { id:a.id, code:a.code, name:a.name, phone:a.phone, clinic:a.clinic, date:a.date, time:a.time,
-           dur:a.dur, fee:a.fee, note:a.note||'', done:!!a.done, gcal_event_id:a.gcalEventId||null };
+           dur:a.dur, fee:a.fee, note:a.note||'', done:!!a.done, gcal_event_id:a.gcalEventId||null, therapist:a.therapist||'' };
 }
 function rowToAppt(r){
   return { id:r.id, code:r.code, name:r.name, phone:r.phone, clinic:r.clinic, date:r.date, time:r.time,
-           dur:r.dur, fee:r.fee, note:r.note||'', done:!!r.done, gcalEventId:r.gcal_event_id||null };
+           dur:r.dur, fee:r.fee, note:r.note||'', done:!!r.done, gcalEventId:r.gcal_event_id||null, therapist:r.therapist||'' };
 }
 function clientToRow(c){
   return { phone:c.phone, code:c.code, name:c.name||'', tg_chat_id:c.tgChatId||null, bale_chat_id:c.baleChatId||null };
@@ -1160,17 +1366,62 @@ async function pullSettlementsFromSupabase(){
 function sessionNoteToRow(s){
   return { id:s.id, appt_id:s.apptId, phone:s.phone, client_name:s.clientName||'', date:s.date,
            summary:s.summary||'', diagnosis:s.diagnosis||'', progress:s.progress||0,
-           client_sat:s.clientSat||null, therapist_sat:s.therapistSat||null, note:s.note||'' };
+           client_sat:s.clientSat||null, therapist_sat:s.therapistSat||null, note:s.note||'',
+           client_code:s.clientCode||null, therapist:s.therapist||'', clinic:s.clinic||'', form:s.form||null };
 }
 function rowToSessionNote(r){
   return { id:r.id, apptId:r.appt_id, phone:r.phone, clientName:r.client_name||'', date:r.date,
            summary:r.summary||'', diagnosis:r.diagnosis||'', progress:r.progress||0,
-           clientSat:r.client_sat||null, therapistSat:r.therapist_sat||null, note:r.note||'' };
+           clientSat:r.client_sat||null, therapistSat:r.therapist_sat||null, note:r.note||'',
+           clientCode:r.client_code||'', therapist:r.therapist||'', clinic:r.clinic||'', form:r.form||null };
+}
+const NOTE_PACK = '\u2063F2\u2063';
+function noteRowLegacy(s){ // row for a Supabase table WITHOUT the new columns: whole form is packed into `note`
+  const r = sessionNoteToRow(s);
+  const extra = { extra:s.note||'', form:s.form||null, therapist:s.therapist||'', clientCode:s.clientCode||'', clinic:s.clinic||'' };
+  delete r.form; delete r.therapist; delete r.client_code; delete r.clinic;
+  r.note = (s.form || s.therapist || s.clientCode) ? NOTE_PACK + JSON.stringify(extra) : (s.note||'');
+  return r;
+}
+function unpackNote(n){
+  if(typeof n.note==='string' && n.note.indexOf(NOTE_PACK)===0){
+    try{
+      const x = JSON.parse(n.note.slice(NOTE_PACK.length));
+      n.note = x.extra||'';
+      if(!n.form && x.form) n.form = x.form;
+      if(!n.therapist && x.therapist) n.therapist = x.therapist;
+      if(!n.clientCode && x.clientCode) n.clientCode = x.clientCode;
+      if(!n.clinic && x.clinic) n.clinic = x.clinic;
+    }catch(e){}
+  }
+  return n;
+}
+/* take a note arriving from the cloud but never lose richer data we already hold locally */
+function mergeCloudNote(n, local){
+  unpackNote(n);
+  if(local){
+    if(!n.form && local.form) n.form = local.form;
+    if(!n.clientCode && local.clientCode) n.clientCode = local.clientCode;
+    if(!n.therapist && local.therapist) n.therapist = local.therapist;
+    if(!n.clinic && local.clinic) n.clinic = local.clinic;
+    if(local._pending) n._pending = true;
+  }
+  return n;
 }
 async function pushSessionNoteToSupabase(s){
   if(!supa) return;
-  const { error } = await supa.from('session_notes').upsert(sessionNoteToRow(s));
-  if(error) toast('❌ ذخیرهٔ آنلاین یادداشت ناموفق بود: '+error.message);
+  let { error } = await supa.from('session_notes').upsert(sessionNoteToRow(s));
+  if(error && /form|therapist|client_code|clinic|column|schema/i.test(error.message||'')){
+    // new columns not created yet in Supabase → the whole form is packed into the old `note` column, so it is still saved online
+    ({ error } = await supa.from('session_notes').upsert(noteRowLegacy(s)));
+    if(!error){ delete s._pending; LS.set('sessionNotes', sessionNotes); toast('✅ ذخیره شد (برای ذخیرهٔ تمیزتر، فایل therapist-migration.sql را در Supabase اجرا کنید)'); return; }
+  }
+  if(error){
+    s._pending = true; LS.set('sessionNotes', sessionNotes); // stays on this device and is retried automatically
+    alert('⚠️ شرح درمان روی همین دستگاه ذخیره شد ولی ارسال به Supabase ناموفق بود:\n'+error.message+'\n\nاطلاعات از بین نرفته و دفعهٔ بعد که اتصال برقرار شد دوباره ارسال می‌شود.');
+    return;
+  }
+  if(s._pending){ delete s._pending; LS.set('sessionNotes', sessionNotes); }
 }
 async function deleteSessionNoteFromSupabase(id){
   if(!supa) return;
@@ -1178,9 +1429,14 @@ async function deleteSessionNoteFromSupabase(id){
 }
 async function pullSessionNotesFromSupabase(){
   if(!supa) return;
-  const { data, error } = await supa.from('session_notes').select('*');
-  if(error || !data) return;
-  sessionNotes = data.map(rowToSessionNote);
+  let data = null;
+  try{ data = await fbFetchAll('session_notes', ['id']); }catch(e){ return; }
+  if(!data) return;
+  const localById = {}; sessionNotes.forEach(s=>{ localById[s.id] = s; });
+  const cloudIds = new Set(data.map(r=>r.id));
+  const keepLocal = sessionNotes.filter(s=>s._pending && !cloudIds.has(s.id)); // saved here but not yet confirmed online
+  sessionNotes = data.map(r=>mergeCloudNote(rowToSessionNote(r), localById[r.id]));
+  keepLocal.forEach(s=>{ sessionNotes.push(s); pushSessionNoteToSupabase(s); });
   LS.set('sessionNotes', sessionNotes);
 }
 
@@ -1216,7 +1472,7 @@ function renderBookingRequestsGroup(list, cardId, wrapId, countId, badgeId, acce
   countEl.textContent = faDigits(list.length);
   if(badge){ badge.style.display='inline-block'; badge.textContent = list.length; badge.style.cssText='display:inline-block;background:var(--danger);color:#fff;border-radius:20px;padding:1px 7px;font-size:10px;margin-right:4px;'; }
   wrap.innerHTML = list.map(r=>{
-    const conflict = checkConflict(r.clinic, r.date, r.time, 50, null);
+    const conflict = checkConflict(r.clinic, r.date, r.time, 50, null, r.therapist);
     return `<div class="appt ${conflict?'conflict':''}">
       <div class="appt-top">
         <div class="appt-name">${r.name||'—'}</div>
@@ -1225,6 +1481,7 @@ function renderBookingRequestsGroup(list, cardId, wrapId, countId, badgeId, acce
       <div class="appt-meta">
         <span>📞 ${r.phone||'—'}</span>
         <span>🏥 ${r.clinic}</span>
+        ${therapistChip(r)}
         <span>📅 ${formatFaDate(r.date)} (${weekdayName(r.date)})</span>
       </div>
       ${conflict? `<div class="appt-meta"><span style="background:#fdecea;color:var(--danger)">⚠️ این ساعت با نوبت دیگری تداخل دارد</span></div>`:''}
@@ -1236,13 +1493,13 @@ function renderBookingRequestsGroup(list, cardId, wrapId, countId, badgeId, acce
   }).join('');
 }
 function renderBookingRequests(){
-  renderBookingRequestsGroup(bookingRequests, 'bookingRequestsCard', 'bookingRequestsList', 'bookingReqCount', 'bookingReqBadge', 'acceptBookingRequest', 'rejectBookingRequest');
+  renderBookingRequestsGroup(scopedRequests(bookingRequests), 'bookingRequestsCard', 'bookingRequestsList', 'bookingReqCount', 'bookingReqBadge', 'acceptBookingRequest', 'rejectBookingRequest');
 }
 function renderBookingRequestsBale(){
-  renderBookingRequestsGroup(bookingRequestsBale, 'bookingRequestsBaleCard', 'bookingRequestsBaleList', 'bookingReqBaleCount', 'bookingReqBaleBadge', 'acceptBookingRequestBale', 'rejectBookingRequestBale');
+  renderBookingRequestsGroup(scopedRequests(bookingRequestsBale), 'bookingRequestsBaleCard', 'bookingRequestsBaleList', 'bookingReqBaleCount', 'bookingReqBaleBadge', 'acceptBookingRequestBale', 'rejectBookingRequestBale');
 }
 async function acceptBookingRequestCore(r, opts){
-  if(checkConflict(r.clinic, r.date, r.time, 50, null)){
+  if(checkConflict(r.clinic, r.date, r.time, 50, null, r.therapist)){
     if(!confirm('⚠️ این ساعت با نوبت دیگری تداخل دارد. آیا مطمئناً تأیید می‌کنید؟')) return false;
   }
   if(!confirm('نوبت «'+r.name+'» در '+formatFaDate(r.date)+' ساعت '+r.time+' تأیید شود؟')) return false;
@@ -1258,14 +1515,15 @@ async function acceptBookingRequestCore(r, opts){
   LS.set('clients', clients);
   pushClientToSupabase(c);
 
-  const appt = { id: uid(), code:c.code, name: r.name, phone: r.phone, clinic: r.clinic, date: r.date, time: r.time, dur:50, fee:0, note: opts.note, done:false };
+  const appt = { id: uid(), code:c.code, name: r.name, phone: r.phone, clinic: r.clinic, therapist: r.therapist||'', date: r.date, time: r.time, dur:50, fee:0, note: opts.note, done:false };
   appts.push(appt);
   LS.set('appts', appts);
   pushToSupabase(appt);
 
   if(r.chat_id && opts.token){
-    opts.sendFn(r.chat_id, `✅ نوبت شما تأیید شد:\nکلینیک: ${r.clinic}\nتاریخ: ${formatFaDate(r.date)}\nساعت: ${r.time}`);
+    opts.sendFn(r.chat_id, `✅ نوبت شما تأیید شد:\nکلینیک: ${r.clinic}${r.therapist?'\nدرمانگر: '+r.therapist:''}\nتاریخ: ${formatFaDate(r.date)}\nساعت: ${r.time}`);
   }
+  notifyTherapistAppt(appt, opts.note);
   if(supa) await supa.from(opts.table).delete().eq('id', r.id);
   renderAll();
   toast('✅ نوبت تأیید و ثبت شد');
@@ -1343,9 +1601,11 @@ async function pullReminderLog(){
 function renderReminderLog(){
   const wrap = document.getElementById('reminderLogList');
   if(!wrap) return;
-  if(!reminderLog.length){ wrap.innerHTML = '<div class="empty">هنوز ارسالی ثبت نشده</div>'; return; }
+  const mtLog = myTherapist();
+  const logList = mtLog ? reminderLog.filter(e=>{ const ap = appts.find(x=>x.id===e.appt_id); return ap && ap.therapist===mtLog; }) : reminderLog;
+  if(!logList.length){ wrap.innerHTML = '<div class="empty">هنوز ارسالی ثبت نشده</div>'; return; }
   const chIcons = {telegram:'📨 تلگرام', bale:'📨 بله', sms:'💬 پیامک', sms_native:'📱 پیامک (گوشی)'};
-  wrap.innerHTML = reminderLog.slice(0,50).map(e=>{
+  wrap.innerHTML = logList.slice(0,50).map(e=>{
     const dt = new Date(e.created_at);
     const timeStr = isNaN(dt) ? '' : dt.toLocaleString('fa-IR');
     const ok = e.status==='موفق';
@@ -1359,6 +1619,7 @@ function renderReminderLog(){
       </div>
       <div class="appt-meta">
         <span>${chIcons[e.channel]||e.channel}</span>
+        ${(()=>{ const ap = appts.find(x=>x.id===e.appt_id); return ap && ap.therapist ? `<span>👨‍⚕️ ${ap.therapist}</span>` : ''; })()}
         <span>🕒 ${timeStr}</span>
       </div>
       ${e.detail? `<div class="appt-meta"><span>📝 ${e.detail}</span></div>`:''}
@@ -1424,9 +1685,10 @@ async function pullSettingsRows(){
     if(isRecentLocalPush(row.key)) return; // keep the value just saved locally, ignore stale/echoed data
     try{
       const val = JSON.parse(row.value);
+      if(row.key==='questionnaires'){ scrApplyDefs(val); return; }   // published by Questionnaire.gs
       if(row.key==='settings') settings = val;
       if(row.key==='reminderSettings') reminderSettings = val;
-      if(row.key==='appUsers') appUsers = val;
+      if(row.key==='appUsers'){ appUsers = val; normalizeUsers(); }
       if(row.key==='gcalClientId') gcalClientId = val;
     }catch(e){}
   });
@@ -1436,6 +1698,7 @@ async function pullSettingsRows(){
   LS.set('gcalClientId', gcalClientId);
   migrateClinicsShape();
   fillClinicSettingInputs();
+  fillTherapistSettingInputs();
   loadSettingsToUI();
   fillClinicSelects();
   renderUsersList();
@@ -1454,6 +1717,7 @@ function initSupabase(){
     pullSessionNotesFromSupabase();
     pullBookingRequests();
     pullBookingRequestsBale();
+    pullScreenings();
     subscribeRealtime();
   }catch(e){
     document.getElementById('supaStatus').textContent = '❌ خطا در اتصال: ' + e.message;
@@ -1461,7 +1725,13 @@ function initSupabase(){
 }
 async function pushToSupabase(appt){
   if(!supa) return;
-  const { error } = await supa.from('appointments').upsert(apptToRow(appt));
+  let { error } = await supa.from('appointments').upsert(apptToRow(appt));
+  if(error && /therapist/i.test(error.message||'')){
+    // column not created yet in Supabase → save without it so nothing is lost, and tell the user what to run
+    const row = apptToRow(appt); delete row.therapist;
+    ({ error } = await supa.from('appointments').upsert(row));
+    if(!error){ toast('⚠️ نوبت ذخیره شد ولی ستون therapist در Supabase ساخته نشده — فایل therapist-migration.sql را اجرا کنید'); return; }
+  }
   if(error) toast('❌ ذخیرهٔ آنلاین ناموفق بود: '+error.message);
 }
 async function deleteFromSupabase(id){
@@ -1470,7 +1740,8 @@ async function deleteFromSupabase(id){
 }
 async function pullFromSupabase(){
   if(!supa) return;
-  const { data, error } = await supa.from('appointments').select('*').order('date',{ascending:true}).order('time',{ascending:true}).limit(MAX_RECORDS);
+  let data = null, error = null;
+  try{ data = await fbFetchAll('appointments', ['id']); }catch(e){ error = e; } // every row — not just the first 500
   if(error){ document.getElementById('supaStatus').textContent = '❌ خطا در دریافت اطلاعات: '+error.message; return; }
   if(data){
     appts = data.map(rowToAppt);
@@ -1566,7 +1837,7 @@ function renderClientsManagement(){
   const wrap = document.getElementById('clientsManagementList');
   if(!wrap) return;
   const q = (document.getElementById('clientSearchBox').value||'').trim();
-  let list = clients.slice();
+  let list = scopedClients().slice();
   if(q) list = list.filter(c=>(c.name||'').indexOf(q)>-1 || (c.phone||'').indexOf(q)>-1);
   list.sort((a,b)=>(a.name||a.phone||'').localeCompare(b.name||b.phone||'','fa'));
   if(!list.length){ wrap.innerHTML = '<div class="empty">مراجعی یافت نشد</div>'; return; }
@@ -1592,7 +1863,7 @@ function toggleSelectAllClients(){
 async function deleteClientRecord(code){
   const c = clients.find(x=>x.code===code);
   const apptCount = appts.filter(a=>a.code===code).length;
-  const noteCount = sessionNotes.filter(s=>{ const a=appts.find(x=>x.id===s.apptId); return a && a.code===code; }).length;
+  const noteCount = sessionNotes.filter(s=>noteClientCode(s)===code).length;
   let warn = '';
   if(apptCount) warn += `\n\n⚠️ این مراجع ${faDigits(apptCount)} نوبت ثبت‌شده دارد که حذف نمی‌شوند.`;
   if(noteCount) warn += `\n📜 ${faDigits(noteCount)} یادداشت جلسه/سابقهٔ درمان هم دارد که حذف نمی‌شود و در گزارش درمان قابل مشاهده باقی می‌ماند.`;
@@ -1619,8 +1890,8 @@ async function deleteSelectedClients(){
 }
 async function pullClientsFromSupabase(){
   if(!supa) return;
-  const { data, error } = await supa.from('clients').select('*');
-  if(error) return;
+  let data = null;
+  try{ data = await fbFetchAll('clients', ['code']); }catch(e){ return; }
   const cloudList = (data||[]).map(rowToClient);
   const cloudCodes = new Set(cloudList.map(c=>c.code));
   // Don't silently discard clients that only exist locally (not yet synced) — keep them and re-upload
@@ -1676,9 +1947,10 @@ function subscribeRealtime(){
       if(isRecentLocalPush(row.key)) return; // this is just the echo of our own recent save — ignore
       try{
         const val = JSON.parse(row.value);
-        if(row.key==='settings'){ settings=val; migrateClinicsShape(); LS.set('settings',settings); fillClinicSettingInputs(); loadSettingsToUI(); fillClinicSelects(); }
+        if(row.key==='questionnaires'){ scrApplyDefs(val); return; }   // published by Questionnaire.gs (no toast: not a user setting)
+        if(row.key==='settings'){ settings=val; migrateClinicsShape(); LS.set('settings',settings); fillClinicSettingInputs(); fillTherapistSettingInputs(); loadSettingsToUI(); fillClinicSelects(); }
         if(row.key==='reminderSettings'){ reminderSettings=val; LS.set('reminderSettings',reminderSettings); loadSettingsToUI(); }
-        if(row.key==='appUsers'){ appUsers=val; LS.set('appUsers',appUsers); renderUsersList(); }
+        if(row.key==='appUsers'){ appUsers=val; normalizeUsers(); LS.set('appUsers',appUsers); renderUsersList(); if(currentUser) applyRolePermissions(); }
         if(row.key==='gcalClientId'){ gcalClientId=val; LS.set('gcalClientId',gcalClientId); document.getElementById('gcalClientId').value=gcalClientId||''; }
         toast('🔄 تنظیمات به‌روزرسانی شد');
       }catch(e){}
@@ -1750,7 +2022,8 @@ function subscribeRealtime(){
       if(payload.eventType==='DELETE'){
         sessionNotes = sessionNotes.filter(s=>s.id !== payload.old.id);
       }else{
-        const s = rowToSessionNote(payload.new);
+        const idx0 = sessionNotes.findIndex(x=>x.id===payload.new.id);
+        const s = mergeCloudNote(rowToSessionNote(payload.new), idx0>=0 ? sessionNotes[idx0] : null);
         const idx = sessionNotes.findIndex(x=>x.id===s.id);
         if(idx>=0) sessionNotes[idx]=s; else sessionNotes.push(s);
       }
@@ -1758,10 +2031,11 @@ function subscribeRealtime(){
       if(document.getElementById('clientHistoryOverlay').classList.contains('show')) renderClientHistoryList();
     })
     .subscribe();
+  subscribeScreenings();
 }
 /* Fallback: if realtime dropped (e.g. phone was locked/asleep), re-sync when the app becomes visible again */
 document.addEventListener('visibilitychange', ()=>{
-  if(!document.hidden && supa){ pullFromSupabase(); pullClientsFromSupabase(); pullSettingsRows(); pullSettlementsFromSupabase(); pullReminderLog(); pullSessionNotesFromSupabase(); }
+  if(!document.hidden && supa){ pullFromSupabase(); pullClientsFromSupabase(); pullSettingsRows(); pullSettlementsFromSupabase(); pullReminderLog(); pullSessionNotesFromSupabase(); pullScreenings(); }
 });
 function manualRefresh(){
   if(!supa){ toast('ابتدا در تنظیمات به Supabase متصل شوید'); return; }
@@ -1774,6 +2048,7 @@ function manualRefresh(){
   pullSessionNotesFromSupabase();
   pullBookingRequests();
   pullBookingRequestsBale();
+  pullScreenings();
 }
 
 /* ================= PERSIAN DATE (Jalali) ================= */
@@ -1959,11 +2234,32 @@ function todayStr(){ const d=new Date(); return d.toISOString().slice(0,10); }
 function timeToMin(t){ const [h,m]=t.split(':').map(Number); return h*60+m; }
 
 /* ================= INIT UI ================= */
+function fillTherapistSelects(){
+  const names = therapistNames();
+  const keep = (id, html)=>{
+    const el = document.getElementById(id); if(!el) return;
+    const prev = el.value;
+    el.innerHTML = html;
+    if(prev && names.includes(prev)) el.value = prev;
+  };
+  keep('fTherapist', '<option value="">— انتخاب درمانگر —</option>' + names.map(n=>`<option value="${escAttr(n)}">${n}</option>`).join(''));
+  { const mt = (typeof myTherapist==='function') ? myTherapist() : ''; const ft = document.getElementById('fTherapist'); if(ft){ if(mt){ ft.value = mt; ft.disabled = true; } else ft.disabled = false; } }
+  keep('filTherapist', '<option value="">👨‍⚕️ همه</option>' + names.map(n=>`<option value="${escAttr(n)}">👨‍⚕️ ${n}</option>`).join(''));
+  keep('repFilTherapist', '<option value="">همهٔ درمانگران</option>' + names.map(n=>`<option value="${escAttr(n)}">${n}</option>`).join(''));
+  keep('trTherapistFilter', '<option value="">همهٔ درمانگران</option>' + names.map(n=>`<option value="${escAttr(n)}">${n}</option>`).join(''));
+  if(typeof renderTherapistBusy==='function') renderTherapistBusy();
+}
 function fillClinicSelects(){
   const plainOpts = settings.clinics.map(c=>`<option value="${c.name}">${c.name}</option>`).join('');
-  document.getElementById('fClinic').innerHTML = plainOpts;
+  const fClinicEl = document.getElementById('fClinic');
+  const prevClinic = fClinicEl.value;
+  fClinicEl.innerHTML = plainOpts;
+  if(prevClinic && settings.clinics.some(c=>c.name===prevClinic)) fClinicEl.value = prevClinic; // don't reset the choice mid-form when a realtime refresh lands
   const filOpts = settings.clinics.map(c=>`<option value="${c.name}">🏥 ${c.name}</option>`).join('');
+  const prevFil = document.getElementById('filClinic').value;
   document.getElementById('filClinic').innerHTML = '<option value="">🏥 همه</option>' + filOpts;
+  if(prevFil && settings.clinics.some(c=>c.name===prevFil)) document.getElementById('filClinic').value = prevFil;
+  fillTherapistSelects();
   const stSel = document.getElementById('stClinic');
   if(stSel){
     const prev = stSel.value;
@@ -1978,6 +2274,47 @@ function fillClinicSettingInputs(){
        <input type="text" value="${c.name}" data-ci="${i}" data-f="name" placeholder="نام کلینیک">
        <input type="number" value="${c.commission}" data-ci="${i}" data-f="commission" placeholder="درصد کلینیک" min="0" max="100">
      </div>`).join('');
+}
+function fillTherapistSettingInputs(){
+  const wrap = document.getElementById('therapistInputs');
+  if(!wrap) return;
+  wrap.innerHTML = (settings.therapists||[]).map((t,i)=>
+    `<div class="row2" style="margin-top:8px">
+       <input type="text" value="${escAttr(t.name)}" data-ti="${i}" data-tf="name" data-old="${escAttr(t.old!==undefined ? t.old : t.name)}" placeholder="نام درمانگر">
+       <input type="text" value="${escAttr(t.specialty||'')}" data-ti="${i}" data-tf="specialty" placeholder="تخصص (اختیاری)">
+     </div>
+     <div class="row2" style="margin-top:8px">
+       <input type="tel" value="${escAttr(t.phone||'')}" data-ti="${i}" data-tf="phone" placeholder="موبایل (برای پیامک)">
+       <input type="text" value="${escAttr(t.tgChatId||'')}" data-ti="${i}" data-tf="tgChatId" placeholder="Chat ID تلگرام">
+     </div>
+     <input type="text" value="${escAttr(t.baleChatId||'')}" data-ti="${i}" data-tf="baleChatId" placeholder="Chat ID بله" style="margin-top:8px">
+     <button class="btn ghost small" style="margin-top:4px" onclick="removeTherapistRow(${i})">حذف «${escAttr(t.name||'این درمانگر')}»</button>`).join('')
+    || '<div class="empty">درمانگری تعریف نشده — ربات‌ها مرحلهٔ انتخاب درمانگر را رد می‌کنند.</div>';
+}
+function readTherapistInputs(){
+  // returns the rows currently typed in the settings form (keeps unsaved edits when adding/removing rows)
+  return Array.from(document.querySelectorAll('#therapistInputs [data-tf="name"]')).map(el=>{
+    const i = el.dataset.ti;
+    const val = f=>{ const x = document.querySelector(`#therapistInputs [data-ti="${i}"][data-tf="${f}"]`); return x ? x.value.trim() : ''; };
+    return { name: el.value.trim(), specialty: val('specialty'), phone: val('phone'), tgChatId: val('tgChatId'), baleChatId: val('baleChatId'), old: el.dataset.old||'' };
+  });
+}
+function addTherapistRow(){
+  const rows = readTherapistInputs();
+  settings.therapists = rows.map(r=>({name:r.name, specialty:r.specialty, phone:r.phone, tgChatId:r.tgChatId, baleChatId:r.baleChatId, old:r.old}));
+  settings.therapists.push({name:'', specialty:'', phone:'', tgChatId:'', baleChatId:'', old:''});
+  fillTherapistSettingInputs();
+}
+function removeTherapistRow(i){
+  const rows = readTherapistInputs();
+  const gone = rows[i];
+  if(gone && gone.old && appts.some(a=>a.therapist===gone.old)){
+    if(!confirm('«'+gone.old+'» نوبت ثبت‌شده دارد. با حذف از فهرست، نوبت‌های قبلی با همان نام باقی می‌مانند (ولی دیگر قابل انتخاب نیست). ادامه می‌دهید؟')) return;
+  }
+  rows.splice(i,1);
+  settings.therapists = rows.map(r=>({name:r.name, specialty:r.specialty, phone:r.phone, tgChatId:r.tgChatId, baleChatId:r.baleChatId, old:r.old}));
+  fillTherapistSettingInputs();
+  toast('برای اعمال نهایی، «ذخیره تنظیمات» را بزنید');
 }
 function loadSettingsToUI(){
   document.getElementById('setDrName').value = settings.drName||'';
@@ -2007,6 +2344,19 @@ function saveSettings(){
     const commEl = document.querySelector(`#clinicInputs [data-ci="${i}"][data-f="commission"]`);
     return { name: el.value.trim()||'کلینیک', commission: Math.max(0, Math.min(100, Number(commEl.value)||0)) };
   });
+  const thRows = readTherapistInputs().filter(r=>r.name);
+  const dupe = thRows.find((r,i)=>thRows.findIndex(x=>x.name===r.name)!==i);
+  if(dupe){ toast('نام درمانگران نباید تکراری باشد: '+dupe.name); return; }
+  // renamed therapist → optionally carry old appointments over to the new name
+  const renamed = thRows.filter(r=>r.old && r.old!==r.name && appts.some(a=>a.therapist===r.old));
+  renamed.forEach(r=>{
+    const n = appts.filter(a=>a.therapist===r.old).length;
+    if(confirm('نام «'+r.old+'» به «'+r.name+'» تغییر کرد. '+faDigits(n)+' نوبت قبلی هم به نام جدید تغییر کند؟')){
+      appts.forEach(a=>{ if(a.therapist===r.old){ a.therapist = r.name; pushToSupabase(a); } });
+      LS.set('appts', appts);
+    }
+  });
+  settings.therapists = thRows.map(r=>({name:r.name, specialty:r.specialty, phone:r.phone, tgChatId:r.tgChatId, baleChatId:r.baleChatId}));
   settings.morningStart = document.getElementById('setMorningStart').value;
   settings.morningEnd = document.getElementById('setMorningEnd').value;
   settings.eveningStart = document.getElementById('setEveningStart').value;
@@ -2015,7 +2365,9 @@ function saveSettings(){
   LS.set('settings', settings);
   pushSettingsRow('settings', settings);
   fillClinicSelects();
+  fillTherapistSettingInputs();
   loadSettingsToUI();
+  renderAll();
   toast('تنظیمات ذخیره شد');
 }
 function saveSupabase(){
@@ -2121,7 +2473,7 @@ document.getElementById('fName').addEventListener('input', function(){
   const q = this.value.trim();
   const wrap = document.getElementById('nameSuggestions');
   if(q.length < 2 || editingId){ wrap.classList.remove('show'); wrap.innerHTML=''; return; }
-  const matches = clients.filter(c=>c.name && c.name.indexOf(q)>-1).slice(0,6);
+  const matches = scopedClients().filter(c=>c.name && c.name.indexOf(q)>-1).slice(0,6);
   if(!matches.length){ wrap.classList.remove('show'); wrap.innerHTML=''; return; }
   wrap.innerHTML = matches.map(c=>`
     <div class="suggestion-item" onclick="selectClientSuggestion('${c.code}')">
@@ -2153,12 +2505,19 @@ function selectClientSuggestion(code){
 }
 
 /* ================= CONFLICT CHECK ================= */
-function checkConflict(clinic, date, time, dur, excludeId){
+/* A therapist can't be in two sessions at once (in any clinic). Appointments with no therapist
+   (old data) fall back to the previous rule: same clinic + overlapping time. */
+function checkConflict(clinic, date, time, dur, excludeId, therapist){
   const start = timeToMin(time);
   const end = start + Number(dur||50);
   return appts.some(a=>{
     if(a.id===excludeId) return false;
-    if(a.clinic!==clinic || a.date!==date) return false;
+    if(a.date!==date) return false;
+    if(therapist && a.therapist){
+      if(a.therapist!==therapist) return false;
+    } else {
+      if(a.clinic!==clinic) return false;
+    }
     const s2 = timeToMin(a.time), e2 = s2 + Number(a.dur||50);
     return start < e2 && s2 < end;
   });
@@ -2181,11 +2540,28 @@ function feeRawValue(){
 }
 
 /* live conflict preview while filling form */
-['fClinic','fDate','fTime','fDur'].forEach(id=>{
+['fClinic','fTherapist','fDate','fTime','fDur'].forEach(id=>{
   document.getElementById(id).addEventListener('input', previewConflict);
   document.getElementById(id).addEventListener('change', previewConflict);
 });
+function renderTherapistBusy(){
+  const el = document.getElementById('therapistBusyHint');
+  if(!el) return;
+  const th = document.getElementById('fTherapist').value;
+  const date = document.getElementById('fDate').value;
+  if(!th || !date){ el.textContent=''; return; }
+  const busy = appts.filter(a=>a.therapist===th && a.date===date && a.id!==editingId)
+    .sort((a,b)=>a.time.localeCompare(b.time))
+    .map(a=>{
+      const e = timeToMin(a.time)+Number(a.dur||50);
+      return a.time+'–'+String(Math.floor(e/60)).padStart(2,'0')+':'+String(e%60).padStart(2,'0');
+    });
+  el.textContent = busy.length
+    ? '⏱ ساعت‌های پرِ '+th+' در این روز: '+busy.join('، ')
+    : '✅ '+th+' در این روز نوبتی ندارد';
+}
 function previewConflict(){
+  renderTherapistBusy();
   const clinic=document.getElementById('fClinic').value;
   const date=document.getElementById('fDate').value;
   const time=document.getElementById('fTime').value;
@@ -2194,7 +2570,8 @@ function previewConflict(){
   const ow = document.getElementById('outsideWarn');
   cw.classList.remove('show'); ow.classList.remove('show');
   if(!clinic||!date||!time) return;
-  if(checkConflict(clinic,date,time,dur,editingId)) cw.classList.add('show');
+  const therapist=document.getElementById('fTherapist').value;
+  if(checkConflict(clinic,date,time,dur,editingId,therapist)) cw.classList.add('show');
   if(!withinWorkHours(time)) ow.classList.add('show');
 }
 
@@ -2208,6 +2585,7 @@ function editAppt(id){
   document.getElementById('fName').value = a.name;
   document.getElementById('fPhone').value = a.phone;
   document.getElementById('fClinic').value = a.clinic;
+  document.getElementById('fTherapist').value = a.therapist || '';
   document.getElementById('fDate').value = a.date;
   setJalaliDateField('fDate','fDateDisplay', a.date);
   document.getElementById('fTime').value = a.time;
@@ -2222,6 +2600,7 @@ function editAppt(id){
   document.getElementById('codeBox').style.display='inline-flex';
   document.getElementById('saveBtn').textContent = 'بروزرسانی نوبت';
   document.getElementById('cancelEditBtn').style.display='block';
+  renderTherapistBusy();
   document.querySelector('nav.tabbar button[data-t="new"]').click();
   window.scrollTo({top:0,behavior:'smooth'});
   toast('در حال ویرایش نوبت — اطلاعات را تغییر دهید و «بروزرسانی نوبت» را بزنید');
@@ -2240,6 +2619,7 @@ document.getElementById('saveBtn').addEventListener('click', async ()=>{
   const name = document.getElementById('fName').value.trim();
   const phone = document.getElementById('fPhone').value.trim();
   const clinic = document.getElementById('fClinic').value;
+  const therapist = myTherapist() || document.getElementById('fTherapist').value;
   const date = document.getElementById('fDate').value;
   const time = document.getElementById('fTime').value;
   const dur = document.getElementById('fDur').value || 50;
@@ -2252,7 +2632,11 @@ document.getElementById('saveBtn').addEventListener('click', async ()=>{
     toast('لطفاً نام، شماره، تاریخ و ساعت را کامل کنید');
     return;
   }
-  if(checkConflict(clinic,date,time,dur,editingId)){
+  if(therapistNames().length && !therapist){
+    toast('لطفاً درمانگر را انتخاب کنید');
+    return;
+  }
+  if(checkConflict(clinic,date,time,dur,editingId,therapist)){
     document.getElementById('conflictWarn').classList.add('show');
     toast('⛔ تداخل زمانی — نوبت ذخیره نشد');
     return;
@@ -2283,12 +2667,14 @@ document.getElementById('saveBtn').addEventListener('click', async ()=>{
 
   let appt;
   let rescheduled = false;
+  let prevState = null;
   if(editingId){
     appt = appts.find(x=>x.id===editingId);
+    prevState = { date:appt.date, time:appt.time, clinic:appt.clinic, therapist:appt.therapist||'' };
     rescheduled = (appt.date !== date || appt.time !== time);
-    Object.assign(appt, { code:c.code, name, phone, clinic, date, time, dur:Number(dur), fee:Number(fee), note });
+    Object.assign(appt, { code:c.code, name, phone, clinic, therapist, date, time, dur:Number(dur), fee:Number(fee), note });
   }else{
-    appt = { id: uid(), code:c.code, name, phone, clinic, date, time, dur:Number(dur), fee:Number(fee), note, done:false };
+    appt = { id: uid(), code:c.code, name, phone, clinic, therapist, date, time, dur:Number(dur), fee:Number(fee), note, done:false };
     appts.push(appt);
   }
   LS.set('appts', appts);
@@ -2297,6 +2683,8 @@ document.getElementById('saveBtn').addEventListener('click', async ()=>{
     supa.from('appointments').update({reminded:false}).eq('id', appt.id).then(()=>{});
   }
   syncToGoogleCalendar(appt);
+  if(!editingId) notifyTherapistAppt(appt, 'ثبت دستی در اپ');
+  else notifyTherapistEdit(prevState, appt);
 
   document.getElementById('savedOk').classList.add('show');
   setTimeout(()=>document.getElementById('savedOk').classList.remove('show'),2000);
@@ -2312,15 +2700,17 @@ document.getElementById('saveBtn').addEventListener('click', async ()=>{
 function renderList(){
   const fc = document.getElementById('filClinic').value;
   const fd = document.getElementById('filDate').value;
-  let list = appts.slice().sort((a,b)=> (a.date+a.time).localeCompare(b.date+b.time));
+  const ft = document.getElementById('filTherapist').value;
+  let list = scopedAppts().slice().sort((a,b)=> (a.date+a.time).localeCompare(b.date+b.time));
   if(fc) list = list.filter(a=>a.clinic===fc);
+  if(ft) list = list.filter(a=>a.therapist===ft);
   if(fd) list = list.filter(a=>a.date===fd);
 
   const wrap = document.getElementById('apptList');
   if(!list.length){ wrap.innerHTML = '<div class="empty">نوبتی یافت نشد</div>'; }
   else{
     wrap.innerHTML = list.map(a=>{
-      const conflict = checkConflict(a.clinic,a.date,a.time,a.dur,a.id);
+      const conflict = checkConflict(a.clinic,a.date,a.time,a.dur,a.id,a.therapist);
       return `
       <div class="appt ${conflict?'conflict':''}">
         <div class="appt-top">
@@ -2330,6 +2720,7 @@ function renderList(){
         <div class="appt-meta">
           <span>🆔 ${a.code}</span>
           <span>🏥 ${a.clinic}</span>
+          ${therapistChip(a)}
           <span>📅 ${formatFaDate(a.date)} (${weekdayName(a.date)})</span>
           <span>⏱ ${a.dur} دقیقه</span>
           ${a.fee? `<span>💰 ${Number(a.fee).toLocaleString('fa-IR')} تومان</span>`:''}
@@ -2337,8 +2728,6 @@ function renderList(){
         ${a.note? `<div class="appt-meta"><span>📝 ${a.note}</span></div>`:''}
         <div class="appt-actions">
           <button onclick="editAppt('${a.id}')">✏️ ویرایش</button>
-          <button onclick="openSessionNote('${a.id}')">📝 یادداشت جلسه</button>
-          <button onclick="openClientHistory('${a.phone}','${a.name.replace(/'/g,"\\'")}')">📜 سابقهٔ درمان</button>
           <button class="tg" onclick="sendTelegramReminder('${a.id}')">تلگرام به خودم</button>
           <button class="tg" onclick="sendTelegramToClient('${a.id}')">تلگرام به مراجع</button>
           <button class="tg" onclick="sendBaleReminder('${a.id}')">بله به خودم</button>
@@ -2356,16 +2745,17 @@ function renderList(){
   const tbody = document.getElementById('apptTableBody');
   if(tbody){
     if(!list.length){
-      tbody.innerHTML = '<tr><td colspan="7" style="padding:16px;color:#93a09e">نوبتی یافت نشد</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" style="padding:16px;color:#93a09e">نوبتی یافت نشد</td></tr>';
     }else{
       tbody.innerHTML = list.map(a=>{
-        const conflict = checkConflict(a.clinic,a.date,a.time,a.dur,a.id);
+        const conflict = checkConflict(a.clinic,a.date,a.time,a.dur,a.id,a.therapist);
         return `<tr style="cursor:pointer;${conflict?'background:#fff8f7':''}" onclick="editAppt('${a.id}')">
           <td>${formatFaDate(a.date)}</td>
           <td>${a.time}</td>
           <td>${a.name}</td>
           <td>${a.code}</td>
           <td>${a.clinic}</td>
+          <td>${a.therapist||'—'}</td>
           <td>${a.fee? Number(a.fee).toLocaleString('fa-IR'):'—'}</td>
           <td>${a.done?'✅':'—'}</td>
         </tr>`;
@@ -2394,11 +2784,13 @@ function applyListViewMode(){
 }
 function clearFilters(){
   document.getElementById('filClinic').value='';
+  document.getElementById('filTherapist').value='';
   document.getElementById('filDate').value='';
   document.getElementById('filDateDisplay').value='';
   renderList();
 }
 document.getElementById('filClinic').addEventListener('change', renderList);
+document.getElementById('filTherapist').addEventListener('change', renderList);
 document.getElementById('filDate').addEventListener('change', renderList);
 applyListViewMode();
 
@@ -2463,9 +2855,9 @@ async function syncToGoogleCalendar(appt){
   const em = String(endMin%60).padStart(2,'0');
   const endDT = appt.date+'T'+eh+':'+em+':00';
   const body = {
-    summary: 'جلسه مشاوره: '+appt.name,
+    summary: 'جلسه مشاوره: '+appt.name+(appt.therapist? ' ('+appt.therapist+')':''),
     location: appt.clinic,
-    description: 'کد مراجع: '+appt.code+(appt.note? (' | '+appt.note):''),
+    description: 'کد مراجع: '+appt.code+(appt.therapist? ' | درمانگر: '+appt.therapist:'')+(appt.note? (' | '+appt.note):''),
     start: { dateTime: startDT, timeZone: 'Asia/Tehran' },
     end: { dateTime: endDT, timeZone: 'Asia/Tehran' }
   };
@@ -2494,8 +2886,8 @@ async function addToGoogleCalendar(id){
   const eh = String(Math.floor(endMin/60)).padStart(2,'0');
   const em = String(endMin%60).padStart(2,'0');
   const end = a.date.replace(/-/g,'') + 'T' + eh+em + '00';
-  const text = encodeURIComponent('جلسه مشاوره: '+a.name);
-  const details = encodeURIComponent('کد مراجع: '+a.code+' | کلینیک: '+a.clinic+(a.note?(' | یادداشت: '+a.note):''));
+  const text = encodeURIComponent('جلسه مشاوره: '+a.name+(a.therapist? ' ('+a.therapist+')':''));
+  const details = encodeURIComponent('کد مراجع: '+a.code+' | کلینیک: '+a.clinic+(a.therapist?(' | درمانگر: '+a.therapist):'')+(a.note?(' | یادداشت: '+a.note):''));
   const loc = encodeURIComponent(a.clinic);
   const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${text}&dates=${start}/${end}&details=${details}&location=${loc}`;
   window.open(url, '_blank');
@@ -2545,7 +2937,7 @@ async function tgSend(chatId, text){
 }
 async function sendTelegramReminder(id){
   const a = appts.find(x=>x.id===id);
-  const msg = `🔔 یادآوری نوبت\nمراجع: ${a.name} (${a.code})\nکلینیک: ${a.clinic}\nتاریخ: ${formatFaDate(a.date)} - ${weekdayName(a.date)}\nساعت: ${a.time}`;
+  const msg = `🔔 یادآوری نوبت\nمراجع: ${a.name} (${a.code})\nکلینیک: ${a.clinic}${a.therapist?'\nدرمانگر: '+a.therapist:''}\nتاریخ: ${formatFaDate(a.date)} - ${weekdayName(a.date)}\nساعت: ${a.time}`;
   const r = await tgSend(reminderSettings.tgChatId, msg);
   toast(r.ok? '✅ پیام تلگرام ارسال شد' : '❌ ناموفق: '+(r.description||'خطای نامشخص'));
   pushReminderLog(a.id, 'خودم', 'telegram', r.ok, r.description);
@@ -2557,7 +2949,7 @@ async function sendTelegramToClient(id){
     toast('برای این مراجع هنوز Chat ID تلگرام ثبت نشده — از فرم ثبت/ویرایش نوبت وارد کنید');
     return;
   }
-  const msg = `🔔 یادآوری نوبت مشاوره\nمراجع گرامی ${a.name}،\nنوبت شما در تاریخ ${formatFaDate(a.date)} (${weekdayName(a.date)}) ساعت ${a.time} در ${a.clinic} می‌باشد.`;
+  const msg = `🔔 یادآوری نوبت مشاوره\nمراجع گرامی ${a.name}،\nنوبت شما در تاریخ ${formatFaDate(a.date)} (${weekdayName(a.date)}) ساعت ${a.time} در ${a.clinic}${a.therapist?' نزد '+a.therapist:''} می‌باشد.`;
   const r = await tgSend(c.tgChatId, msg);
   toast(r.ok? '✅ پیام برای مراجع ارسال شد' : '❌ ناموفق: '+(r.description||'خطای نامشخص'));
   pushReminderLog(a.id, a.name, 'telegram', r.ok, r.description);
@@ -2611,7 +3003,7 @@ async function baSend(chatId, text){
 }
 async function sendBaleReminder(id){
   const a = appts.find(x=>x.id===id);
-  const msg = `🔔 یادآوری نوبت\nمراجع: ${a.name} (${a.code})\nکلینیک: ${a.clinic}\nتاریخ: ${formatFaDate(a.date)} - ${weekdayName(a.date)}\nساعت: ${a.time}`;
+  const msg = `🔔 یادآوری نوبت\nمراجع: ${a.name} (${a.code})\nکلینیک: ${a.clinic}${a.therapist?'\nدرمانگر: '+a.therapist:''}\nتاریخ: ${formatFaDate(a.date)} - ${weekdayName(a.date)}\nساعت: ${a.time}`;
   const r = await baSend(reminderSettings.baleChatId, msg);
   toast(r.ok? '✅ پیام بله ارسال شد' : '❌ ناموفق: '+(r.description||'خطای نامشخص'));
   pushReminderLog(a.id, 'خودم', 'bale', r.ok, r.description);
@@ -2623,7 +3015,7 @@ async function sendBaleToClient(id){
     toast('برای این مراجع هنوز Chat ID بله ثبت نشده — از فرم ثبت/ویرایش نوبت وارد کنید');
     return;
   }
-  const msg = `🔔 یادآوری نوبت مشاوره\nمراجع گرامی ${a.name}،\nنوبت شما در تاریخ ${formatFaDate(a.date)} (${weekdayName(a.date)}) ساعت ${a.time} در ${a.clinic} می‌باشد.`;
+  const msg = `🔔 یادآوری نوبت مشاوره\nمراجع گرامی ${a.name}،\nنوبت شما در تاریخ ${formatFaDate(a.date)} (${weekdayName(a.date)}) ساعت ${a.time} در ${a.clinic}${a.therapist?' نزد '+a.therapist:''} می‌باشد.`;
   const r = await baSend(c.baleChatId, msg);
   toast(r.ok? '✅ پیام برای مراجع ارسال شد' : '❌ ناموفق: '+(r.description||'خطای نامشخص'));
   pushReminderLog(a.id, a.name, 'bale', r.ok, r.description);
@@ -2657,13 +3049,79 @@ async function notifyStaffClientChange(client, type){
   }
 }
 
+/* ---- Therapist notifications (Telegram / Bale / SMS — whichever contact details exist for that therapist) ---- */
+function apptDetailText(a){
+  return `مراجع: ${a.name}\nموبایل: ${a.phone}\n` +
+    `کلینیک: ${a.clinic}\n` +
+    `تاریخ: ${formatFaDate(a.date)} (${weekdayName(a.date)})\nساعت: ${a.time}` +
+    (a.dur ? `\nمدت: ${faDigits(a.dur)} دقیقه` : '');
+}
+async function sendToTherapist(therapistName, apptId, msg){
+  const t = getTherapist(therapistName);
+  if(!t) return;
+  const who = 'درمانگر: '+t.name;
+  const jobs = [];
+  if(t.tgChatId && reminderSettings.tgToken){
+    jobs.push(tgSend(t.tgChatId, msg).then(r=>pushReminderLog(apptId, who, 'telegram', r.ok, r.description)));
+  }
+  if(t.baleChatId && reminderSettings.baleToken){
+    jobs.push(baSend(t.baleChatId, msg).then(r=>pushReminderLog(apptId, who, 'bale', r.ok, r.description)));
+  }
+  if(t.phone && reminderSettings.smsWebhook){
+    jobs.push((async()=>{
+      try{
+        const res = await fetch(reminderSettings.smsWebhook, {
+          method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
+          body: JSON.stringify({phone:t.phone, message:msg})
+        });
+        const j = JSON.parse(await res.text());
+        const st = j.result && j.result.return && j.result.return.status;
+        const ok = j.success===true && (!st || st===200);
+        pushReminderLog(apptId, who, 'sms', ok, ok?'':(j.error || (j.result&&j.result.return&&j.result.return.message) || 'خطای پیامک'));
+      }catch(e){ pushReminderLog(apptId, who, 'sms', false, e.message||'خطای شبکه'); }
+    })());
+  }
+  if(!jobs.length){
+    toast('ℹ️ برای «'+t.name+'» موبایل یا Chat ID ثبت نشده — اطلاع‌رسانی به درمانگر انجام نشد');
+    return;
+  }
+  await Promise.all(jobs);
+}
+/* new / confirmed appointment → the chosen therapist */
+async function notifyTherapistAppt(appt, sourceLabel){
+  if(!appt || !appt.therapist) return;
+  const msg = `📌 نوبت جدید برای شما\n` + apptDetailText(appt) + (sourceLabel ? `\nمنبع: ${sourceLabel}` : '');
+  return sendToTherapist(appt.therapist, appt.id, msg);
+}
+/* edited appointment: prev = values before the edit. Handles therapist change (tell both) and time/date/clinic change */
+async function notifyTherapistEdit(prev, appt){
+  if(!appt) return;
+  const curTh = appt.therapist || '';
+  const prevTh = prev.therapist || '';
+  const prevView = Object.assign({}, appt, {date:prev.date, time:prev.time, clinic:prev.clinic});
+  if(prevTh !== curTh){
+    const jobs = [];
+    if(prevTh) jobs.push(sendToTherapist(prevTh, appt.id,
+      `❌ این نوبت از برنامهٔ شما خارج شد${curTh ? ' (به '+curTh+' منتقل شد)' : ''}\n` + apptDetailText(prevView)));
+    if(curTh) jobs.push(sendToTherapist(curTh, appt.id,
+      `📌 نوبت جدید برای شما${prevTh ? ' (منتقل‌شده از '+prevTh+')' : ''}\n` + apptDetailText(appt)));
+    return Promise.all(jobs);
+  }
+  if(!curTh) return;
+  const changed = [];
+  if(prev.date!==appt.date || prev.time!==appt.time) changed.push(`زمان: ${formatFaDate(prev.date)} ساعت ${prev.time}  ⬅️  ${formatFaDate(appt.date)} ساعت ${appt.time}`);
+  if(prev.clinic!==appt.clinic) changed.push(`کلینیک: ${prev.clinic}  ⬅️  ${appt.clinic}`);
+  if(!changed.length) return;
+  return sendToTherapist(curTh, appt.id, `🔄 نوبت تغییر کرد\n` + changed.join('\n') + `\n\n` + apptDetailText(appt));
+}
+
 /* ================= SMS ================= */
 function isIOS(){ return /iPad|iPhone|iPod/.test(navigator.userAgent); }
 
 /* Opens the phone's own SMS app with the reminder text ready to send — works instantly, no setup/API keys needed */
 function sendSmsNative(id){
   const a = appts.find(x=>x.id===id);
-  const msg = `یادآوری نوبت مشاوره: ${a.name} - ${formatFaDate(a.date)} ساعت ${a.time} - ${a.clinic}`;
+  const msg = `یادآوری نوبت مشاوره: ${a.name} - ${formatFaDate(a.date)} ساعت ${a.time} - ${a.clinic}${a.therapist?' - '+a.therapist:''}`;
   const sep = isIOS() ? '&' : '?';
   const url = `sms:${a.phone}${sep}body=${encodeURIComponent(msg)}`;
   window.location.href = url;
@@ -2674,7 +3132,7 @@ function sendSmsNative(id){
 async function sendSmsWebhook(id){
   const a = appts.find(x=>x.id===id);
   if(!reminderSettings.smsWebhook){ toast('آدرس Webhook پیامک تنظیم نشده'); return; }
-  const msg = `یادآوری نوبت مشاوره: ${a.name} - ${formatFaDate(a.date)} ساعت ${a.time} - ${a.clinic}`;
+  const msg = `یادآوری نوبت مشاوره: ${a.name} - ${formatFaDate(a.date)} ساعت ${a.time} - ${a.clinic}${a.therapist?' - '+a.therapist:''}`;
   toast('در حال ارسال پیامک...');
   logDebug('[پیامک/رله] درخواست به: '+reminderSettings.smsWebhook);
   try{
@@ -2727,7 +3185,8 @@ function switchSettingsGroup(which){
   });
 }
 function switchListGroup(which){
-  const groups = {confirmed:'listGroupConfirmed', requests:'listGroupRequests', requestsBale:'listGroupRequestsBale'};
+  if((which==='notes' || which==='screenings') && !canClinical()){ toast('⛔ شما به این بخش دسترسی ندارید'); which = 'confirmed'; }
+  const groups = {confirmed:'listGroupConfirmed', requests:'listGroupRequests', requestsBale:'listGroupRequestsBale', notes:'listGroupNotes', screenings:'listGroupScreenings'};
   Object.keys(groups).forEach(key=>{
     const el = document.getElementById(groups[key]);
     const btn = document.querySelector('[data-lg="'+key+'"]');
@@ -2736,9 +3195,12 @@ function switchListGroup(which){
   });
   if(which==='requests') renderBookingRequests();
   else if(which==='requestsBale') renderBookingRequestsBale();
+  else if(which==='notes') renderNoteList();
+  else if(which==='screenings') renderScreenings();
   else renderList();
 }
 function switchReportGroup(which){
+  if(which==='treatment' && !canClinical()){ toast('⛔ شما به گزارش درمان دسترسی ندارید'); which = 'income'; }
   const incomeBtn = document.querySelector('[data-rg="income"]');
   const msgBtn = document.querySelector('[data-rg="messages"]');
   const trBtn = document.querySelector('[data-rg="treatment"]');
@@ -2764,21 +3226,22 @@ function fillTreatmentClientSelect(){
   const sel = document.getElementById('trClientSelect');
   if(!sel) return;
   const map = {};
-  clients.forEach(c=>{ if(c.code && c.name && c.name.trim()) map[c.code] = { code:c.code, name:c.name, phone:c.phone }; });
-  // Even if a client record was deleted, keep their entry reachable here if they still have
-  // clinical session notes on file — that history must never become invisible/unreachable.
-  sessionNotes.forEach(s=>{
-    const a = appts.find(x=>x.id===s.apptId);
-    const name = a && (a.name || s.clientName);
-    if(a && a.code && name && name.trim() && !map[a.code]){
-      map[a.code] = { code:a.code, name:name, phone:a.phone };
-    }
+  const myNotes = scopedNotes();
+  const withNotes = new Set(myNotes.map(noteClientCode));
+  // a client is listed if they have a name, or (even without a name) if they have notes on file
+  scopedClients().forEach(c=>{ if(c.code && ((c.name && c.name.trim()) || withNotes.has(c.code))) map[c.code] = { code:c.code, name:c.name||'', phone:c.phone }; });
+  // Notes are matched to a client by their OWN stored code/phone — so clients whose appointments were deleted
+  // (or fell outside the stored-record limit) still appear. That history must never become unreachable.
+  myNotes.forEach(s=>{
+    const code = noteClientCode(s);
+    if(!map[code]) map[code] = { code, name: s.clientName||'', phone: s.phone||'' };
+    else if(!map[code].name && s.clientName) map[code].name = s.clientName;
   });
   const opts = Object.values(map).sort((a,b)=>(a.name||a.phone||'').localeCompare(b.name||b.phone||'','fa'));
   const prev = sel.value;
   const allOpt = opts.length ? '<option value="__ALL__">📋 گزارش کلی همهٔ مراجعین</option>' : '';
   sel.innerHTML = opts.length
-    ? allOpt + opts.map(o=>`<option value="${o.code}">${o.name||'(بدون نام)'} — ${o.phone}</option>`).join('')
+    ? allOpt + opts.map(o=>`<option value="${o.code}">${escHtml(o.name||'(بدون نام)')} — ${escHtml(o.phone||'')}</option>`).join('')
     : '<option value="">هیچ مراجعی ثبت نشده</option>';
   if(prev && (prev==='__ALL__' || opts.some(o=>o.code===prev))) sel.value = prev;
 }
@@ -2787,9 +3250,15 @@ function clearTreatmentDateRange(){
   setJalaliDateField('trToDate','trToDateDisplay','');
   renderTreatmentReport();
 }
+function trTherapistOf(note){ return noteTherapist(note); }
+/* names of the therapists who actually held these sessions; falls back to the old single-doctor label for old data */
+function trTherapistLabel(notes){
+  const names = Array.from(new Set(notes.map(trTherapistOf).filter(Boolean)));
+  return names.length ? names.join('، ') : (settings.drName ? ('دکتر '+settings.drName) : 'درمانگر');
+}
 function trClinicOf(note){
-  const a = appts.find(x=>x.id===note.apptId);
-  return a ? a.clinic : 'نامشخص';
+  const a = noteApptOf(note);
+  return a ? a.clinic : (note.clinic || 'نامشخص');
 }
 /* Returns { clientName, therapistName, byClinic: { clinicName: [notes...] } } for the selected client + date range */
 function getTreatmentData(){
@@ -2797,44 +3266,27 @@ function getTreatmentData(){
   if(!sel || !sel.value) return null;
   const code = sel.value;
   const c = clients.find(x=>x.code===code);
-  const clientName = (c && c.name) || code;
   const from = document.getElementById('trFromDate').value;
   const to = document.getElementById('trToDate').value;
-  let notes = sessionNotes.filter(s=>{
-    const a = appts.find(x=>x.id===s.apptId);
-    return a && a.code === code;
-  });
+  let notes = scopedNotes().filter(s=>noteClientCode(s)===code);
+  const clientName = (c && c.name) || (notes.find(s=>s.clientName)||{}).clientName || code;
   if(from) notes = notes.filter(s=>s.date >= from);
   if(to) notes = notes.filter(s=>s.date <= to);
+  const trTh = (document.getElementById('trTherapistFilter')||{}).value;
+  if(trTh) notes = notes.filter(s=>trTherapistOf(s)===trTh);
   notes.sort((a,b)=>a.date.localeCompare(b.date));
-  const therapistName = settings.drName ? ('دکتر '+settings.drName) : 'درمانگر';
+  const therapistName = trTherapistLabel(notes);
   const byClinic = {};
   notes.forEach(s=>{
     const clinic = trClinicOf(s);
     if(!byClinic[clinic]) byClinic[clinic] = [];
     byClinic[clinic].push(s);
   });
-  return { clientName, therapistName, notes, byClinic };
+  const therapistByClinic = {};
+  Object.keys(byClinic).forEach(k=>{ therapistByClinic[k] = trTherapistLabel(byClinic[k]); });
+  return { clientName, therapistName, therapistByClinic, notes, byClinic, screenings: screeningsOfClient(code) };
 }
-function treatmentTableHtml(notes){
-  const rowsHtml = notes.map(s=>`
-    <tr>
-      <td style="white-space:nowrap">${formatFaDate(s.date)}</td>
-      <td>${s.diagnosis||'—'}</td>
-      <td>${s.summary||'—'}</td>
-    </tr>
-  `).join('') || '<tr><td colspan="3" style="text-align:center;color:#93a09e">جلسه‌ای ثبت نشده</td></tr>';
-  return `
-    <table>
-      <colgroup>
-        <col style="width:13%">
-        <col style="width:17%">
-        <col style="width:70%">
-      </colgroup>
-      <thead><tr><th>تاریخ</th><th>تشخیص</th><th>شرح درمان</th></tr></thead>
-      <tbody>${rowsHtml}</tbody>
-    </table>`;
-}
+function treatmentTableHtml(notes){ return treatmentSessionsHtml(notes, 'print'); }
 function getAllTreatmentClientCodes(){
   const sel = document.getElementById('trClientSelect');
   if(!sel) return [];
@@ -2876,7 +3328,8 @@ function renderTreatmentReport(){
       <div><b>نام مراجع:</b> ${data.clientName}</div>
       <div><b>تعداد جلسات:</b> ${faDigits(data.notes.length)}</div>
     </div>
-    ${treatmentTableHtml(data.notes)}
+    ${treatmentScreeningsHtml(data.screenings)}
+    ${treatmentSessionsHtml(data.notes, 'screen')}
   `;
 }
 function buildTreatmentPagesHtml(data, pageStyle, printDate, startIndex){
@@ -2888,6 +3341,7 @@ function buildTreatmentPagesHtml(data, pageStyle, printDate, startIndex){
          <div class="tr-sub">تاریخ چاپ: ${printDate}</div>
          <div class="tr-meta-row"><div><b>نام درمانگر:</b> ${data.therapistName}</div></div>
          <div class="tr-meta-row" style="border-bottom:none;"><div><b>نام مراجع:</b> ${data.clientName}</div></div>
+         ${treatmentScreeningsHtml(data.screenings)}
          ${treatmentTableHtml([])}
        </div>`,
       count: 1
@@ -2898,13 +3352,14 @@ function buildTreatmentPagesHtml(data, pageStyle, printDate, startIndex){
       <h1>گزارش روند درمان</h1>
       <div class="tr-sub">تاریخ چاپ: ${printDate}</div>
       <div class="tr-meta-row">
-        <div><b>نام درمانگر:</b> ${data.therapistName}</div>
+        <div><b>نام درمانگر:</b> ${data.therapistByClinic[clinic]}</div>
         <div><b>کلینیک:</b> ${clinic}</div>
       </div>
       <div class="tr-meta-row" style="border-bottom:none;">
         <div><b>نام مراجع:</b> ${data.clientName}</div>
         <div><b>تعداد جلسات:</b> ${faDigits(data.byClinic[clinic].length)}</div>
       </div>
+      ${i===0 ? treatmentScreeningsHtml(data.screenings) : ''}
       ${treatmentTableHtml(data.byClinic[clinic])}
     </div>`).join('');
   return { html, count: clinicNames.length };
@@ -2953,18 +3408,18 @@ function addClientSheetsToWorkbook(wb, data, colWidths, usedNames){
   clinicNames.forEach(clinic=>{
     const notes = data.byClinic[clinic];
     const aoa = [
-      ['نام درمانگر:', data.therapistName],
+      ['نام درمانگر:', data.therapistByClinic[clinic]],
       ['کلینیک:', clinic],
       ['نام مراجع:', data.clientName],
       [],
-      ['تاریخ','تشخیص','شرح درمان','درصد پیشرفت','رضایت مراجع (٪)','رضایت درمانگر (٪)']
+      ['تاریخ','تشخیص','شرح درمان','پیشرفت','رضایت مراجع (٪)','رضایت درمانگر (٪)']
     ];
     notes.forEach(s=>{
       aoa.push([
         formatFaDate(s.date),
         s.diagnosis||'',
-        s.summary||'',
-        s.progress||0,
+        noteFullText(s),
+        noteHasForm(s) ? progressText(s) : (s.progress||0),
         s.clientSat!=null? s.clientSat : '',
         s.therapistSat!=null? s.therapistSat : ''
       ]);
@@ -2981,7 +3436,7 @@ function addClientSheetsToWorkbook(wb, data, colWidths, usedNames){
 function exportTreatmentExcel(){
   if(typeof XLSX==='undefined'){ toast('کتابخانهٔ Excel بارگذاری نشد — اتصال اینترنت را بررسی کنید'); return; }
   const sel = document.getElementById('trClientSelect');
-  const colWidths = [{wch:14},{wch:20},{wch:60},{wch:14},{wch:16},{wch:16}];
+  const colWidths = [{wch:14},{wch:24},{wch:100},{wch:16},{wch:16},{wch:16}];
 
   if(sel && sel.value === '__ALL__'){
     const codes = getAllTreatmentClientCodes();
@@ -3024,17 +3479,19 @@ function renderReport(){
   const today = todayStr();
   let filtered = [];
   if(reportMode==='day'){
-    filtered = appts.filter(a=>a.date===today);
+    filtered = scopedAppts().filter(a=>a.date===today);
   } else if(reportMode==='week'){
     const [s,e] = getWeekRange(today);
-    filtered = appts.filter(a=>a.date>=s && a.date<=e);
+    filtered = scopedAppts().filter(a=>a.date>=s && a.date<=e);
   } else if(reportMode==='month'){
     const ym = today.slice(0,7);
-    filtered = appts.filter(a=>a.date.slice(0,7)===ym);
+    filtered = scopedAppts().filter(a=>a.date.slice(0,7)===ym);
   } else {
     const y = today.slice(0,4);
-    filtered = appts.filter(a=>a.date.slice(0,4)===y);
+    filtered = scopedAppts().filter(a=>a.date.slice(0,4)===y);
   }
+  const repTh = (document.getElementById('repFilTherapist')||{}).value;
+  if(repTh) filtered = filtered.filter(a=>a.therapist===repTh);
   const total = filtered.reduce((s,a)=>s+Number(a.fee||0),0);
   const clinicShareTotal = filtered.reduce((s,a)=>s+Number(a.fee||0)*getClinicCommission(a.clinic)/100, 0);
   const netTotal = total - clinicShareTotal;
@@ -3060,15 +3517,33 @@ function renderReport(){
     return `<tr><td>${name}</td><td>${faDigits(comm)}٪</td><td>${faDigits(byClinic[name].count)}</td><td>${g.toLocaleString('fa-IR')}</td><td>${Math.round(share).toLocaleString('fa-IR')}</td><td>${Math.round(net).toLocaleString('fa-IR')}</td></tr>`;
   }).join('') || '<tr><td colspan="6" style="padding:16px;color:#93a09e">داده‌ای موجود نیست</td></tr>';
 
+  /* per-therapist breakdown (net = after the clinic's commission) */
+  const byTh = {};
+  filtered.forEach(a=>{
+    const k = a.therapist || '— بدون درمانگر —';
+    if(!byTh[k]) byTh[k] = {count:0, gross:0, share:0};
+    const fee = Number(a.fee||0);
+    byTh[k].count++;
+    byTh[k].gross += fee;
+    byTh[k].share += fee*getClinicCommission(a.clinic)/100;
+  });
+  const thBody = document.getElementById('repByTherapist');
+  if(thBody){
+    thBody.innerHTML = Object.keys(byTh).sort().map(k=>{
+      const v = byTh[k];
+      return `<tr><td>${k}</td><td>${faDigits(v.count)}</td><td>${v.gross.toLocaleString('fa-IR')}</td><td>${Math.round(v.share).toLocaleString('fa-IR')}</td><td>${Math.round(v.gross-v.share).toLocaleString('fa-IR')}</td></tr>`;
+    }).join('') || '<tr><td colspan="5" style="padding:16px;color:#93a09e">داده‌ای موجود نیست</td></tr>';
+  }
+
   /* per-appointment detail */
   document.getElementById('repTable').innerHTML = filtered
     .sort((a,b)=>b.date.localeCompare(a.date))
     .map(a=>{
       const fee = Number(a.fee||0);
       const net = fee - (fee*getClinicCommission(a.clinic)/100);
-      return `<tr><td>${formatFaDate(a.date)}</td><td>${a.name}</td><td>${a.clinic}</td><td>${fee.toLocaleString('fa-IR')}</td><td>${Math.round(net).toLocaleString('fa-IR')}</td></tr>`;
+      return `<tr><td>${formatFaDate(a.date)}</td><td>${a.name}</td><td>${a.clinic}</td><td>${a.therapist||'—'}</td><td>${fee.toLocaleString('fa-IR')}</td><td>${Math.round(net).toLocaleString('fa-IR')}</td></tr>`;
     })
-    .join('') || '<tr><td colspan="5" style="padding:16px;color:#93a09e">داده‌ای موجود نیست</td></tr>';
+    .join('') || '<tr><td colspan="6" style="padding:16px;color:#93a09e">داده‌ای موجود نیست</td></tr>';
 }
 
 /* ================= SETTLEMENTS (تسویه‌حساب با کلینیک‌ها) ================= */
@@ -3151,59 +3626,593 @@ function deleteSettlement(id){
   renderSettlementSummary();
 }
 
-/* ================= SESSION NOTES (سابقهٔ درمان) ================= */
-let currentSessionApptId = null;
-function openSessionNote(apptId){
-  const a = appts.find(x=>x.id===apptId);
-  if(!a) return;
-  currentSessionApptId = apptId;
-  document.getElementById('snClientLabel').textContent = `مراجع: ${a.name} — نوبت ${formatFaDate(a.date)} ساعت ${a.time}`;
-  const existing = sessionNotes.find(s=>s.apptId===apptId);
-  document.getElementById('snSummary').value = existing ? existing.summary : '';
-  document.getElementById('snDiagnosis').value = existing ? existing.diagnosis : '';
-  document.getElementById('snProgress').value = existing ? existing.progress : 0;
-  document.getElementById('snProgressVal').textContent = faDigits(existing ? existing.progress : 0)+'٪';
-  document.getElementById('snClientSat').value = existing ? (existing.clientSat||5) : 5;
-  document.getElementById('snTherapistSat').value = existing ? (existing.therapistSat||5) : 5;
-  document.getElementById('snNote').value = existing ? existing.note : '';
-  document.getElementById('sessionNoteOverlay').classList.add('show');
-}
-function closeSessionNote(){
-  document.getElementById('sessionNoteOverlay').classList.remove('show');
-  currentSessionApptId = null;
-}
-function saveSessionNote(){
-  if(!currentSessionApptId) return;
-  const a = appts.find(x=>x.id===currentSessionApptId);
-  if(!a) return;
-  let existing = sessionNotes.find(s=>s.apptId===currentSessionApptId);
-  const data = {
-    apptId: currentSessionApptId,
-    phone: a.phone,
-    clientName: a.name,
-    date: a.date,
-    summary: document.getElementById('snSummary').value.trim(),
-    diagnosis: document.getElementById('snDiagnosis').value.trim(),
-    progress: Number(document.getElementById('snProgress').value)||0,
-    clientSat: Number(document.getElementById('snClientSat').value)||null,
-    therapistSat: Number(document.getElementById('snTherapistSat').value)||null,
-    note: document.getElementById('snNote').value.trim()
-  };
-  if(existing){
-    Object.assign(existing, data);
-  }else{
-    existing = { id: uid(), ...data };
-    sessionNotes.push(existing);
+/* ================= SESSION NOTES / شرح درمان (structured session report) ================= */
+const TN_PROGRESS = ['بدتر','بدون تغییر','بهبود خفیف','بهبود متوسط','بهبود چشمگیر'];
+const TN_PROGRESS_PCT = [0,10,30,60,90]; // kept so old screens/Excel that expect a percent still work
+const TN_SYMPTOMS = [['anxiety','اضطراب'],['insomnia','بی‌خوابی'],['focus','کاهش تمرکز'],['mood','خلق پایین']];
+const TN_INTERVENTIONS = [['review','مرور تکالیف'],['cbt','بازسازی شناختی'],['relax','آموزش آرام‌سازی'],['mind','تکنیک ذهن‌آگاهی'],['expo','مواجهه تدریجی'],
+  ['ba','فعال‌سازی رفتاری'],['behexp','آزمایش رفتاری'],['psychoedu','روان‌آموزی'],['problem','حل مسئله'],['act','پذیرش و تعهد (ACT)'],['dbt','مهارت‌های DBT'],
+  ['mi','مصاحبهٔ انگیزشی'],['sleep','بهداشت خواب / CBT-I'],['social','مهارت‌های اجتماعی / جرأت‌ورزی'],['supportive','درمان حمایتی'],
+  ['crisis','مداخلهٔ بحران'],['safety','برنامهٔ ایمنی'],['family','جلسهٔ خانوادگی / زوجی']];
+/* DSM-5-TR Level 1 cross-cutting symptom measure (adult): 13 domains, rated 0–4 over the past 2 weeks.
+   [key, label, threshold at/above which APA suggests a Level 2 (in-depth) assessment] */
+const TN_CC = [['depression','افسردگی',2],['anger','خشم',2],['mania','شیدایی (مانیا)',2],['anxiety','اضطراب',2],['somatic','علائم جسمانی',2],
+  ['suicidal','افکار خودکشی',1],['psychosis','روان‌پریشی',1],['sleep','مشکلات خواب',2],['memory','حافظه',2],['repetitive','افکار و رفتارهای تکراری',2],
+  ['dissociation','تجزیه',2],['personality','کارکرد شخصیت',2],['substance','مصرف مواد',1]];
+const TN_CC_OPTS = [['','—'],['0','۰ — هیچ'],['1','۱ — خفیف (نادر؛ کمتر از یکی دو روز)'],['2','۲ — ملایم (چند روز)'],['3','۳ — متوسط (بیش از نیمی از روزها)'],['4','۴ — شدید (تقریباً هر روز)']];
+const TN_BANDS = { gad7:[[4,'حداقل'],[9,'خفیف'],[14,'متوسط'],[21,'شدید']], phq9:[[4,'حداقل'],[9,'خفیف'],[14,'متوسط'],[19,'نسبتاً شدید'],[27,'شدید']] };
+/* "Other conditions that may be a focus of clinical attention" (Z-codes) commonly used in practice */
+const TN_Z = [['Z63.0','مشکل رابطه با همسر/شریک'],['Z63.5','اختلال خانواده به‌دلیل جدایی یا طلاق'],['Z62.820','مشکل رابطهٔ والد–فرزند'],['Z63.4','فقدان/مرگ عضو خانواده (سوگ ساده)'],
+  ['Z63.8','هیجان ابرازشدهٔ بالا در خانواده'],['Z60.0','مشکل مرحلهٔ زندگی'],['Z55.9','مشکل تحصیلی'],['Z56.9','مشکل مرتبط با شغل'],['Z59.6','درآمد پایین'],
+  ['Z65.8','مشکل مذهبی یا معنوی'],['Z91.19','عدم پایبندی به درمان'],['Z91.51','سابقهٔ رفتار خودکشی'],['Z91.52','سابقهٔ خودآسیبی غیرخودکشی']];
+/* Diagnosis names + ICD-10-CM codes as listed in DSM-5-TR (names/codes only — NOT the diagnostic criteria). Anything can also be typed freely. */
+const TN_DSM = [
+  ['F90.2','نقص توجه/بیش‌فعالی — نوع ترکیبی','ADHD, combined presentation'],['F90.0','نقص توجه/بیش‌فعالی — عمدتاً بی‌توجه','ADHD, predominantly inattentive'],['F90.1','نقص توجه/بیش‌فعالی — عمدتاً بیش‌فعال/تکانشی','ADHD, predominantly hyperactive-impulsive'],
+  ['F84.0','اختلال طیف اوتیسم','Autism Spectrum Disorder'],
+  ['F20.9','اسکیزوفرنی','Schizophrenia'],['F20.81','اختلال اسکیزوفرنی‌فرم','Schizophreniform Disorder'],['F25.0','اسکیزوافکتیو — نوع دوقطبی','Schizoaffective, bipolar type'],['F25.1','اسکیزوافکتیو — نوع افسردگی','Schizoaffective, depressive type'],
+  ['F22','اختلال هذیانی','Delusional Disorder'],['F23','اختلال روان‌پریشی گذرا','Brief Psychotic Disorder'],
+  ['F31.xx','اختلال دوقطبی I (کد بسته به دورهٔ فعلی)','Bipolar I Disorder'],['F31.81','اختلال دوقطبی II','Bipolar II Disorder'],['F34.0','اختلال سیکلوتایمیک','Cyclothymic Disorder'],
+  ['F32.0','اختلال افسردگی اساسی — دورهٔ منفرد، خفیف','MDD, single episode, mild'],['F32.1','اختلال افسردگی اساسی — دورهٔ منفرد، متوسط','MDD, single episode, moderate'],['F32.2','اختلال افسردگی اساسی — دورهٔ منفرد، شدید','MDD, single episode, severe'],
+  ['F33.0','اختلال افسردگی اساسی — راجعه، خفیف','MDD, recurrent, mild'],['F33.1','اختلال افسردگی اساسی — راجعه، متوسط','MDD, recurrent, moderate'],['F33.2','اختلال افسردگی اساسی — راجعه، شدید','MDD, recurrent, severe'],
+  ['F34.1','اختلال افسردگی مداوم (دیس‌تایمی)','Persistent Depressive Disorder'],['F34.81','اختلال بدتنظیمی مخرب خلق','Disruptive Mood Dysregulation Disorder'],['N94.3','اختلال ملال پیش از قاعدگی','Premenstrual Dysphoric Disorder'],
+  ['F32.89','سایر اختلال افسردگی مشخص‌شده','Other Specified Depressive Disorder'],['F32.A','اختلال افسردگی نامشخص','Unspecified Depressive Disorder'],
+  ['F41.1','اختلال اضطراب فراگیر','Generalized Anxiety Disorder'],['F41.0','اختلال هراس (پانیک)','Panic Disorder'],['F40.10','اختلال اضطراب اجتماعی','Social Anxiety Disorder'],
+  ['F40.00','آگورافوبیا','Agoraphobia'],['F40.2xx','فوبی خاص (کد بسته به نوع)','Specific Phobia'],['F93.0','اختلال اضطراب جدایی','Separation Anxiety Disorder'],['F94.0','لالی انتخابی','Selective Mutism'],
+  ['F41.8','سایر اختلال اضطرابی مشخص‌شده','Other Specified Anxiety Disorder'],['F41.9','اختلال اضطرابی نامشخص','Unspecified Anxiety Disorder'],
+  ['F42.2','اختلال وسواسی-جبری','Obsessive-Compulsive Disorder'],['F45.22','اختلال بدشکلی بدن','Body Dysmorphic Disorder'],['F42.3','اختلال احتکار','Hoarding Disorder'],
+  ['F63.3','اختلال کندن مو (تریکوتیلومانیا)','Trichotillomania'],['F42.4','اختلال کندن پوست','Excoriation Disorder'],['F42.8','سایر اختلال وسواسی-جبری مشخص‌شده','Other Specified OCD and Related'],['F42.9','اختلال وسواسی-جبری نامشخص','Unspecified OCD and Related'],
+  ['F43.10','اختلال استرس پس از سانحه (PTSD)','Posttraumatic Stress Disorder'],['F43.0','اختلال استرس حاد','Acute Stress Disorder'],['F43.81','اختلال سوگ طولانی‌مدت','Prolonged Grief Disorder'],
+  ['F43.20','اختلال سازگاری — نامشخص','Adjustment Disorder, unspecified'],['F43.21','اختلال سازگاری — با خلق افسرده','Adjustment Disorder, with depressed mood'],['F43.22','اختلال سازگاری — با اضطراب','Adjustment Disorder, with anxiety'],
+  ['F43.23','اختلال سازگاری — با اضطراب و خلق افسرده مختلط','Adjustment Disorder, mixed anxiety and depressed mood'],['F43.24','اختلال سازگاری — با اختلال رفتار','Adjustment Disorder, with disturbance of conduct'],['F43.25','اختلال سازگاری — با اختلال مختلط هیجان و رفتار','Adjustment Disorder, mixed disturbance of emotions and conduct'],
+  ['F94.1','اختلال دلبستگی واکنشی','Reactive Attachment Disorder'],
+  ['F44.81','اختلال هویت تجزیه‌ای','Dissociative Identity Disorder'],['F44.0','فراموشی تجزیه‌ای','Dissociative Amnesia'],['F48.1','اختلال مسخ شخصیت/غیرواقعی‌سازی','Depersonalization/Derealization Disorder'],
+  ['F45.1','اختلال علائم جسمانی','Somatic Symptom Disorder'],['F45.21','اختلال اضطراب بیماری','Illness Anxiety Disorder'],['F44.xx','اختلال علائم عصبی کارکردی (تبدیلی)','Functional Neurological Symptom Disorder'],
+  ['F50.01x','بی‌اشتهایی عصبی — نوع محدودکننده','Anorexia Nervosa, restricting type'],['F50.02x','بی‌اشتهایی عصبی — نوع پرخوری/پاک‌سازی','Anorexia Nervosa, binge-eating/purging type'],['F50.2','پراشتهایی عصبی','Bulimia Nervosa'],
+  ['F50.81','اختلال پرخوری','Binge-Eating Disorder'],['F50.82','اختلال مصرف غذای اجتنابی/محدود','Avoidant/Restrictive Food Intake Disorder'],
+  ['F51.01','اختلال بی‌خوابی','Insomnia Disorder'],['F51.11','اختلال پرخوابی','Hypersomnolence Disorder'],['F51.5','اختلال کابوس','Nightmare Disorder'],
+  ['F63.81','اختلال انفجاری متناوب','Intermittent Explosive Disorder'],['F91.3','اختلال نافرمانی مقابله‌ای','Oppositional Defiant Disorder'],['F91.1','اختلال سلوک — شروع در کودکی','Conduct Disorder, childhood-onset'],
+  ['F63.0','اختلال قمار','Gambling Disorder'],['F1x.xx','اختلال مصرف مواد (کد بسته به ماده و شدت)','Substance Use Disorder'],
+  ['F60.0','اختلال شخصیت پارانوئید','Paranoid Personality Disorder'],['F60.1','اختلال شخصیت اسکیزوئید','Schizoid Personality Disorder'],['F21','اختلال شخصیت اسکیزوتایپال','Schizotypal Personality Disorder'],
+  ['F60.2','اختلال شخصیت ضداجتماعی','Antisocial Personality Disorder'],['F60.3','اختلال شخصیت مرزی','Borderline Personality Disorder'],['F60.4','اختلال شخصیت نمایشی','Histrionic Personality Disorder'],
+  ['F60.81','اختلال شخصیت خودشیفته','Narcissistic Personality Disorder'],['F60.6','اختلال شخصیت دوری‌گزین (اجتنابی)','Avoidant Personality Disorder'],['F60.7','اختلال شخصیت وابسته','Dependent Personality Disorder'],['F60.5','اختلال شخصیت وسواسی-جبری','Obsessive-Compulsive Personality Disorder'],
+  ['F99','اختلال روانی نامشخص','Unspecified Mental Disorder'],['Z03.89','بدون تشخیص / فاقد اختلال روانی','No diagnosis or condition']
+];
+const TN_MEASURES = ['PCL-5','WHODAS 2.0','Y-BOCS','BDI-II','BAI','DASS-21','ISI (بی‌خوابی)','C-SSRS','PHQ-15','PDSS','LSAS','SCL-90-R','MDQ'];
+const TN_LVL = ['','بدون اختلال','خفیف','متوسط','شدید'];
+
+/* ---- form definition: one entry per input; the same list drives rendering, filling and collecting ---- */
+const TN_SECTIONS = [
+ {title:'بخش ۱: اطلاعات پایه جلسه', open:true, fields:[
+   {k:'caseNo',l:'شمارهٔ پرونده',t:'text',half:1},
+   {k:'sessionNo',l:'شمارهٔ جلسه',t:'number',min:1,half:1},
+   {k:'type',l:'نوع جلسه',t:'select',o:['حضوری','آنلاین','تلفنی'],half:1},
+   {k:'sessionKind',l:'ماهیت جلسه',t:'select',o:['','ارزیابی اولیه (پذیرش)','جلسهٔ درمانی','پیگیری','مداخلهٔ بحران','جلسهٔ خاتمه'],half:1}
+ ]},
+ {title:'بخش ۲: وضعیت فعلی مراجع و سنجش نشانه‌ها', open:true, fields:[
+   {k:'complaint',l:'۱. شکایت اصلی این جلسه',t:'textarea'},
+   {k:'changes',l:'۲. تغییرات از جلسهٔ قبل',t:'textarea',ph:'مثلاً: کاهش جزئی تپش قلب، تداوم نشخوار فکری، خواب میانگین ۵/۵ ساعت'},
+   {k:'symptoms',l:'۳. شدت علائم (خودگزارشی ۰ تا ۱۰)',t:'symptoms'},
+   {k:'gad7',l:'۴. نمرهٔ GAD-7 (۰–۲۱)',t:'score2',max:21},
+   {k:'phq9',l:'۵. نمرهٔ PHQ-9 (۰–۲۷)',t:'score2',max:27},
+   {k:'measures',l:'۶. سایر آزمون‌ها و مقیاس‌ها',t:'rows',add:'افزودن آزمون',cols:[{k:'name',ph:'نام آزمون',list:'tnMeasureList',w:'100%'},{k:'now',ph:'نمرهٔ این جلسه',num:1},{k:'prev',ph:'نمرهٔ قبلی',num:1}]},
+   {k:'cc',l:'۷. غربالگری حوزه‌های نشانه‌ای — DSM-5-TR سطح ۱ (اختیاری، دو هفتهٔ گذشته)',t:'cc'}
+ ]},
+ {title:'بخش ۳: وضعیت روانی (MSE)', fields:[
+   {k:'appearance',l:'ظاهر',t:'select',o:['','مرتب','ژولیده','نامتناسب با سن یا موقعیت','مراقبت ضعیف از خود'],half:1},
+   {k:'behavior',l:'رفتار و فعالیت روانی‌حرکتی',t:'select',o:['','طبیعی','بی‌قرار / آژیتاسیون','کندی روانی‌حرکتی','حرکات غیرعادی (تیک، لرزش …)'],half:1},
+   {k:'eyeContact',l:'تماس چشمی',t:'select',o:['','مناسب','کم','اجتنابی','خیره / ناپایدار'],half:1},
+   {k:'attitude',l:'نگرش و همکاری',t:'select',o:['','همکار','محتاط','مقاوم / تدافعی','بی‌تفاوت','خصمانه'],half:1},
+   {k:'speech',l:'گفتار',t:'select',o:['','طبیعی','کند / کم‌حرف','پرفشار / سریع','بلند','آهسته / نامفهوم','غیرطبیعی'],half:1},
+   {k:'mood',l:'خلق (به گفتهٔ مراجع)',t:'text',ph:'مثلاً مضطرب خفیف',half:1},
+   {k:'affectRange',l:'دامنهٔ عاطفه',t:'select',o:['','کامل (گسترده)','محدود','کُند','تخت'],half:1},
+   {k:'affectCongruent',l:'تناسب / ثبات عاطفه',t:'select',o:['','متناسب با محتوا','نامتناسب','ناپایدار (لابیل)'],half:1},
+   {k:'affect',l:'توضیح عاطفه',t:'text',ph:'مثلاً متناسب'},
+   {k:'thoughtProcess',l:'جریان تفکر',t:'select',o:['','منظم و هدفمند','جزئی‌گویی (Circumstantial)','مماسی (Tangential)','پرش افکار','سست شدن تداعی‌ها','انسداد فکر']},
+   {k:'thought',l:'محتوای تفکر',t:'text',ph:'نشخوار، وسواس، هذیان، افکار مرجع، دلواپسی‌ها …'},
+   {k:'perception',l:'ادراک',t:'select',o:['','بدون اختلال ادراکی','توهم شنیداری','توهم بینایی','سایر توهم‌ها','غیرواقعی‌سازی / مسخ شخصیت']},
+   {k:'orientation',l:'جهت‌یابی',t:'select',o:['','کامل (شخص، مکان، زمان)','ناقص'],half:1},
+   {k:'attention',l:'توجه و تمرکز',t:'select',o:['','طبیعی','کاهش تمرکز','پرت‌شدن حواس'],half:1},
+   {k:'memory',l:'حافظه',t:'select',o:['','سالم','اختلال حافظهٔ فوری/کوتاه‌مدت','اختلال حافظهٔ دوردست'],half:1},
+   {k:'insight',l:'بینش',t:'select',o:['','خوب','متوسط','بد','فاقد بینش'],half:1},
+   {k:'judgment',l:'قضاوت',t:'select',o:['','خوب','متوسط','بد'],half:1},
+   {k:'cognition',l:'توضیح شناخت و تمرکز',t:'text',ph:'مثلاً تمرکز نسبتاً بهتر'}
+ ]},
+ {title:'بخش ۴: ارزیابی خطر', fields:[
+   {k:'riskBanner',t:'banner'},
+   {k:'riskSI',l:'افکار خودکشی',t:'select',o:['','ندارد','منفعل (آرزوی مرگ، بدون قصد)','فعال بدون برنامه','فعال با برنامه','فعال با برنامه و قصد']},
+   {k:'riskFlags',l:'عوامل خطر',t:'multi',o:[['plan','روش یا برنامهٔ مشخص'],['means','دسترسی به وسیلهٔ آسیب'],['prevAttempt','سابقهٔ اقدام به خودکشی'],['nssi','خودآسیبی غیرخودکشی (فعلی یا اخیر)'],['hopeless','ناامیدی شدید'],['substance','مصرف پرخطر مواد / الکل'],['recentLoss','فقدان یا بحران اخیر'],['isolation','انزوای اجتماعی']]},
+   {k:'riskHI',l:'افکار آسیب به دیگران',t:'select',o:['','ندارد','افکار آسیب به دیگران، بدون هدف مشخص','افکار آسیب به دیگران، با هدف مشخص']},
+   {k:'riskProtective',l:'عوامل محافظ',t:'textarea',ph:'حمایت خانواده، دلبستگی به زندگی، باور مذهبی، شغل، آینده‌نگری …'},
+   {k:'riskLevel',l:'سطح خطر کلی (قضاوت بالینی)',t:'select',o:['','پایین','متوسط','بالا']},
+   {k:'riskActions',l:'اقدامات انجام‌شده',t:'multi',o:[['safetyPlan','برنامهٔ ایمنی تدوین شد'],['support','تماس با خانواده / فرد حمایتگر'],['psychiatric','ارجاع فوری به روان‌پزشک / اورژانس'],['followup','پیگیری تلفنی تعیین شد'],['restrict','محدودسازی دسترسی به وسیله']]},
+   {k:'riskNote',l:'توضیحات خطر',t:'textarea'},
+   {k:'riskLegacy',t:'legacyRisk'}
+ ]},
+ {title:'بخش ۵: تشخیص و فرمول‌بندی (DSM-5-TR)', fields:[
+   {k:'dxPrimary',l:'تشخیص اصلی',t:'text',ph:'تایپ کنید (نام یا کد) و از پیشنهادها انتخاب کنید',list:'tnDsmList'},
+   {k:'dxStatus',l:'وضعیت تشخیص',t:'select',o:['','قطعی','موقت (Provisional)','در حال تشخیص افتراقی'],half:1},
+   {k:'dxSeverity',l:'شدت',t:'select',o:['','خفیف','متوسط','شدید'],half:1},
+   {k:'dxSpecifiers',l:'مشخصه‌گرها (Specifiers)',t:'text',ph:'مثلاً: با پریشانی اضطرابی، در بهبودی نسبی'},
+   {k:'dxSecondary',l:'تشخیص‌های همراه',t:'rows',add:'افزودن تشخیص همراه',cols:[{k:'dx',ph:'تشخیص (نام یا کد)',list:'tnDsmList',w:'100%'},{k:'spec',ph:'مشخصه‌گر / توضیح',w:'100%'}]},
+   {k:'zCodes',l:'عوامل روانی‌اجتماعی و محیطی (Z-code)',t:'multi',o:TN_Z.map(z=>[z[0],z[0]+' — '+z[1]])},
+   {k:'zOther',l:'سایر عوامل روانی‌اجتماعی و محیطی',t:'text'},
+   {k:'func_work',l:'عملکرد: کار / تحصیل',t:'select',o:TN_LVL,half:1},
+   {k:'func_social',l:'عملکرد: روابط اجتماعی',t:'select',o:TN_LVL,half:1},
+   {k:'func_family',l:'عملکرد: خانواده / زناشویی',t:'select',o:TN_LVL,half:1},
+   {k:'func_self',l:'عملکرد: مراقبت از خود',t:'select',o:TN_LVL,half:1},
+   {k:'medical',l:'بیماری‌های جسمی مرتبط',t:'text'},
+   {k:'meds',l:'داروهای روان‌پزشکی فعلی (نام / پزشک)',t:'text'},
+   {k:'cultural',l:'ملاحظات فرهنگی',t:'textarea',ph:'مفهوم‌سازی مراجع از مشکل، زمینهٔ فرهنگی / مذهبی / خانوادگی'},
+   {k:'formulation',l:'فرمول‌بندی: عوامل زمینه‌ساز، آغازگر، تداوم‌بخش و محافظ',t:'textarea'},
+   {k:'diagnosis',l:'توضیح تشخیص (متن آزاد)',t:'text'}
+ ]},
+ {title:'بخش ۶: محتوای جلسه و مداخلات', fields:[
+   {k:'topics',l:'موضوعات مطرح‌شده',t:'textarea'},
+   {k:'interventions',l:'مداخلات به‌کاررفته',t:'multi',o:TN_INTERVENTIONS},
+   {k:'otherIntervention',t:'text',ph:'سایر مداخلات (اختیاری)'},
+   {k:'engagement',l:'میزان همکاری مراجع',t:'select',o:['','مشارکت خوب','مشارکت متوسط','مقاومت / مشارکت ضعیف']},
+   {k:'reaction',l:'واکنش مراجع به مداخلات',t:'textarea'}
+ ]},
+ {title:'بخش ۷: تکالیف و برنامهٔ درمان', fields:[
+   {k:'homework',l:'تکالیف بین جلسات',t:'rows',add:'افزودن تکلیف',startEmpty:1,cols:[{k:'type',ph:'نوع تکلیف'},{k:'desc',ph:'توضیح'}],chk:{k:'review',l:'بررسی در جلسهٔ بعد',def:true}},
+   {k:'plan_goals',l:'اهداف درمانی قابل‌سنجش',t:'textarea'},
+   {k:'plan_status',l:'وضعیت برنامهٔ درمان',t:'select',o:['','ادامهٔ برنامهٔ فعلی','اصلاح برنامهٔ درمان','آمادهٔ خاتمه','ارجاع به مرکز / درمانگر دیگر'],half:1},
+   {k:'plan_freq',l:'تناوب جلسات',t:'select',o:['','هفتگی','هر دو هفته','ماهانه','بر حسب نیاز'],half:1},
+   {k:'referrals',l:'ارجاع و هماهنگی',t:'multi',o:[['psychiatry','روان‌پزشک (ارزیابی/هماهنگی دارویی)'],['medical','ارزیابی پزشکی / آزمایش'],['specialist','درمانگر تخصصی دیگر'],['social','خدمات حمایتی / اجتماعی']]}
+ ]},
+ {title:'بخش ۸: ارزیابی پیشرفت', fields:[
+   {k:'progress',l:'پیشرفت کلی',t:'radio',o:TN_PROGRESS},
+   {k:'analysis',l:'تحلیل درمانگر',t:'textarea'}
+ ]},
+ {title:'بخش ۹: برنامهٔ جلسهٔ بعد', fields:[
+   {k:'nextDate',l:'تاریخ جلسهٔ بعد',t:'date'},
+   {k:'nextGoals',l:'اهداف',t:'textarea'},
+   {k:'nextInterventions',l:'مداخلات پیش‌بینی‌شده',t:'text'},
+   {k:'nextNotes',l:'ملاحظات',t:'textarea'}
+ ]},
+ {title:'بخش ۱۰: ملاحظات بالینی و اخلاقی', fields:[
+   {k:'consent',l:'رضایت آگاهانه برای ادامهٔ درمان',t:'check'},
+   {k:'confidentiality',l:'محرمانگی حفظ شد',t:'check'},
+   {k:'legalReport',l:'نیاز به گزارش به مراجع قانونی',t:'check'},
+   {k:'legalReportNote',t:'text',ph:'در صورت نیاز به گزارش: دلیل / مرجع'},
+   {k:'supervision',l:'نیاز به مشاوره یا سوپرویژن',t:'check'},
+   {k:'extra',l:'یادداشت اضافی',t:'textarea'}
+ ]}
+];
+const TN_ALL_FIELDS = TN_SECTIONS.reduce((a,s)=>a.concat(s.fields), []);
+const TN_FIELD = {}; TN_ALL_FIELDS.forEach(f=>{ TN_FIELD[f.k] = f; });
+const TN_ACTIVE_SI = ['فعال بدون برنامه','فعال با برنامه','فعال با برنامه و قصد'];
+let tnCtx = null; // { a: appointment-like, existing: note|null }
+
+function tnFieldHTML(f){
+  const id = 'tn_'+f.k;
+  const lab = f.l ? `<label>${f.l}</label>` : '';
+  const ph = f.ph ? ` placeholder="${escAttr(f.ph)}"` : '';
+  switch(f.t){
+    case 'text': return `${lab}<input type="text" id="${id}"${ph}${f.list?` list="${f.list}"`:''} autocomplete="off">`;
+    case 'number': return `${lab}<input type="number" id="${id}"${f.min!==undefined?` min="${f.min}"`:''}${f.max!==undefined?` max="${f.max}"`:''}>`;
+    case 'textarea': return `${lab}<textarea id="${id}"${ph}></textarea>`;
+    case 'select': return `${lab}<select id="${id}">${f.o.map(o=>`<option value="${escAttr(o)}">${o||'—'}</option>`).join('')}</select>`;
+    case 'check': return `<label class="tn-chk"><input type="checkbox" id="${id}"> ${f.l}</label>`;
+    case 'multi': return `${lab}<div id="${id}">${f.o.map(([k,l])=>`<label class="tn-chk"><input type="checkbox" data-m="${k}"> ${l}</label>`).join('')}</div>`;
+    case 'radio': return `${lab}<div id="${id}">${f.o.map((l,i)=>`<label class="tn-chk" style="color:${['#c62828','#6b7b79','#7cb342','#2e9e4f','#1b7a3a'][i]||'inherit'};font-weight:700"><input type="radio" name="${id}" value="${escAttr(l)}"> ${l}</label>`).join('')}</div>`;
+    case 'date': return `${lab}<input type="hidden" id="${id}"><input type="text" id="${id}_disp" readonly placeholder="📅 انتخاب تاریخ" style="cursor:pointer" onclick="openJalaliPicker('${id}','${id}_disp')">`;
+    case 'symptoms': return `${lab}<div class="tn-grid"><span class="tn-h">علامت</span><span class="tn-h">جلسهٔ قبل</span><span class="tn-h">این جلسه</span></div>` +
+      TN_SYMPTOMS.map(([k,l])=>`<div class="tn-grid"><span>${l}</span><input type="number" min="0" max="10" id="tn_sym_${k}_prev"><input type="number" min="0" max="10" id="tn_sym_${k}_now"></div>`).join('');
+    case 'score2': return `${lab}<div class="row2"><input type="number" id="${id}Now" min="0" max="${f.max}" placeholder="این جلسه"><input type="number" id="${id}Prev" min="0" max="${f.max}" placeholder="قبلاً"></div><div class="hint" id="${id}Info"></div>`;
+    case 'rows': return `${lab}<div id="${id}"></div><button type="button" class="btn ghost small" onclick="tnAddRow('${f.k}')">➕ ${f.add}</button>`;
+    case 'cc': return `<details class="tn-sec" style="margin:6px 0"><summary>${f.l}</summary><div class="tn-body">
+      <p class="hint">هر حوزه را برای «۲ هفتهٔ گذشته» از ۰ تا ۴ نمره بدهید. پیشنهاد بررسی تکمیلی (سطح ۲) طبق آستانه‌های DSM-5-TR خودکار نشان داده می‌شود.</p>
+      ${TN_CC.map(([k,l])=>`<div class="tn-grid" style="grid-template-columns:1fr 1.6fr"><span>${l}</span><select id="tn_cc_${k}">${TN_CC_OPTS.map(([v,t])=>`<option value="${v}">${t}</option>`).join('')}</select></div>`).join('')}
+      <div class="hint" id="tn_ccHint" style="font-weight:700"></div></div></details>`;
+    case 'banner': return `<div id="tnRiskBanner" style="display:none;background:#fdecea;border:1.5px solid #e0a39c;color:#8a2a22;border-radius:10px;padding:9px 11px;font-size:13px;line-height:1.8;margin-bottom:8px"></div>`;
+    case 'legacyRisk': return `<div id="tnRiskLegacy" class="hint" style="display:none"></div>`;
   }
-  LS.set('sessionNotes', sessionNotes);
-  pushSessionNoteToSupabase(existing);
-  toast('✅ یادداشت جلسه ذخیره شد');
-  closeSessionNote();
+  return '';
+}
+function tnRenderFields(fields){
+  let out = '', pend = [];
+  const flush = ()=>{ if(pend.length){ out += `<div class="row2">${pend.map(x=>`<div>${x}</div>`).join('')}</div>`; pend = []; } };
+  fields.forEach(f=>{
+    const html = tnFieldHTML(f);
+    if(f.half){ pend.push(html); if(pend.length===2) flush(); }
+    else { flush(); out += html; }
+  });
+  flush();
+  return out;
+}
+function initNoteFormStatic(){
+  const host = document.getElementById('tnSections');
+  if(!host || host.dataset.built) return;
+  host.dataset.built = '1';
+  host.innerHTML = TN_SECTIONS.map((s,i)=>`<details class="tn-sec" style="--sc:${TN_SEC_COLORS[i][0]};--st:${TN_SEC_COLORS[i][1]}"${s.open?' open':''}><summary>${s.title}</summary><div class="tn-body">${tnRenderFields(s.fields)}</div></details>`).join('');
+  const dl = document.createElement('div');
+  dl.innerHTML = `<datalist id="tnDsmList">${TN_DSM.map(([c,fa,en])=>`<option value="${escAttr(c+' — '+fa)}" label="${escAttr(en)}"></option>`).join('')}</datalist>` +
+                 `<datalist id="tnMeasureList">${TN_MEASURES.map(m=>`<option value="${escAttr(m)}"></option>`).join('')}</datalist>`;
+  document.body.appendChild(dl);
+  host.addEventListener('input', tnRefreshDerived);
+  host.addEventListener('change', tnRefreshDerived);
+}
+function tnAddRow(k, row){
+  const f = TN_FIELD[k]; const wrap = document.getElementById('tn_'+k); if(!f || !wrap) return;
+  const r = row || {};
+  const div = document.createElement('div'); div.className = 'tn-hw';
+  div.innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:6px">${f.cols.map(c=>`<input type="${c.num?'number':'text'}" data-c="${c.k}" placeholder="${escAttr(c.ph)}"${c.list?` list="${c.list}"`:''} value="${escAttr(r[c.k]!==undefined?r[c.k]:'')}" style="flex:1 1 ${c.w||'45%'};min-width:0">`).join('')}</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+      ${f.chk ? `<label class="tn-chk" style="margin:0"><input type="checkbox" data-c="${f.chk.k}" ${(r[f.chk.k]===undefined ? f.chk.def : r[f.chk.k]) ? 'checked' : ''}> ${f.chk.l}</label>` : '<span></span>'}
+      <button type="button" class="btn ghost small" style="width:auto;margin:0" onclick="this.closest('.tn-hw').remove()">حذف</button>
+    </div>`;
+  wrap.appendChild(div);
+}
+function noteHasForm(s){ return !!(s && s.form && typeof s.form==='object'); }
+function progressText(s){
+  if(noteHasForm(s) && s.form.progress) return s.form.progress;
+  return faDigits(s.progress||0)+'٪';
+}
+function tnVal(id){ const el = document.getElementById(id); return el ? el.value : ''; }
+function tnRefreshDerived(){
+  tnApplySeverity();
+  // standardized scores: severity band + change since last time
+  [['gad7','GAD-7'],['phq9','PHQ-9']].forEach(([k])=>{
+    const info = document.getElementById('tn_'+k+'Info'); if(!info) return;
+    const max = TN_FIELD[k].max, now = tnVal('tn_'+k+'Now'), prev = tnVal('tn_'+k+'Prev');
+    const band = v=>{ if(v<0||v>max) return ' ⚠️ خارج از دامنه'; const b = TN_BANDS[k].find(x=>v<=x[0]); return b ? ' ('+b[1]+')' : ''; };
+    const parts = [];
+    if(now!=='') parts.push('این جلسه: '+faDigits(now)+band(Number(now)));
+    if(prev!=='') parts.push('قبلاً: '+faDigits(prev)+band(Number(prev)));
+    if(now!=='' && prev!==''){ const d = Number(now)-Number(prev); parts.push('تغییر: '+(d>0?'+':d<0?'−':'')+faDigits(Math.abs(d))); }
+    info.textContent = parts.join(' · ');
+  });
+  // DSM-5-TR Level 1 thresholds → suggest Level 2 follow-up
+  const hint = document.getElementById('tn_ccHint');
+  if(hint){
+    const rated = TN_CC.filter(([k])=>tnVal('tn_cc_'+k)!=='');
+    const hit = TN_CC.filter(([k,,th])=>{ const v = tnVal('tn_cc_'+k); return v!=='' && Number(v)>=th; }).map(([,l])=>l);
+    hint.textContent = !rated.length ? '' : (hit.length ? '🔎 به آستانهٔ بررسی تکمیلی (سطح ۲) رسیده: '+hit.join('، ') : '✅ هیچ حوزه‌ای به آستانهٔ بررسی تکمیلی نرسیده است');
+  }
+  // risk banner
+  const ban = document.getElementById('tnRiskBanner');
+  if(ban){
+    const msgs = [];
+    if(TN_ACTIVE_SI.includes(tnVal('tn_riskSI')) || tnVal('tn_riskLevel')==='بالا') msgs.push('⚠️ افکار خودکشی فعال یا سطح خطر بالا ثبت شده است — ارزیابی دقیق، برنامهٔ ایمنی و پیگیری را در «اقدامات انجام‌شده» ثبت کنید.');
+    if(tnVal('tn_riskHI').indexOf('با هدف مشخص')>-1) msgs.push('⚠️ افکار آسیب به دیگران با هدف مشخص ثبت شده است — طبق ضوابط حرفه‌ای و قانونی اقدام و مستندسازی کنید.');
+    ban.style.display = msgs.length ? '' : 'none';
+    ban.innerHTML = msgs.join('<br>');
+  }
 }
 
-let currentHistoryPhone = null;
-function openClientHistory(phone, name){
-  currentHistoryPhone = phone;
+/* ================= full session report (print / preview / Excel / history) ================= */
+const TN_SEC_COLORS = [['#546e7a','#eceff1'],['#1e88e5','#e3f2fd'],['#8e24aa','#f3e5f5'],['#e53935','#ffebee'],['#00897b','#e0f2f1'],
+                       ['#fb8c00','#fff3e0'],['#3949ab','#e8eaf6'],['#43a047','#e8f5e9'],['#6d4c41','#efebe9'],['#d81b60','#fce4ec']];
+const TN_CC_SHORT = ['هیچ','خفیف','ملایم','متوسط','شدید'];
+const TN_LABEL_FALLBACK = { otherIntervention:'سایر مداخلات', legalReportNote:'دلیل / مرجع گزارش قانونی' };
+function tnLabel(fd){ return tnClean(fd.l) || TN_LABEL_FALLBACK[fd.k] || fd.k; }
+function tnClean(l){ return String(l||'').replace(/^[۰-۹0-9]+\.\s*/,''); }
+function tnBand(k, v){ v = Number(v); if(isNaN(v) || v<0 || v>TN_FIELD[k].max) return ''; const b = TN_BANDS[k].find(x=>v<=x[0]); return b ? b[1] : ''; }
+function tnEmpty(v){ return v===undefined || v===null || v===''; }
+function tnValueText(fd, f){
+  const v = f[fd.k];
+  switch(fd.t){
+    case 'text': case 'textarea': case 'select': case 'radio': return tnEmpty(v) ? '' : String(v).trim();
+    case 'number': return tnEmpty(v) ? '' : faDigits(v);
+    case 'check': return v ? '✔ بله' : '';
+    case 'date': return v ? formatFaDate(v) : '';
+    case 'multi': { const m = {}; fd.o.forEach(x=>{ m[x[0]] = x[1]; }); return Array.isArray(v) ? v.map(k=>m[k]||k).join('، ') : ''; }
+    case 'score2': {
+      const now = f[fd.k+'Now'], prev = f[fd.k+'Prev'], parts = [];
+      if(!tnEmpty(now)) parts.push('این جلسه: '+faDigits(now)+(tnBand(fd.k,now)?' ('+tnBand(fd.k,now)+')':''));
+      if(!tnEmpty(prev)) parts.push('قبلاً: '+faDigits(prev)+(tnBand(fd.k,prev)?' ('+tnBand(fd.k,prev)+')':''));
+      if(!tnEmpty(now) && !tnEmpty(prev)){ const d = Number(now)-Number(prev); parts.push('تغییر: '+(d>0?'+':d<0?'−':'')+faDigits(Math.abs(d))); }
+      return parts.join(' · ');
+    }
+    case 'symptoms': {
+      const s = f.symptoms || {};
+      return TN_SYMPTOMS.filter(([k])=>s[k] && (!tnEmpty(s[k].prev) || !tnEmpty(s[k].now)))
+        .map(([k,l])=>l+': '+(!tnEmpty(s[k].prev)?'قبلی '+faDigits(s[k].prev):'—')+' ← '+(!tnEmpty(s[k].now)?'فعلی '+faDigits(s[k].now):'—')).join('\n');
+    }
+    case 'cc': {
+      const c = f.cc || {};
+      const lines = TN_CC.filter(([k])=>!tnEmpty(c[k])).map(([k,l])=>l+': '+faDigits(c[k])+' ('+TN_CC_SHORT[c[k]]+')');
+      if(!lines.length) return '';
+      const hit = TN_CC.filter(([k,,th])=>!tnEmpty(c[k]) && c[k]>=th).map(([,l])=>l);
+      if(hit.length) lines.push('🔎 رسیده به آستانهٔ بررسی تکمیلی (سطح ۲): '+hit.join('، '));
+      return lines.join('\n');
+    }
+    case 'rows': {
+      const rows = Array.isArray(v) ? v : [];
+      return rows.map(r=>{
+        if(fd.k==='homework') return [r.type, r.desc].filter(Boolean).join(' — ')+(r.review?' (بررسی در جلسهٔ بعد)':'');
+        if(fd.k==='dxSecondary') return [r.dx, r.spec].filter(Boolean).join(' — ');
+        if(fd.k==='measures') return (r.name||'')+(tnEmpty(r.now)?'':': '+faDigits(r.now))+(tnEmpty(r.prev)?'':' (قبلاً '+faDigits(r.prev)+')');
+        return Object.keys(r).map(k=>r[k]).filter(x=>x!==''&&x!==false).join(' — ');
+      }).filter(Boolean).join('\n');
+    }
+  }
+  return '';
+}
+function noteFullSections(s){
+  if(!noteHasForm(s)){ // older, simple note
+    const rows = [];
+    if(s.diagnosis) rows.push(['تشخیص', s.diagnosis]);
+    if(s.summary) rows.push(['شرح درمان', s.summary]);
+    if(s.note) rows.push(['یادداشت', s.note]);
+    rows.push(['پیشرفت', progressText(s)]);
+    return [{ title:'شرح جلسه', c:TN_SEC_COLORS[1], rows }];
+  }
+  const f = s.form, out = [];
+  TN_SECTIONS.forEach((sec,i)=>{
+    const rows = [];
+    sec.fields.forEach(fd=>{
+      if(fd.t==='banner' || fd.t==='legacyRisk') return;
+      const txt = tnValueText(fd, f);
+      if(txt) rows.push([tnLabel(fd), txt]);
+    });
+    if(i===3){ // values the previous form version stored for risk
+      const old = [f.suicidal?'افکار خودکشی: '+f.suicidal:'', f.risk?'خطر: '+f.risk:'', f.riskAssess?'ارزیابی خطر جلسه: '+f.riskAssess:''].filter(Boolean);
+      if(old.length) rows.push(['ثبت‌شده در فرم قبلی', old.join(' · ')]);
+    }
+    if(rows.length) out.push({ title:sec.title, c:TN_SEC_COLORS[i], rows });
+  });
+  return out;
+}
+function noteFullHTML(s){
+  return noteFullSections(s).map(sec=>`
+    <div class="tn-rep-sec" style="border-right-color:${sec.c[0]}">
+      <div class="tn-rep-st" style="background:${sec.c[1]};color:${sec.c[0]}">${escHtml(sec.title)}</div>
+      <table class="tn-kv"><tbody>${sec.rows.map(([l,v])=>`<tr><td class="k">${escHtml(l)}</td><td>${nl2br(v)}</td></tr>`).join('')}</tbody></table>
+    </div>`).join('');
+}
+function noteFullText(s){
+  return noteFullSections(s).map(sec=>sec.title+'\n'+sec.rows.map(([l,v])=>'• '+l+': '+String(v).replace(/\n/g,' | ')).join('\n')).join('\n\n').slice(0,32000);
+}
+function treatmentSessionsHtml(notes, mode){
+  if(!notes.length) return '<div class="empty" style="text-align:center;color:#93a09e;padding:12px">جلسه‌ای ثبت نشده</div>';
+  return notes.map((s,i)=>{
+    const f = noteHasForm(s) ? s.form : {};
+    const head = `<b>جلسهٔ ${faDigits(f.sessionNo || (i+1))}</b> — ${formatFaDate(s.date)}${f.type?' — '+escHtml(f.type):''}`;
+    const chips = `${s.diagnosis ? `<span class="tn-chip">🩺 ${escHtml(s.diagnosis)}</span>` : ''}<span class="tn-chip">📈 ${escHtml(progressText(s))}</span>`;
+    const body = noteFullHTML(s);
+    if(mode==='screen') return `<details class="tn-rep"${notes.length===1?' open':''}><summary class="tn-rep-head">${head}<span>${chips}</span></summary>${body}</details>`;
+    return `<div class="tn-rep"><div class="tn-rep-head">${head}<span>${chips}</span></div>${body}</div>`;
+  }).join('');
+}
+function tnApplySeverity(){
+  const g='g', y='y', o='o', r='r';
+  const MAP = {
+    riskLevel:{'پایین':g,'متوسط':o,'بالا':r},
+    riskSI:{'ندارد':g,'منفعل (آرزوی مرگ، بدون قصد)':o,'فعال بدون برنامه':r,'فعال با برنامه':r,'فعال با برنامه و قصد':r},
+    riskHI:{'ندارد':g,'افکار آسیب به دیگران، بدون هدف مشخص':o,'افکار آسیب به دیگران، با هدف مشخص':r},
+    dxSeverity:{'خفیف':y,'متوسط':o,'شدید':r}, dxStatus:{'قطعی':g,'موقت (Provisional)':y,'در حال تشخیص افتراقی':o},
+    func_work:null, func_social:null, func_family:null, func_self:null,
+    engagement:{'مشارکت خوب':g,'مشارکت متوسط':y,'مقاومت / مشارکت ضعیف':o},
+    insight:{'خوب':g,'متوسط':y,'بد':r,'فاقد بینش':r}, judgment:{'خوب':g,'متوسط':y,'بد':r}
+  };
+  const FUNC = {'بدون اختلال':g,'خفیف':y,'متوسط':o,'شدید':r};
+  ['func_work','func_social','func_family','func_self'].forEach(k=>{ MAP[k] = FUNC; });
+  const paint = (el, cls)=>{ if(!el) return; el.classList.remove('sev-g','sev-y','sev-o','sev-r'); if(cls) el.classList.add('sev-'+cls); };
+  Object.keys(MAP).forEach(k=>{ const el = document.getElementById('tn_'+k); paint(el, el ? MAP[k][el.value] : ''); });
+  const CC = ['g','g','y','o','r'];
+  TN_CC.forEach(([k])=>{ const el = document.getElementById('tn_cc_'+k); paint(el, el && el.value!=='' ? CC[Number(el.value)] : ''); });
+  // score text colour by severity band
+  [['gad7',['#2e7d32','#9a7b00','#e65100','#c62828']],['phq9',['#2e7d32','#9a7b00','#e65100','#d84315','#b71c1c']]].forEach(([k,cols])=>{
+    const info = document.getElementById('tn_'+k+'Info'); if(!info) return;
+    const now = tnVal('tn_'+k+'Now'); const i = now==='' ? -1 : TN_BANDS[k].findIndex(b=>Number(now)<=b[0]);
+    info.style.color = i>=0 ? cols[i] : ''; info.style.fontWeight = i>=0 ? '700' : '';
+  });
+}
+
+function buildNoteSummary(f){
+  const parts = [];
+  const j = a=>a.filter(x=>x!==undefined && x!==null && x!=='').join('، ');
+  if(f.complaint) parts.push('شکایت اصلی: '+f.complaint);
+  if(f.topics) parts.push('موضوعات: '+f.topics);
+  const dx = j([f.dxPrimary, f.dxStatus, f.dxSeverity ? 'شدت '+f.dxSeverity : '', f.dxSpecifiers]);
+  if(dx) parts.push('تشخیص (DSM-5-TR): '+dx);
+  const sc = [];
+  if(f.gad7Now!==undefined && f.gad7Now!=='') sc.push('GAD-7: '+f.gad7Now+(f.gad7Prev!==undefined && f.gad7Prev!=='' ? ' (قبلاً '+f.gad7Prev+')' : ''));
+  if(f.phq9Now!==undefined && f.phq9Now!=='') sc.push('PHQ-9: '+f.phq9Now+(f.phq9Prev!==undefined && f.phq9Prev!=='' ? ' (قبلاً '+f.phq9Prev+')' : ''));
+  (f.measures||[]).forEach(m=>{ if(m.name && m.now!=='' && m.now!==undefined) sc.push(m.name+': '+m.now+(m.prev!=='' && m.prev!==undefined ? ' (قبلاً '+m.prev+')' : '')); });
+  if(sc.length) parts.push('نمرات: '+sc.join('، '));
+  const risk = j([f.riskSI ? 'افکار خودکشی: '+f.riskSI : '', (f.riskHI && f.riskHI!=='ندارد') ? f.riskHI : '', f.riskLevel ? 'سطح خطر: '+f.riskLevel : '']);
+  if(risk) parts.push('ارزیابی خطر: '+risk);
+  const ivLabels = TN_INTERVENTIONS.filter(([k])=>(f.interventions||[]).includes(k)).map(([,l])=>l);
+  if(f.otherIntervention) ivLabels.push(f.otherIntervention);
+  if(ivLabels.length) parts.push('مداخلات: '+ivLabels.join('، '));
+  if(f.reaction) parts.push('واکنش مراجع: '+f.reaction);
+  if(f.analysis) parts.push('تحلیل درمانگر: '+f.analysis);
+  if(f.plan_status) parts.push('برنامهٔ درمان: '+f.plan_status);
+  return parts.join('\n');
+}
+
+function renderNoteList(){
+  const wrap = document.getElementById('tnApptList');
+  if(!wrap) return;
+  const q = (document.getElementById('tnSearch').value||'').trim();
+  const onlyMissing = document.getElementById('tnOnlyMissing').checked;
+  const noteIds = new Set(sessionNotes.map(s=>s.apptId));
+  let list = scopedAppts().slice().sort((a,b)=>(b.date+b.time).localeCompare(a.date+a.time));
+  if(q) list = list.filter(a=>(a.name||'').indexOf(q)>-1 || (a.phone||'').indexOf(q)>-1 || (a.code||'').toLowerCase().indexOf(q.toLowerCase())>-1);
+  if(onlyMissing) list = list.filter(a=>!noteIds.has(a.id));
+  const total = list.length;
+  list = list.slice(0,60);
+  if(!list.length){ wrap.innerHTML = '<div class="empty">جلسه‌ای یافت نشد</div>'; return; }
+  wrap.innerHTML = list.map(a=>{
+    const has = noteIds.has(a.id);
+    return `<div class="appt">
+      <div class="appt-top"><span class="appt-name">${escHtml(a.name)}</span><div class="appt-time">${a.time}</div></div>
+      <div class="appt-meta">
+        <span>📅 ${formatFaDate(a.date)}</span><span>🏥 ${escHtml(a.clinic)}</span>${therapistChip(a)}
+        <span style="${has?'background:#e3f3e7;color:#1f7a3d;font-weight:700':'background:#fff3e0;color:#a5671a'}">${has?'✅ شرح ثبت شده':'⏳ بدون شرح'}</span>
+      </div>
+      <div class="appt-actions">
+        <button onclick="openNoteEditor('${a.id}')">🩺 ${has?'ویرایش شرح':'نوشتن شرح'}</button>
+        <button data-k="${escAttr(apptClientKey(a))}" data-n="${escAttr(a.name)}" onclick="openClientHistory(this.dataset.k, this.dataset.n)">📜 سابقهٔ مراجع</button>
+      </div>
+    </div>`;
+  }).join('') + (total>60 ? `<div class="hint" style="text-align:center">${faDigits(60)} جلسهٔ اخیر از ${faDigits(total)} نمایش داده شد — برای یافتن بقیه جستجو کنید.</div>` : '');
+}
+function openNoteEditor(apptId, noteId){
+  if(!canClinical()){ toast('⛔ شما به «شرح درمان» دسترسی ندارید'); return; }
+  initNoteFormStatic();
+  let a = appts.find(x=>x.id===apptId);
+  let existing = noteId ? sessionNotes.find(s=>s.id===noteId) : sessionNotes.find(s=>s.apptId===apptId);
+  if(!a && existing){ // the appointment was deleted, but the note must stay editable
+    a = { id:existing.apptId, name:existing.clientName, phone:existing.phone, code:noteClientCode(existing), date:existing.date, clinic:existing.clinic||'', therapist:existing.therapist||'', dur:50 };
+  }
+  if(!a){ toast('نوبت پیدا نشد'); return; }
+  const mt = myTherapist();
+  if(mt && (a.therapist||'') !== mt){ toast('⛔ این مراجع متعلق به درمانگر دیگری است'); return; }
+  tnCtx = { a, existing: existing||null };
+  // reach the editor from anywhere (e.g. the history popup)
+  if(!canTab('list')){ toast('⛔ دسترسی به لیست نوبت‌ها لازم است'); return; }
+  closeClientHistory();
+  document.querySelector('nav.tabbar button[data-t="list"]').click();
+  switchListGroup('notes');
+  document.getElementById('tnListCard').style.display = 'none';
+  document.getElementById('tnFormCard').style.display = 'block';
+  document.getElementById('tnHeader').innerHTML =
+    `👤 <b>${escHtml(a.name)}</b> — کد: ${escHtml(a.code||'—')}<br>📅 ${formatFaDate(a.date)} · ⏰ ${a.time||''} · ⏱ ${faDigits(a.dur||50)} دقیقه<br>🏥 ${escHtml(a.clinic||'—')} · 👨‍⚕️ ${escHtml(a.therapist||'—')}`;
+  renderScreeningBox(a);
+  let f = noteHasForm(existing) ? existing.form : null;
+  if(!f){
+    f = {};
+    if(existing){ f.topics = existing.summary||''; f.diagnosis = existing.diagnosis||''; f.extra = existing.note||''; }
+  }
+  const code = a.code;
+  const priorCount = sessionNotes.filter(s=>noteClientCode(s)===code && s.apptId!==a.id && (s.date||'') < (a.date||'')).length;
+  fillNoteForm(f, { caseNo: code||'', sessionNo: priorCount+1, type:'حضوری' });
+  document.getElementById('tnFormCard').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function tnSetSelect(el, v){
+  Array.from(el.querySelectorAll('option[data-legacy]')).forEach(o=>o.remove());
+  v = (v===undefined || v===null) ? '' : String(v);
+  if(v && !Array.from(el.options).some(o=>o.value===v)){ // a value from an older form version must never be dropped
+    const o = document.createElement('option'); o.value = v; o.textContent = v+' (مقدار قبلی)'; o.dataset.legacy = '1'; el.appendChild(o);
+  }
+  el.value = v;
+  if(el.value !== v) el.selectedIndex = 0;
+}
+function fillNoteForm(f, defaults){
+  initNoteFormStatic();
+  const d = defaults || {};
+  const pick = k=> (f[k]!==undefined && f[k]!==null && f[k]!=='') ? f[k] : d[k];
+  TN_ALL_FIELDS.forEach(fd=>{
+    const id = 'tn_'+fd.k, el = document.getElementById(id), v = pick(fd.k);
+    switch(fd.t){
+      case 'text': case 'textarea': case 'number': if(el) el.value = (v===undefined?'':v); break;
+      case 'select': if(el) tnSetSelect(el, v); break;
+      case 'check': if(el) el.checked = !!f[fd.k]; break;
+      case 'multi': if(el) el.querySelectorAll('[data-m]').forEach(c=>{ c.checked = Array.isArray(f[fd.k]) && f[fd.k].includes(c.dataset.m); }); break;
+      case 'radio': if(el) el.querySelectorAll('input').forEach(r=>{ r.checked = (r.value===f[fd.k]); }); break;
+      case 'date': setJalaliDateField(id, id+'_disp', f[fd.k]||''); break;
+      case 'score2':
+        document.getElementById(id+'Now').value = (f[fd.k+'Now']!==undefined && f[fd.k+'Now']!==null) ? f[fd.k+'Now'] : '';
+        document.getElementById(id+'Prev').value = (f[fd.k+'Prev']!==undefined && f[fd.k+'Prev']!==null) ? f[fd.k+'Prev'] : '';
+        break;
+      case 'symptoms':
+        TN_SYMPTOMS.forEach(([k])=>{
+          const s = (f.symptoms||{})[k]||{};
+          document.getElementById('tn_sym_'+k+'_prev').value = (s.prev!==undefined && s.prev!==null) ? s.prev : '';
+          document.getElementById('tn_sym_'+k+'_now').value  = (s.now!==undefined && s.now!==null) ? s.now : '';
+        });
+        break;
+      case 'cc':
+        TN_CC.forEach(([k])=>{ const c = (f.cc||{})[k]; tnSetSelect(document.getElementById('tn_cc_'+k), (c===undefined||c===null) ? '' : c); });
+        break;
+      case 'rows':
+        if(el){ el.innerHTML = ''; const rows = Array.isArray(f[fd.k]) ? f[fd.k] : []; rows.forEach(r=>tnAddRow(fd.k, r)); if(!rows.length && fd.startEmpty) tnAddRow(fd.k); }
+        break;
+    }
+  });
+  // values saved by the previous (8-section) form for fields that no longer exist: show, never silently drop
+  const lg = document.getElementById('tnRiskLegacy');
+  if(lg){
+    const old = [f.suicidal ? 'افکار خودکشی: '+f.suicidal : '', f.risk ? 'خطر: '+f.risk : '', f.riskAssess ? 'ارزیابی خطر جلسه: '+f.riskAssess : ''].filter(Boolean);
+    lg.style.display = old.length ? '' : 'none';
+    lg.textContent = old.length ? 'ثبت‌شده در فرم قبلی (محفوظ می‌ماند): '+old.join(' · ') : '';
+  }
+  tnRefreshDerived();
+}
+function collectNoteForm(){
+  // start from the stored form so keys this version doesn't show (older versions) are preserved on re-save
+  const f = (tnCtx && tnCtx.existing && noteHasForm(tnCtx.existing)) ? JSON.parse(JSON.stringify(tnCtx.existing.form)) : {};
+  TN_ALL_FIELDS.forEach(fd=>{
+    const id = 'tn_'+fd.k, el = document.getElementById(id);
+    switch(fd.t){
+      case 'text': case 'textarea': f[fd.k] = el ? el.value.trim() : ''; break;
+      case 'number': f[fd.k] = el ? el.value.trim() : ''; break;
+      case 'select': f[fd.k] = el ? el.value : ''; break;
+      case 'check': f[fd.k] = el ? el.checked : false; break;
+      case 'multi': f[fd.k] = el ? Array.from(el.querySelectorAll('[data-m]')).filter(c=>c.checked).map(c=>c.dataset.m) : []; break;
+      case 'radio': { const r = el ? el.querySelector('input:checked') : null; f[fd.k] = r ? r.value : ''; break; }
+      case 'date': f[fd.k] = el ? (el.value||'') : ''; break;
+      case 'score2': f[fd.k+'Now'] = tnVal(id+'Now').trim(); f[fd.k+'Prev'] = tnVal(id+'Prev').trim(); break;
+      case 'symptoms':
+        f.symptoms = {};
+        TN_SYMPTOMS.forEach(([k])=>{
+          const p = tnVal('tn_sym_'+k+'_prev'), n = tnVal('tn_sym_'+k+'_now');
+          f.symptoms[k] = { prev: p===''?null:Number(p), now: n===''?null:Number(n) };
+        });
+        break;
+      case 'cc':
+        f.cc = {};
+        TN_CC.forEach(([k])=>{ const v = tnVal('tn_cc_'+k); f.cc[k] = v===''?null:Number(v); });
+        break;
+      case 'rows':
+        f[fd.k] = el ? Array.from(el.querySelectorAll('.tn-hw')).map(div=>{
+          const o = {};
+          div.querySelectorAll('[data-c]').forEach(inp=>{ o[inp.dataset.c] = inp.type==='checkbox' ? inp.checked : inp.value.trim(); });
+          return o;
+        }).filter(o=>fd.cols.some(c=>o[c.k]!=='' && o[c.k]!==undefined)) : [];
+        break;
+    }
+  });
+  f.formVersion = 2;
+  return f;
+}
+
+function closeNoteEditor(){
+  tnCtx = null;
+  document.getElementById('tnFormCard').style.display = 'none';
+  document.getElementById('tnListCard').style.display = '';
+  renderNoteList();
+}
+function saveNoteForm(){
+  if(!tnCtx) return;
+  const a = tnCtx.a;
+  const mt = myTherapist();
+  if(mt && (a.therapist||'') !== mt){ toast('⛔ این مراجع متعلق به درمانگر دیگری است'); return; }
+  const f = collectNoteForm();
+  const SKIP = ['caseNo','sessionNo','type','formVersion'];
+  const hasText = Object.keys(f).some(k=>{
+    if(SKIP.includes(k)) return false;
+    const v = f[k];
+    if(Array.isArray(v)) return v.length>0;
+    if(v && typeof v==='object') return Object.keys(v).some(x=>{ const y=v[x]; return y && typeof y==='object' ? (y.now!==null||y.prev!==null) : (y!==null && y!==''); });
+    return v!=='' && v!==false && v!==null && v!==undefined;
+  });
+  if(!hasText){ toast('فرم خالی است — حداقل یک بخش را پر کنید'); return; }
+  const pIdx = TN_PROGRESS.indexOf(f.progress);
+  const data = {
+    apptId: a.id, phone: a.phone, clientName: a.name, clientCode: a.code||'', therapist: a.therapist||'', clinic: a.clinic||'', date: a.date,
+    summary: buildNoteSummary(f), diagnosis: f.dxPrimary ? (f.dxPrimary + ((f.dxStatus && f.dxStatus!=='قطعی') ? ' ('+f.dxStatus+')' : '')) : (f.diagnosis||''), progress: pIdx>=0 ? TN_PROGRESS_PCT[pIdx] : 0,
+    note: f.extra, form: f
+  };
+  let existing = tnCtx.existing;
+  if(existing){ Object.assign(existing, data); }
+  else{ existing = { id: uid(), clientSat:null, therapistSat:null, ...data }; sessionNotes.push(existing); }
+  existing._pending = !!supa; // cleared as soon as the cloud confirms
+  LS.set('sessionNotes', sessionNotes);
+  pushSessionNoteToSupabase(existing);
+  toast('✅ گزارش جلسه ذخیره شد');
+  closeNoteEditor();
+}
+/* kept as the single entry point used by the history popup */
+function openSessionNote(apptId, noteId){ openNoteEditor(apptId, noteId); }
+
+let currentHistoryPhone = null; // holds the client KEY (code), name kept for compatibility
+function openClientHistory(clientKey, name){
+  currentHistoryPhone = clientKey;
   document.getElementById('chClientLabel').textContent = 'مراجع: '+name;
   renderClientHistoryList();
   document.getElementById('clientHistoryOverlay').classList.add('show');
@@ -3215,7 +4224,8 @@ function closeClientHistory(){
 function renderClientHistoryList(){
   const wrap = document.getElementById('chList');
   if(!wrap || !currentHistoryPhone) return;
-  const list = sessionNotes.filter(s=>s.phone===currentHistoryPhone).sort((a,b)=>b.date.localeCompare(a.date));
+  const hk = currentHistoryPhone;
+  const list = scopedNotes().filter(s=>noteClientCode(s)===hk).sort((a,b)=>b.date.localeCompare(a.date));
   if(!list.length){ wrap.innerHTML = '<div class="empty">هنوز یادداشتی برای این مراجع ثبت نشده</div>'; return; }
   const satStars = n => n ? '★'.repeat(n)+'☆'.repeat(5-n) : '—';
   wrap.innerHTML = list.map(s=>`
@@ -3223,24 +4233,23 @@ function renderClientHistoryList(){
       <div class="h-date">${formatFaDate(s.date)}</div>
       <div class="h-row">
         ${s.diagnosis? `<span>🩺 ${s.diagnosis}</span>`:''}
-        <span>📈 پیشرفت: ${faDigits(s.progress)}٪</span>
-        <span>😊 رضایت مراجع: ${satStars(s.clientSat)}</span>
-        <span>🧑‍⚕️ رضایت درمانگر: ${satStars(s.therapistSat)}</span>
+        <span>📈 پیشرفت: ${progressText(s)}</span>
+        ${noteHasForm(s) ? '' : `<span>😊 رضایت مراجع: ${satStars(s.clientSat)}</span><span>🧑‍⚕️ رضایت درمانگر: ${satStars(s.therapistSat)}</span>`}
+        ${noteTherapist(s) ? `<span>👨‍⚕️ ${escHtml(noteTherapist(s))}</span>` : ''}
       </div>
-      ${s.summary? `<div class="h-summary">${s.summary}</div>`:''}
-      ${s.note? `<div class="h-summary" style="color:#8a9694">📝 ${s.note}</div>`:''}
+      ${noteHasForm(s) ? `<details class="tn-rep" style="margin-top:8px"><summary class="tn-rep-head">📄 مشاهدهٔ گزارش کامل جلسه</summary>${noteFullHTML(s)}</details>` : `${s.summary? `<div class="h-summary">${nl2br(s.summary)}</div>`:''}${s.note? `<div class="h-summary" style="color:#8a9694">📝 ${nl2br(s.note)}</div>`:''}`}
       <div class="appt-actions">
-        <button onclick="editSessionNoteFromHistory('${s.apptId}')">✏️ ویرایش</button>
+        <button onclick="editSessionNoteFromHistory('${s.apptId}','${s.id}')">✏️ ویرایش</button>
         <button class="del" onclick="deleteSessionNoteEntry('${s.id}')">حذف</button>
       </div>
     </div>
   `).join('');
 }
-function editSessionNoteFromHistory(apptId){
-  closeClientHistory();
-  openSessionNote(apptId);
+function editSessionNoteFromHistory(apptId, noteId){
+  openNoteEditor(apptId, noteId);
 }
 function deleteSessionNoteEntry(id){
+  if(!canClinical()){ toast('⛔ دسترسی ندارید'); return; }
   if(!confirm('این یادداشت حذف شود؟')) return;
   sessionNotes = sessionNotes.filter(s=>s.id!==id);
   LS.set('sessionNotes', sessionNotes);
@@ -3256,51 +4265,104 @@ function exportData(){
   a.href = url; a.download = 'clinic-backup-'+todayStr()+'.json';
   a.click();
 }
+/* after a restore, send everything to the cloud — otherwise the next cloud refresh overwrites the restored data and clients "disappear" again */
+async function pushRestoredToSupabase(){
+  if(!supa) return;
+  const chunks = (arr, n)=>{ const out=[]; for(let i=0;i<arr.length;i+=n) out.push(arr.slice(i,i+n)); return out; };
+  const send = async (table, rows, conflict)=>{
+    for(const part of chunks(rows, 100)){
+      const { error } = await supa.from(table).upsert(part);
+      if(error){ toast('⚠️ ارسال '+table+' به Supabase ناقص ماند: '+error.message); return false; }
+    }
+    return true;
+  };
+  const a = await send('clients', clients.filter(c=>c.code).map(clientToRow));
+  const b = await send('appointments', appts.map(apptToRow));
+  let c = await send('session_notes', sessionNotes.map(sessionNoteToRow));
+  if(!c){ // older cloud schema: retry without the new columns
+    c = await send('session_notes', sessionNotes.map(noteRowLegacy));
+  }
+  await send('settlements', settlements.map(settlementToRow));
+  if(a && b && c) toast('☁️ همهٔ اطلاعات بازیابی‌شده در Supabase هم ذخیره شد');
+}
 document.getElementById('importFile').addEventListener('change', (e)=>{
   const file = e.target.files[0]; if(!file) return;
   const reader = new FileReader();
   reader.onload = ()=>{
     try{
       const data = JSON.parse(reader.result);
-      if(data.clients) clients=data.clients;
-      if(data.appts) appts=data.appts;
-      if(data.settings) settings=data.settings;
-      if(data.settlements) settlements=data.settlements;
-      if(data.sessionNotes) sessionNotes=data.sessionNotes;
+      const merge = (local, incoming, keyFn)=>{
+        const m = new Map(); (local||[]).forEach(x=>m.set(keyFn(x), x)); (incoming||[]).forEach(x=>m.set(keyFn(x), x)); // file wins on conflicts
+        return Array.from(m.values());
+      };
+      const before = { clients:clients.length, appts:appts.length, notes:sessionNotes.length };
+      if(Array.isArray(data.clients)) clients = merge(clients, data.clients, c=>c.code||('p'+c.phone));
+      if(Array.isArray(data.appts)) appts = merge(appts, data.appts, a=>a.id);
+      if(data.settings) settings = Object.assign({}, settings, data.settings, { therapists: (data.settings.therapists && data.settings.therapists.length) ? data.settings.therapists : settings.therapists });
+      if(Array.isArray(data.settlements)) settlements = merge(settlements, data.settlements, s=>s.id);
+      if(Array.isArray(data.sessionNotes)) sessionNotes = merge(sessionNotes, data.sessionNotes, s=>s.id);
       migrateClinicsShape();
       LS.set('clients',clients); LS.set('appts',appts); LS.set('settings',settings); LS.set('settlements',settlements); LS.set('sessionNotes',sessionNotes);
-      renderAll(); toast('بازیابی انجام شد');
+      renderAll(); fillTreatmentClientSelect();
+      toast('بازیابی انجام شد (ادغام): مراجع '+faDigits(clients.length-before.clients)+'+ ، نوبت '+faDigits(appts.length-before.appts)+'+ ، شرح درمان '+faDigits(sessionNotes.length-before.notes)+'+');
+      pushRestoredToSupabase();
+      if(data.settings) pushSettingsRow('settings', settings);
     }catch(err){ toast('فایل نامعتبر است'); }
   };
   reader.readAsText(file);
 });
 
-/* ---- Excel (xlsx) backup ---- */
+/* ---- Excel (xlsx) backup — a COMPLETE backup: appointments, clients, session notes (incl. the full structured form),
+        settlements, therapists, clinics and settings. Import MERGES (never wipes what is already in the app). ---- */
 const APPT_HEADERS = {
-  id:'شناسه', code:'کد مراجع', name:'نام', phone:'موبایل', clinic:'کلینیک',
-  date:'تاریخ (میلادی YYYY-MM-DD)', time:'ساعت', dur:'مدت (دقیقه)', fee:'هزینه', note:'یادداشت', done:'انجام‌شده'
+  id:'شناسه', code:'کد مراجع', name:'نام', phone:'موبایل', clinic:'کلینیک', therapist:'درمانگر',
+  date:'تاریخ (میلادی YYYY-MM-DD)', time:'ساعت', dur:'مدت (دقیقه)', fee:'هزینه', note:'یادداشت', done:'انجام‌شده',
+  gcal:'شناسه رویداد Google Calendar'
 };
+const XL_NOTE = { id:'شناسه', apptId:'شناسه نوبت', code:'کد مراجع', name:'نام مراجع', phone:'موبایل', therapist:'درمانگر', clinic:'کلینیک',
+  date:'تاریخ (میلادی YYYY-MM-DD)', diagnosis:'تشخیص', progress:'پیشرفت (درصد)', progressText:'پیشرفت', summary:'خلاصه', note:'یادداشت',
+  clientSat:'رضایت مراجع', therapistSat:'رضایت درمانگر', full:'گزارش کامل (متن خوانا)' };
+const XL_FORM_COL = 'فرم (JSON) ';
+function xlSheet(wb, name, rows, widths){
+  const ws = XLSX.utils.json_to_sheet(rows);
+  if(widths) ws['!cols'] = widths.map(w=>({wch:w}));
+  XLSX.utils.book_append_sheet(wb, ws, name);
+}
 function exportExcel(){
   if(typeof XLSX==='undefined'){ toast('کتابخانهٔ Excel بارگذاری نشد — اتصال اینترنت را بررسی کنید'); return; }
-  const rows = appts.map(a=>({
-    [APPT_HEADERS.id]: a.id,
-    [APPT_HEADERS.code]: a.code,
-    [APPT_HEADERS.name]: a.name,
-    [APPT_HEADERS.phone]: a.phone,
-    [APPT_HEADERS.clinic]: a.clinic,
-    [APPT_HEADERS.date]: a.date,
-    [APPT_HEADERS.time]: a.time,
-    [APPT_HEADERS.dur]: a.dur,
-    [APPT_HEADERS.fee]: a.fee,
-    [APPT_HEADERS.note]: a.note||'',
-    [APPT_HEADERS.done]: a.done ? 'بله' : 'خیر'
-  }));
   const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.json_to_sheet(rows);
-  XLSX.utils.book_append_sheet(wb, ws, 'نوبت‌ها');
-  const wsClients = XLSX.utils.json_to_sheet(clients.map(c=>({'کد مراجع':c.code,'نام':c.name,'موبایل':c.phone})));
-  XLSX.utils.book_append_sheet(wb, wsClients, 'مراجعین');
+  xlSheet(wb, 'نوبت‌ها', appts.map(a=>({
+    [APPT_HEADERS.id]: a.id, [APPT_HEADERS.code]: a.code, [APPT_HEADERS.name]: a.name, [APPT_HEADERS.phone]: a.phone,
+    [APPT_HEADERS.clinic]: a.clinic, [APPT_HEADERS.therapist]: a.therapist||'', [APPT_HEADERS.date]: a.date, [APPT_HEADERS.time]: a.time,
+    [APPT_HEADERS.dur]: a.dur, [APPT_HEADERS.fee]: a.fee, [APPT_HEADERS.note]: a.note||'', [APPT_HEADERS.done]: a.done ? 'بله' : 'خیر',
+    [APPT_HEADERS.gcal]: a.gcalEventId||''
+  })), [18,18,18,14,24,20,16,8,10,10,30,10,20]);
+  xlSheet(wb, 'مراجعین', clients.map(c=>({'کد مراجع':c.code,'نام':c.name,'موبایل':c.phone,'Chat ID تلگرام':c.tgChatId||'','Chat ID بله':c.baleChatId||''})), [18,22,14,16,16]);
+  // session notes: readable columns + the whole form as JSON (split in chunks: an Excel cell holds at most 32,767 characters)
+  const noteRows = sessionNotes.map(s=>{
+    const r = {
+      [XL_NOTE.id]: s.id, [XL_NOTE.apptId]: s.apptId||'', [XL_NOTE.code]: noteClientCode(s), [XL_NOTE.name]: s.clientName||'', [XL_NOTE.phone]: s.phone||'',
+      [XL_NOTE.therapist]: noteTherapist(s), [XL_NOTE.clinic]: trClinicOf(s)==='نامشخص' ? '' : trClinicOf(s), [XL_NOTE.date]: s.date||'',
+      [XL_NOTE.diagnosis]: s.diagnosis||'', [XL_NOTE.progress]: s.progress||0, [XL_NOTE.progressText]: progressText(s),
+      [XL_NOTE.summary]: s.summary||'', [XL_NOTE.note]: s.note||'',
+      [XL_NOTE.clientSat]: s.clientSat==null ? '' : s.clientSat, [XL_NOTE.therapistSat]: s.therapistSat==null ? '' : s.therapistSat,
+      [XL_NOTE.full]: noteFullText(s)
+    };
+    if(noteHasForm(s)){
+      const js = JSON.stringify(s.form);
+      for(let i=0, n=1; i<js.length; i+=30000, n++) r[XL_FORM_COL+faDigits(n)] = js.slice(i, i+30000);
+    }
+    return r;
+  });
+  xlSheet(wb, 'شرح درمان', noteRows, [18,18,18,18,14,20,24,16,24,10,12,40,30,10,10,80]);
+  xlSheet(wb, 'ارزیابی‌ها', screenings.map(s=>({'شناسه':s.id,'پلتفرم':s.platform,'Chat ID':s.chatId,'نام':s.name,'موبایل':s.phone,'کد مراجع':s.clientCode||'','پرسشنامه':s.instrument,'نمره':s.total,'شدت':s.severity,'سؤال ۹':s.item9===null?'':s.item9,'اختلال عملکرد':s.difficulty===null?'':s.difficulty,'اولویت':s.urgent?'بله':'خیر','وضعیت':s.status,'تاریخ (ISO)':s.created,'پاسخ‌ها':s.answers.join(',')})), [26,10,14,20,14,18,10,8,12,8,10,8,10,26,24]);
+  xlSheet(wb, 'تسویه‌ها', settlements.map(s=>({'شناسه':s.id,'کلینیک':s.clinic,'تاریخ (میلادی YYYY-MM-DD)':s.date,'مبلغ':s.amount,'روش':s.method||'','کد پیگیری':s.trackingCode||'','یادداشت':s.note||''})), [18,24,16,12,14,16,30]);
+  xlSheet(wb, 'درمانگران', (settings.therapists||[]).map(t=>({'نام':t.name,'تخصص':t.specialty||'','موبایل':t.phone||'','Chat ID تلگرام':t.tgChatId||'','Chat ID بله':t.baleChatId||''})), [24,30,14,16,16]);
+  xlSheet(wb, 'کلینیک‌ها', (settings.clinics||[]).map(c=>({'نام':c.name,'سهم کلینیک (٪)':c.commission||0})), [28,14]);
+  const setKeys = ['drName','morningStart','morningEnd','eveningStart','eveningEnd','dayOff'];
+  xlSheet(wb, 'تنظیمات', setKeys.map(k=>({'کلید':k,'مقدار':(settings[k]===undefined||settings[k]===null) ? '' : (typeof settings[k]==='object' ? JSON.stringify(settings[k]) : settings[k])})), [18,24]);
   XLSX.writeFile(wb, 'clinic-backup-'+todayStr()+'.xlsx');
+  toast('فایل Excel کامل ذخیره شد ('+faDigits(appts.length)+' نوبت، '+faDigits(clients.length)+' مراجع، '+faDigits(sessionNotes.length)+' شرح درمان)');
 }
 document.getElementById('importExcelFile').addEventListener('change', (e)=>{
   const file = e.target.files[0]; if(!file) return;
@@ -3308,42 +4370,574 @@ document.getElementById('importExcelFile').addEventListener('change', (e)=>{
   const reader = new FileReader();
   reader.onload = (ev)=>{
     try{
-      const data = new Uint8Array(ev.target.result);
-      const wb = XLSX.read(data, {type:'array'});
-      const sheetName = wb.SheetNames.find(n=>n==='نوبت‌ها') || wb.SheetNames[0];
-      const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {raw:false});
-      const imported = rows.map(r=>({
-        id: String(r[APPT_HEADERS.id] || uid()),
-        code: r[APPT_HEADERS.code] || '',
-        name: r[APPT_HEADERS.name] || '',
-        phone: String(r[APPT_HEADERS.phone] || ''),
-        clinic: r[APPT_HEADERS.clinic] || '',
-        date: r[APPT_HEADERS.date] || '',
-        time: r[APPT_HEADERS.time] || '',
-        dur: Number(r[APPT_HEADERS.dur]) || 50,
-        fee: Number(r[APPT_HEADERS.fee]) || 0,
-        note: r[APPT_HEADERS.note] || '',
-        done: (r[APPT_HEADERS.done]==='بله' || r[APPT_HEADERS.done]===true)
+      const wb = XLSX.read(new Uint8Array(ev.target.result), {type:'array'});
+      const sheet = (name)=> wb.SheetNames.includes(name) ? XLSX.utils.sheet_to_json(wb.Sheets[name], {raw:false, defval:''}) : null;
+      const merge = (local, incoming, keyFn)=>{ const m = new Map(); local.forEach(x=>m.set(keyFn(x), x)); incoming.forEach(x=>m.set(keyFn(x), x)); return Array.from(m.values()); };
+      const before = { appts:appts.length, clients:clients.length, notes:sessionNotes.length };
+      const num = v=> (v===''||v==null) ? null : Number(v);
+      let found = 0;
+
+      const apRows = sheet('نوبت‌ها') || (wb.SheetNames.length ? XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {raw:false, defval:''}) : []);
+      const impAppts = apRows.map(r=>({
+        id: String(r[APPT_HEADERS.id] || uid()), code: r[APPT_HEADERS.code] || '', name: r[APPT_HEADERS.name] || '', phone: String(r[APPT_HEADERS.phone] || ''),
+        clinic: r[APPT_HEADERS.clinic] || '', therapist: r[APPT_HEADERS.therapist] || '', date: r[APPT_HEADERS.date] || '', time: r[APPT_HEADERS.time] || '',
+        dur: Number(r[APPT_HEADERS.dur]) || 50, fee: Number(r[APPT_HEADERS.fee]) || 0, note: r[APPT_HEADERS.note] || '',
+        done: (r[APPT_HEADERS.done]==='بله' || r[APPT_HEADERS.done]===true), gcalEventId: r[APPT_HEADERS.gcal] || null
       })).filter(a=>a.name && a.date && a.time);
-      if(!imported.length){ toast('هیچ رکورد معتبری در فایل Excel پیدا نشد'); return; }
-      appts = imported;
-      LS.set('appts', appts);
-      const clientsSheetName = wb.SheetNames.find(n=>n==='مراجعین');
-      if(clientsSheetName){
-        const crows = XLSX.utils.sheet_to_json(wb.Sheets[clientsSheetName], {raw:false});
-        const importedClients = crows.map(r=>({code:r['کد مراجع']||'', name:r['نام']||'', phone:String(r['موبایل']||'')})).filter(c=>c.phone);
-        if(importedClients.length){ clients = importedClients; LS.set('clients', clients); }
+      if(impAppts.length){ appts = merge(appts, impAppts, a=>a.id); found++; }
+
+      const cRows = sheet('مراجعین');
+      if(cRows){
+        const impC = cRows.map(r=>({code:r['کد مراجع']||'', name:r['نام']||'', phone:String(r['موبایل']||''), tgChatId:String(r['Chat ID تلگرام']||''), baleChatId:String(r['Chat ID بله']||'')})).filter(c=>c.phone);
+        if(impC.length){ clients = merge(clients, impC, c=>c.code||('p'+c.phone)); found++; }
       }
-      renderAll();
-      toast('بازیابی از Excel انجام شد — '+faDigits(imported.length)+' نوبت وارد شد');
-    }catch(err){ toast('فایل Excel نامعتبر است'); }
+
+      const nRows = sheet('شرح درمان');
+      if(nRows){
+        const impN = nRows.map(r=>{
+          const keys = Object.keys(r).filter(k=>k.indexOf(XL_FORM_COL)===0).sort((a,b)=>a.localeCompare(b,'fa',{numeric:true}));
+          let form = null;
+          if(keys.length){ try{ form = JSON.parse(keys.map(k=>r[k]).join('')); }catch(err){ form = null; } }
+          return { id:String(r[XL_NOTE.id]||uid()), apptId:String(r[XL_NOTE.apptId]||''), clientCode:r[XL_NOTE.code]||'', clientName:r[XL_NOTE.name]||'', phone:String(r[XL_NOTE.phone]||''),
+            therapist:r[XL_NOTE.therapist]||'', clinic:r[XL_NOTE.clinic]||'', date:r[XL_NOTE.date]||'', diagnosis:r[XL_NOTE.diagnosis]||'', progress:Number(r[XL_NOTE.progress])||0,
+            summary:r[XL_NOTE.summary]||'', note:r[XL_NOTE.note]||'', clientSat:num(r[XL_NOTE.clientSat]), therapistSat:num(r[XL_NOTE.therapistSat]), form };
+        }).filter(n=>n.date);
+        // codes that were only synthetic keys at export time ("NM:…") are not real client codes — don't store them
+        impN.forEach(n=>{ if(/^(NM:|PH:|ID:)/.test(n.clientCode)) n.clientCode = ''; });
+        if(impN.length){ sessionNotes = merge(sessionNotes, impN, s=>s.id); found++; }
+      }
+
+      const scRows = sheet('ارزیابی‌ها');
+      if(scRows){
+        const impSc = scRows.map(r=>rowToScreening({ id:r['شناسه'], platform:r['پلتفرم'], chat_id:r['Chat ID'], name:r['نام'], phone:r['موبایل'], client_code:r['کد مراجع'], instrument:r['پرسشنامه'],
+          answers:String(r['پاسخ‌ها']||'').split(',').filter(x=>x!=='').map(Number), total:r['نمره'], severity:r['شدت'], item9:r['سؤال ۹'], difficulty:r['اختلال عملکرد'],
+          urgent:r['اولویت']==='بله', status:r['وضعیت'], created_at:r['تاریخ (ISO)'] })).filter(s=>s.id && s.instrument);
+        if(impSc.length){ screenings = merge(screenings, impSc, s=>s.id); LS.set('screenings', screenings); found++; }
+      }
+      const sRows = sheet('تسویه‌ها');
+      if(sRows){
+        const impS = sRows.map(r=>({id:String(r['شناسه']||uid()), clinic:r['کلینیک']||'', date:r['تاریخ (میلادی YYYY-MM-DD)']||'', amount:Number(r['مبلغ'])||0, method:r['روش']||'', trackingCode:r['کد پیگیری']||'', note:r['یادداشت']||''})).filter(s=>s.clinic && s.date);
+        if(impS.length){ settlements = merge(settlements, impS, s=>s.id); found++; }
+      }
+
+      let settingsChanged = false;
+      const tRows = sheet('درمانگران');
+      if(tRows){
+        const impT = tRows.map(r=>({name:String(r['نام']||'').trim(), specialty:r['تخصص']||'', phone:String(r['موبایل']||''), tgChatId:String(r['Chat ID تلگرام']||''), baleChatId:String(r['Chat ID بله']||'')})).filter(t=>t.name);
+        if(impT.length){ settings.therapists = impT; settingsChanged = true; found++; }
+      }
+      const clRows = sheet('کلینیک‌ها');
+      if(clRows){
+        const impCl = clRows.map(r=>({name:String(r['نام']||'').trim(), commission:Number(r['سهم کلینیک (٪)'])||0})).filter(c=>c.name);
+        if(impCl.length){ settings.clinics = impCl; settingsChanged = true; found++; }
+      }
+      const stRows = sheet('تنظیمات');
+      if(stRows){
+        stRows.forEach(r=>{
+          const k = r['کلید']; if(!k || r['مقدار']==='') return;
+          let v = r['مقدار'];
+          if(k==='dayOff'){ const n = Number(v); v = isNaN(n) ? v : n; }
+          settings[k] = v; settingsChanged = true;
+        });
+        found++;
+      }
+
+      if(!found){ toast('هیچ رکورد معتبری در فایل Excel پیدا نشد'); return; }
+      migrateClinicsShape();
+      LS.set('appts', appts); LS.set('clients', clients); LS.set('sessionNotes', sessionNotes); LS.set('settlements', settlements); LS.set('settings', settings);
+      renderAll(); fillTreatmentClientSelect(); fillClinicSelects();
+      if(typeof fillTherapistSettingInputs==='function') fillTherapistSettingInputs();
+      if(typeof fillClinicSettingInputs==='function') fillClinicSettingInputs();
+      if(typeof loadSettingsToUI==='function') loadSettingsToUI();
+      toast('بازیابی از Excel انجام شد (ادغام): نوبت '+faDigits(appts.length-before.appts)+'+ ، مراجع '+faDigits(clients.length-before.clients)+'+ ، شرح درمان '+faDigits(sessionNotes.length-before.notes)+'+');
+      pushRestoredToSupabase();
+      if(settingsChanged) pushSettingsRow('settings', settings);
+    }catch(err){ console.error(err); toast('فایل Excel نامعتبر است'); }
   };
   reader.readAsArrayBuffer(file);
 });
 
+/* ================= SCREENINGS — GAD-7 / PHQ-9 filled in by clients in the Telegram / Bale bots ================= */
+let screenings = LS.get('screenings', []);
+let supaScreeningChannel = null;
+/* ----- Questionnaire definitions are NOT stored in this file -----
+   Questionnaire.gs is the single source of truth: the bot publishes the definitions (item texts, answer scales, severity bands,
+   urgent items) to the cloud (app_settings → key "questionnaires") and the app reads them here. Adding a questionnaire means
+   editing Questionnaire.gs only. Until the definitions arrive, results still show (name, score, severity, raw answers). */
+let SCR_DEFS = LS.get('questionnaires', null);
+let SCR_INFO = scrBuildInfo(SCR_DEFS);
+function scrBandColors(bands){                       // green → red, spread evenly over however many bands the questionnaire has
+  const P = ['#2e7d32','#9a7b00','#e65100','#d84315','#b71c1c'], n = (bands||[]).length;
+  return n<=1 ? [] : bands.map((_,i)=>P[Math.round(i*(P.length-1)/(n-1))]);
+}
+function scrBuildInfo(pub){
+  const info = {};
+  ((pub && pub.list) || []).forEach(d=>{
+    info[d.inst] = { title:d.title, fa:d.fa, cmd:d.cmd||'', max:d.max, bands:d.bands||[], colors:scrBandColors(d.bands), scale:d.scale||null,
+                     difficulty:d.difficulty||null, urgentItems:d.urgentItems||[], items:d.items||[] };
+  });
+  return info;
+}
+function scrApplyDefs(pub, rerender){
+  if(!pub || !Array.isArray(pub.list)) return;
+  SCR_DEFS = pub; SCR_INFO = scrBuildInfo(pub); LS.set('questionnaires', pub);
+  scrRenderDefsLine();
+  if(rerender!==false){ try{ renderScreenings(); updateScreeningBadge(); }catch(e){} }
+}
+function scrRenderDefsLine(){
+  const el = document.getElementById('scrDefsLine'); if(!el) return;
+  const list = (SCR_DEFS && SCR_DEFS.list) || [];
+  el.innerHTML = list.length
+    ? '📋 پرسشنامه‌های فعال: ' + list.map(d=>`<b>${escHtml(d.title)}</b> (${escHtml(d.fa)}) <span dir="ltr">/${escHtml(d.cmd)}</span>`).join(' · ')
+    : 'فهرست پرسشنامه‌ها هنوز از ربات دریافت نشده است؛ با اولین استفاده از ربات (یا اجرای publishQuestionnaires در Apps Script) خودکار می‌آید.';
+}
+function scrInfo(inst){ return SCR_INFO[inst] || { title:String(inst).replace(/^([A-Za-z]+)(\d+)$/, '$1-$2'), fa:'', max:null, bands:[], colors:[], items:[], scale:null, difficulty:null, urgentItems:[], generic:true }; }
+function scrScaleLabel(inst, v){ const sc = scrInfo(inst).scale; return (sc && sc[v]!==undefined) ? sc[v] : faDigits(v); }
+function scrDiffLabel(s){ const d = scrInfo(s.instrument).difficulty; return (d && d[s.difficulty]!==undefined) ? d[s.difficulty] : (s.difficulty!==null && s.difficulty!==undefined ? faDigits(s.difficulty) : ''); }
+function scrBandIdx(inst, total){ const bands = scrInfo(inst).bands; if(!bands.length) return 0; const b = bands.findIndex(x=>total<=x[0]); return b<0 ? bands.length-1 : b; }
+function scrColor(inst, total){ return scrInfo(inst).colors[scrBandIdx(inst,total)] || '#37474f'; }
+function scrScoreText(info, total){ return faDigits(total) + (info.max!=null ? ' از '+faDigits(info.max) : ''); }
+
+function rowToScreening(r){
+  let answers = r.answers;
+  if(typeof answers==='string'){ try{ answers = JSON.parse(answers); }catch(e){ answers = []; } }
+  const n = v=> (v===null || v===undefined || v==='') ? null : Number(v);
+  return { id:r.id, platform:r.platform||'', chatId:String(r.chat_id||''), name:r.name||'', phone:String(r.phone||''), clientCode:r.client_code||'',
+           instrument:r.instrument, answers:Array.isArray(answers)?answers:[], total:Number(r.total)||0, severity:r.severity||'',
+           item9:n(r.item9), difficulty:n(r.difficulty), urgent:!!r.urgent, status:r.status||'new', created:r.created_at||'' };
+}
+function screeningToRow(s){
+  return { id:s.id, platform:s.platform, chat_id:s.chatId, name:s.name, phone:s.phone, client_code:s.clientCode||null, instrument:s.instrument,
+           answers:s.answers, total:s.total, severity:s.severity, item9:s.item9, difficulty:s.difficulty, urgent:!!s.urgent,
+           status:s.status||'new', created_at:s.created || new Date().toISOString() };
+}
+async function pushScreeningToSupabase(s){
+  if(!supa) return;
+  const { error } = await supa.from('screenings').upsert(screeningToRow(s));
+  if(error) toast('❌ ذخیرهٔ آنلاین ارزیابی ناموفق بود: '+error.message);
+}
+async function deleteScreeningFromSupabase(id){ if(supa) await supa.from('screenings').delete().eq('id', id); }
+async function pullScreenings(){
+  if(!supa) return;
+  let data = null;
+  try{ data = await fbFetchAll('screenings', ['id']); }catch(e){ return; } // table not created yet → nothing to show
+  screenings = data.map(rowToScreening).sort((a,b)=>String(b.created).localeCompare(String(a.created)));
+  LS.set('screenings', screenings);
+  renderScreenings(); updateScreeningBadge();
+}
+function subscribeScreenings(){
+  if(!supa) return;
+  if(supaScreeningChannel) supa.removeChannel(supaScreeningChannel);
+  supaScreeningChannel = supa.channel('screenings-live')
+    .on('postgres_changes', {event:'*', schema:'public', table:'screenings'}, payload=>{
+      if(payload.eventType==='DELETE'){
+        screenings = screenings.filter(s=>s.id !== payload.old.id);
+      }else{
+        const s = rowToScreening(payload.new);
+        const idx = screenings.findIndex(x=>x.id===s.id);
+        if(idx>=0) screenings[idx] = s;
+        else{
+          screenings.unshift(s);
+          if(canClinical()) toast(s.urgent ? '🚨 ارزیابی با اولویت بالا رسید: '+s.name : '🧠 ارزیابی سلامت روان جدید: '+s.name);
+        }
+      }
+      LS.set('screenings', screenings);
+      renderScreenings(); updateScreeningBadge();
+    })
+    .subscribe();
+}
+
+/* A screening belongs to a client file by: the code stored on it → same phone AND name → same chat-id AND name.
+   (Phone alone is never enough: different people can share one number.) */
+function screeningClient(s){
+  if(s.clientCode){ const c = clients.find(x=>x.code===s.clientCode); if(c) return c; }
+  const nm = normName(s.name), pk = phoneKey(s.phone);
+  if(!nm) return null;
+  let c = pk ? clients.find(x=>x.code && phoneKey(x.phone)===pk && normName(x.name)===nm) : null;
+  if(c) return c;
+  if(s.chatId) c = clients.find(x=>x.code && normName(x.name)===nm && (s.platform==='bale' ? x.baleChatId===s.chatId : x.tgChatId===s.chatId));
+  return c || null;
+}
+function scopedScreenings(){
+  if(!canClinical()) return [];
+  const mt = myTherapist();
+  if(!mt) return screenings;
+  const ok = new Set(scopedClients().map(c=>c.code));
+  return screenings.filter(s=>{ const c = screeningClient(s); return c && ok.has(c.code); });
+}
+function screeningsOfClient(code){
+  return scopedScreenings().filter(s=>{ const c = screeningClient(s); return c && c.code===code; })
+    .sort((a,b)=>String(a.created).localeCompare(String(b.created)));
+}
+function scrLocalDate(iso){
+  const d = new Date(iso); if(isNaN(d)) return { date:'', time:'' };
+  const p = n=>String(n).padStart(2,'0');
+  return { date: d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()), time: p(d.getHours())+':'+p(d.getMinutes()) };
+}
+function scrAnswerLine(s){
+  const info = scrInfo(s.instrument);
+  return `${info.title}: ${scrScoreText(info, s.total)}${s.severity ? ' ('+s.severity+')' : ''}`;
+}
+function updateScreeningBadge(){
+  const el = document.getElementById('scrBadge'); if(!el) return;
+  const fresh = scopedScreenings().filter(s=>s.status==='new');
+  if(!fresh.length){ el.style.display = 'none'; return; }
+  const urgent = fresh.some(s=>s.urgent);
+  el.style.cssText = 'display:inline-block;color:#fff;border-radius:20px;padding:1px 7px;font-size:10px;margin-right:4px;background:'+(urgent?'#c62828':'var(--danger)');
+  el.textContent = (urgent?'🚨 ':'') + faDigits(fresh.length);
+}
+
+/* group the two questionnaires one person filled in the same sitting into one card */
+function scrGroups(list){
+  const sorted = list.slice().sort((a,b)=>String(b.created).localeCompare(String(a.created)));
+  const groups = [];
+  sorted.forEach(s=>{
+    const g = groups.find(x=>x.platform===s.platform && x.chatId===s.chatId && x.name===s.name && x.phone===s.phone && Math.abs(new Date(x.created)-new Date(s.created)) <= 30*60*1000);
+    if(g) g.items.push(s); else groups.push({ platform:s.platform, chatId:s.chatId, name:s.name, phone:s.phone, created:s.created, items:[s] });
+  });
+  return groups;
+}
+function renderScreenings(){
+  const wrap = document.getElementById('scrList'); if(!wrap) return;
+  if(!canClinical()){ wrap.innerHTML = ''; return; }
+  const q = (document.getElementById('scrSearch').value||'').trim();
+  const f = document.getElementById('scrFilter').value;
+  let list = scopedScreenings();
+  if(f==='new') list = list.filter(s=>s.status==='new');
+  else if(f==='filed') list = list.filter(s=>s.status==='filed');
+  else if(f==='urgent') list = list.filter(s=>s.urgent);
+  if(q) list = list.filter(s=>(s.name||'').indexOf(q)>-1 || (s.phone||'').indexOf(q)>-1);
+  const groups = scrGroups(list);
+  if(!groups.length){ wrap.innerHTML = '<div class="empty">ارزیابی‌ای یافت نشد</div>'; return; }
+  const mine = scopedClients().filter(c=>c.name);
+  wrap.innerHTML = groups.slice(0,80).map(g=>{
+    const ids = g.items.map(s=>s.id).join(',');
+    const urgent = g.items.some(s=>s.urgent);
+    const filed = g.items.every(s=>s.status==='filed');
+    const client = screeningClient(g.items[0]);
+    const worst = g.items.reduce((m,s)=>Math.max(m, (scrInfo(s.instrument).bands.length>1) ? scrBandIdx(s.instrument,s.total)/(scrInfo(s.instrument).bands.length-1) : 0), 0);
+    const edge = urgent ? '#c62828' : (worst>=0.66 ? '#e65100' : worst>=0.33 ? '#9a7b00' : '#2e7d32');
+    const dt = scrLocalDate(g.created);
+    const rows = g.items.map(s=>{
+      const info = scrInfo(s.instrument);
+      const ans = s.answers.map((v,i)=>`<div style="${((info.urgentItems||[]).includes(i) && v>0)?'color:#b71c1c;font-weight:700':''}">${faDigits(i+1)}. ${escHtml(info.items[i]||'سؤال '+faDigits(i+1))} — <b>${escHtml(scrScaleLabel(s.instrument, v))}</b></div>`).join('');
+      return `<div style="margin:8px 0;padding:8px;border-radius:10px;background:#f6f8f7">
+        <div style="color:${scrColor(s.instrument,s.total)};font-weight:700">${info.title}${info.fa?' ('+info.fa+')':''}: ${scrScoreText(info, s.total)} — ${escHtml(s.severity)}</div>
+        ${s.difficulty!==null ? `<div class="hint">اختلال عملکرد گزارش‌شده: ${escHtml(scrDiffLabel(s))}</div>` : ''}
+        <details style="margin-top:4px"><summary style="cursor:pointer;font-size:12px;color:#5c6c6a">مشاهدهٔ پاسخ‌ها</summary><div style="font-size:12px;line-height:1.9;margin-top:4px">${ans}</div></details>
+      </div>`;
+    }).join('');
+    const unlinkedPicker = client ? '' : `<select onchange="linkScreeningGroup('${ids}', this.value)" style="margin-top:6px"><option value="">🔗 اتصال به یک مراجع موجود…</option>${mine.map(c=>`<option value="${escAttr(c.code)}">${escHtml(c.name)} — ${escHtml(c.phone||'')}</option>`).join('')}</select>`;
+    return `<div class="appt" style="border-right:5px solid ${edge}">
+      <div class="appt-top"><span class="appt-name">${escHtml(g.name||'—')}</span><div class="appt-time">${dt.time}</div></div>
+      <div class="appt-meta">
+        <span>📞 ${escHtml(g.phone||'—')}</span><span>${g.platform==='bale'?'💬 بله':'✈️ تلگرام'}</span><span>📅 ${formatFaDate(dt.date)}</span>
+        <span style="${filed?'background:#e3f3e7;color:#1f7a3d;font-weight:700':'background:#fff3e0;color:#a5671a'}">${filed?'✅ ثبت‌شده در پرونده':'🆕 جدید'}</span>
+        ${client ? `<span class="th-chip">📁 ${escHtml(client.name)}</span>` : '<span class="th-chip none">📁 بدون پرونده</span>'}
+      </div>
+      ${urgent ? '<div style="background:#fdecea;border:1.5px solid #e0a39c;color:#8a2a22;border-radius:10px;padding:8px 10px;margin:8px 0;font-size:13px;line-height:1.8">🚨 <b>اولویت بالا:</b> '+(g.items.some(s=>s.urgent && s.instrument==='PHQ9') ? 'پاسخ سؤال ۹ پرسشنامهٔ PHQ-9 (افکار آسیب به خود) مثبت است.' : 'پاسخ یکی از سؤال‌های هشداردهندهٔ پرسشنامه ('+g.items.filter(s=>s.urgent).map(s=>scrInfo(s.instrument).title).join('، ')+') مثبت است.')+' ارزیابی خطر و پیگیری سریع توصیه می‌شود.</div>' : ''}
+      ${rows}
+      ${unlinkedPicker}
+      <div class="appt-actions">
+        ${filed ? `<button onclick="setScreeningStatus('${ids}','new')">↩️ بازگردانی به جدید</button>` : `<button class="done" onclick="fileScreenings('${ids}')">📌 ثبت در پرونده</button>`}
+        <button class="danger" onclick="deleteScreenings('${ids}')">🗑 حذف</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function scrByIds(idsStr){ const ids = String(idsStr).split(','); return screenings.filter(s=>ids.includes(s.id)); }
+function scrCommit(items){ LS.set('screenings', screenings); items.forEach(pushScreeningToSupabase); renderScreenings(); updateScreeningBadge(); }
+function setScreeningStatus(idsStr, status){ const items = scrByIds(idsStr); items.forEach(s=>{ s.status = status; }); scrCommit(items); }
+function linkScreeningGroup(idsStr, code){
+  if(!code) return;
+  const items = scrByIds(idsStr); items.forEach(s=>{ s.clientCode = code; });
+  const c = clients.find(x=>x.code===code); const s0 = items[0];
+  if(c && s0 && s0.chatId){ // remember the chat id on the client so the next ones link automatically
+    if(s0.platform==='bale' && !c.baleChatId){ c.baleChatId = s0.chatId; pushClientToSupabase(c); LS.set('clients', clients); }
+    if(s0.platform!=='bale' && !c.tgChatId){ c.tgChatId = s0.chatId; pushClientToSupabase(c); LS.set('clients', clients); }
+  }
+  scrCommit(items); toast('🔗 به پروندهٔ «'+(c?c.name:'')+'» متصل شد');
+}
+function fileScreenings(idsStr){
+  const items = scrByIds(idsStr); if(!items.length) return;
+  const s0 = items[0];
+  let c = screeningClient(s0);
+  if(!c){
+    if(!confirm('مراجعی با نام «'+s0.name+'» در پرونده‌ها نیست. یک پروندهٔ جدید ساخته شود و این ارزیابی در آن ثبت شود؟')) return;
+    c = { code:generateClientCode(), phone:s0.phone, name:s0.name, tgChatId: s0.platform==='bale'?'':s0.chatId, baleChatId: s0.platform==='bale'?s0.chatId:'' };
+    clients.push(c); LS.set('clients', clients); pushClientToSupabase(c);
+    if(typeof fillTreatmentClientSelect==='function') fillTreatmentClientSelect();
+  }
+  items.forEach(s=>{ s.clientCode = c.code; s.status = 'filed'; });
+  scrCommit(items); toast('✅ در پروندهٔ «'+c.name+'» ثبت شد');
+}
+function deleteScreenings(idsStr){
+  if(!canClinical()){ toast('⛔ دسترسی ندارید'); return; }
+  if(!confirm('این ارزیابی برای همیشه حذف شود؟')) return;
+  const ids = String(idsStr).split(',');
+  screenings = screenings.filter(s=>!ids.includes(s.id));
+  LS.set('screenings', screenings); ids.forEach(deleteScreeningFromSupabase);
+  renderScreenings(); updateScreeningBadge();
+}
+
+/* ---- inside the session-note editor: show what the client sent and let the therapist copy it into this session ---- */
+function renderScreeningBox(a){
+  const box = document.getElementById('tnScreenBox'); if(!box) return;
+  const list = a && a.code ? screeningsOfClient(a.code) : [];
+  if(!list.length){ box.innerHTML = ''; return; }
+  const insts = Array.from(new Set(list.map(s=>s.instrument))).sort((a,b)=>(a==='GAD7'?0:a==='PHQ9'?1:2)-(b==='GAD7'?0:b==='PHQ9'?1:2));
+  const lines = insts.map(inst=>{
+    const mine = list.filter(s=>s.instrument===inst); if(!mine.length) return '';
+    const s = mine[mine.length-1], dt = scrLocalDate(s.created);
+    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap">
+      <span style="color:${scrColor(inst,s.total)};font-weight:700">${scrAnswerLine(s)} <span style="color:#6d7977;font-weight:400">— ${formatFaDate(dt.date)}</span></span>
+      ${(inst==='GAD7'||inst==='PHQ9') ? `<button type="button" class="btn ghost small" style="width:auto;margin:0" onclick="useScreening('${s.id}')">📥 استفاده در این جلسه</button>` : ''}
+    </div>${s.urgent ? '<div style="color:#b71c1c;font-size:12px;margin-top:2px">🚨 پاسخ سؤال ۹ (افکار آسیب به خود) مثبت بوده — در «ارزیابی خطر» بررسی و ثبت کنید.</div>' : ''}`;
+  }).join('');
+  box.innerHTML = `<div class="tn-meta" style="margin-top:8px;border:1.5px dashed #8e24aa;background:#f3e5f5"><b style="color:#8e24aa">🧠 ارزیابی خودگزارشی ارسال‌شده توسط مراجع (ربات)</b>${lines}</div>`;
+}
+function useScreening(id){
+  const s = screenings.find(x=>x.id===id); if(!s) return;
+  const key = s.instrument==='GAD7' ? 'gad7' : 'phq9';
+  const code = (tnCtx && tnCtx.a && tnCtx.a.code) || '';
+  const earlier = (code ? screeningsOfClient(code) : []).filter(x=>x.instrument===s.instrument && String(x.created) < String(s.created));
+  document.getElementById('tn_'+key+'Now').value = s.total;
+  if(earlier.length && document.getElementById('tn_'+key+'Prev').value==='') document.getElementById('tn_'+key+'Prev').value = earlier[earlier.length-1].total;
+  tnRefreshDerived();
+  const sec = document.querySelector('#tnSections > details'); const d2 = document.querySelectorAll('#tnSections > details')[1]; if(d2) d2.open = true;
+  toast('نمرهٔ '+scrInfo(s.instrument).title+' در فرم قرار گرفت');
+}
+
+/* ---- in the printed / on-screen treatment report ---- */
+function treatmentScreeningsHtml(list){
+  if(!list || !list.length) return '';
+  const rows = list.map(s=>{
+    const dt = scrLocalDate(s.created), info = scrInfo(s.instrument);
+    return `<tr><td>${formatFaDate(dt.date)}</td><td>${info.title}${info.fa?' ('+info.fa+')':''}</td><td style="font-weight:700;color:${scrColor(s.instrument,s.total)}">${info.max!=null ? faDigits(s.total)+' / '+faDigits(info.max) : faDigits(s.total)}</td><td>${escHtml(s.severity)}</td>
+      <td>${(s.item9!==null && s.item9!==undefined) ? (s.item9>0 ? '⚠️ ' : '')+escHtml(scrScaleLabel(s.instrument, s.item9)) : (s.urgent ? '⚠️ مثبت' : '—')}</td><td>${s.difficulty!==null ? escHtml(scrDiffLabel(s)) : '—'}</td></tr>`;
+  }).join('');
+  return `<div class="tn-rep-sec" style="border-right-color:#8e24aa;margin-top:10px">
+    <div class="tn-rep-st" style="background:#f3e5f5;color:#8e24aa">🧠 ارزیابی‌های خودگزارشی مراجع (GAD-7 / PHQ-9) — ارسال‌شده از ربات</div>
+    <table class="tn-kv"><thead><tr><th>تاریخ</th><th>پرسشنامه</th><th>نمره</th><th>شدت</th><th>سؤال ۹</th><th>اختلال عملکرد</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+/* ================= FULL BACKUP — everything in the database + users ================= */
+const FB_FORMAT = 'clinic-full-backup';
+
+/* Supabase returns at most 1000 rows per request: read EVERY row, page by page */
+async function fbFetchAll(table, orderCols){
+  const PAGE = 1000;
+  const tries = (orderCols||[]).concat([null]);
+  let lastErr = null;
+  for(const col of tries){
+    let all = [], failed = false;
+    for(let from=0; from<500000; from+=PAGE){
+      let q = supa.from(table).select('*');
+      if(col) q = q.order(col, {ascending:true});
+      const { data, error } = await q.range(from, from+PAGE-1);
+      if(error){ failed = true; lastErr = error; break; }
+      all = all.concat(data||[]);
+      if(!data || data.length<PAGE) break;
+    }
+    if(!failed) return all;
+  }
+  throw new Error((lastErr && lastErr.message) || ('read failed: '+table));
+}
+
+/* optional password protection: PBKDF2 → AES-GCM (Web Crypto) */
+function fbB64(buf){ const b = new Uint8Array(buf); let s = ''; for(let i=0;i<b.length;i+=0x8000) s += String.fromCharCode.apply(null, b.subarray(i,i+0x8000)); return btoa(s); }
+function fbUnB64(str){ const s = atob(str), b = new Uint8Array(s.length); for(let i=0;i<s.length;i++) b[i] = s.charCodeAt(i); return b; }
+async function fbKey(pass, salt, iter){
+  const km = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2', salt, iterations:iter, hash:'SHA-256'}, km, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+}
+async function fbEncrypt(text, pass){
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12)), iter = 200000;
+  const key = await fbKey(pass, salt, iter);
+  const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, key, new TextEncoder().encode(text));
+  return { format: FB_FORMAT+'-encrypted', version:1, kdf:'PBKDF2-SHA256', iterations:iter, salt:fbB64(salt), iv:fbB64(iv), data:fbB64(ct) };
+}
+async function fbDecrypt(obj, pass){
+  const key = await fbKey(pass, fbUnB64(obj.salt), obj.iterations);
+  const pt = await crypto.subtle.decrypt({name:'AES-GCM', iv:fbUnB64(obj.iv)}, key, fbUnB64(obj.data));
+  return new TextDecoder().decode(pt);
+}
+
+/* read the whole database (cloud if connected, else this device) + keep anything that exists only on this device */
+async function fbBuild(){
+  const clean = n=>{ const c = Object.assign({}, n); delete c._pending; return c; };
+  const data = {
+    clients: clients.slice(), appts: appts.slice(), sessionNotes: sessionNotes.map(clean), settlements: settlements.slice(),
+    bookingRequests: bookingRequests.slice(), bookingRequestsBale: bookingRequestsBale.slice(), reminderLog: reminderLog.slice(), screenings: screenings.slice(),
+    settings: settings, appUsers: appUsers, reminderSettings: reminderSettings, gcalClientId: gcalClientId, appTheme: LS.get('appTheme','classic')
+  };
+  const info = { source: supa ? 'cloud' : 'local', failed: [], localOnly: 0 };
+  if(supa){
+    const localById = {}; sessionNotes.forEach(s=>{ localById[s.id] = s; });
+    const jobs = [
+      ['appts','appointments',['id'],'id',rowToAppt],
+      ['clients','clients',['code'],'code',rowToClient],
+      ['sessionNotes','session_notes',['id'],'id', r=>clean(mergeCloudNote(rowToSessionNote(r), localById[r.id]))],
+      ['settlements','settlements',['id'],'id',rowToSettlement],
+      ['screenings','screenings',['id'],'id',rowToScreening],
+      ['bookingRequests','booking_requests',['id','created_at'],'id',null],
+      ['bookingRequestsBale','bale_booking_requests',['id','created_at'],'id',null],
+      ['reminderLog','reminder_log',['id','created_at'],'id',null]
+    ];
+    for(const [key, table, order, idKey, mapper] of jobs){
+      try{
+        const rows = await fbFetchAll(table, order);
+        const cloud = mapper ? rows.map(mapper) : rows;
+        const ids = new Set(cloud.map(x=>x[idKey]));
+        const only = (data[key]||[]).filter(x=>x[idKey] && !ids.has(x[idKey]));
+        info.localOnly += only.length;
+        data[key] = cloud.concat(only);
+      }catch(e){ info.failed.push(table); }
+    }
+    try{
+      const rows = await fbFetchAll('app_settings', ['key']);
+      rows.forEach(r=>{
+        try{
+          const v = JSON.parse(r.value);
+          if(r.key==='settings') data.settings = v;
+          else if(r.key==='appUsers') data.appUsers = v;
+          else if(r.key==='reminderSettings') data.reminderSettings = v;
+          else if(r.key==='gcalClientId') data.gcalClientId = v;
+        }catch(e){}
+      });
+    }catch(e){ info.failed.push('app_settings'); }
+  }
+  const counts = {};
+  ['clients','appts','sessionNotes','settlements','bookingRequests','bookingRequestsBale','reminderLog','appUsers','screenings'].forEach(k=>{ counts[k] = (data[k]||[]).length; });
+  return { file:{ format:FB_FORMAT, version:1, createdAt:new Date().toISOString(), source:info.source, counts, data }, info };
+}
+function fbDownload(text, name){
+  const blob = new Blob([text], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ a.remove(); URL.revokeObjectURL(url); }, 3000);
+}
+async function exportFullBackup(){
+  if(myTherapist() || !canTab('settings')){ toast('⛔ پشتیبان کامل فقط برای مدیر (بدون محدودیت) در دسترس است'); return; }
+  const p1 = prompt('رمز محافظ فایل (اختیاری).\\nاین فایل شامل رمز کاربران و توکن‌هاست؛ بهتر است با رمز ذخیره شود.\\n⚠️ اگر رمز را فراموش کنید فایل قابل بازیابی نیست.\\n\\nبرای ذخیرهٔ بدون رمز، خالی بگذارید و تأیید کنید:', '');
+  if(p1===null) return;
+  let pass = '';
+  if(p1){
+    const p2 = prompt('رمز را دوباره وارد کنید:', '');
+    if(p2===null) return;
+    if(p1!==p2){ toast('❌ دو رمز یکسان نیستند — پشتیبانی گرفته نشد'); return; }
+    if(!(window.crypto && crypto.subtle)){ toast('رمزگذاری در این مرورگر پشتیبانی نمی‌شود — بدون رمز ذخیره کنید'); return; }
+    pass = p1;
+  }
+  toast('⏳ در حال خواندن همهٔ اطلاعات دیتابیس...');
+  let built;
+  try{ built = await fbBuild(); }catch(e){ console.error(e); toast('❌ ساخت پشتیبان ناموفق بود: '+(e.message||e)); return; }
+  let text = JSON.stringify(built.file);
+  let name = 'clinic-FULL-backup-'+todayStr();
+  if(pass){
+    try{ text = JSON.stringify(await fbEncrypt(text, pass)); name += '-encrypted'; }catch(e){ toast('❌ رمزگذاری ناموفق بود: '+(e.message||e)); return; }
+  }
+  fbDownload(text, name+'.json');
+  const c = built.file.counts;
+  alert('✅ پشتیبان کامل ذخیره شد'+(pass?' (رمزگذاری‌شده)':' (بدون رمز)')+'\\n\\nمنبع: '+(built.info.source==='cloud'?'دیتابیس Supabase':'همین دستگاه')+
+    '\\nنوبت: '+c.appts+' | مراجع: '+c.clients+' | شرح درمان: '+c.sessionNotes+' | ارزیابی‌ها: '+(c.screenings||0)+' | تسویه: '+c.settlements+
+    '\\nکاربران: '+c.appUsers+' | درخواست ربات‌ها: '+(c.bookingRequests+c.bookingRequestsBale)+' | گزارش پیام‌ها: '+c.reminderLog+
+    (built.info.localOnly ? '\\n\\nℹ️ '+built.info.localOnly+' رکورد فقط روی این دستگاه بود (در دیتابیس نبود) و به فایل اضافه شد.' : '')+
+    (built.info.failed.length ? '\\n\\n⚠️ این جدول‌ها از دیتابیس خوانده نشد و از نسخهٔ همین دستگاه گرفته شد: '+built.info.failed.join('، ') : ''));
+}
+
+async function fbPushAll(d){
+  const failed = [];
+  if(!supa) return failed;
+  const chunks = (arr,n)=>{ const o=[]; for(let i=0;i<arr.length;i+=n) o.push(arr.slice(i,i+n)); return o; };
+  const send = async (table, rows)=>{
+    if(!rows || !rows.length) return true;
+    for(const part of chunks(rows,100)){
+      const { error } = await supa.from(table).upsert(part);
+      if(error){ failed.push(table+': '+error.message); return false; }
+    }
+    return true;
+  };
+  await send('clients', clients.filter(c=>c.code).map(clientToRow));
+  await send('appointments', appts.map(apptToRow));
+  const okNotes = await (async()=>{
+    const before = failed.length;
+    if(await send('session_notes', sessionNotes.map(sessionNoteToRow))) return true;
+    failed.length = before; // older schema: pack the form into the old `note` column instead
+    return send('session_notes', sessionNotes.map(noteRowLegacy));
+  })();
+  await send('settlements', settlements.map(settlementToRow));
+  await send('booking_requests', d.bookingRequests);
+  await send('bale_booking_requests', d.bookingRequestsBale);
+  await send('reminder_log', d.reminderLog);
+  await send('screenings', screenings.map(screeningToRow));
+  try{
+    await pushSettingsRow('settings', settings);
+    await pushSettingsRow('appUsers', appUsers);
+    await pushSettingsRow('reminderSettings', reminderSettings);
+    if(gcalClientId) await pushSettingsRow('gcalClientId', gcalClientId);
+  }catch(e){ failed.push('app_settings: '+(e.message||e)); }
+  return failed;
+}
+async function fbRestoreFile(file){
+  if(myTherapist() || !canTab('settings')){ toast('⛔ بازیابی پشتیبان کامل فقط برای مدیر (بدون محدودیت) در دسترس است'); return; }
+  let obj;
+  try{ obj = JSON.parse(await file.text()); }catch(e){ toast('فایل نامعتبر است'); return; }
+  if(obj && obj.format === FB_FORMAT+'-encrypted'){
+    const pass = prompt('این فایل رمزگذاری شده است. رمز را وارد کنید:', '');
+    if(pass===null) return;
+    try{ obj = JSON.parse(await fbDecrypt(obj, pass)); }
+    catch(e){ toast('❌ رمز اشتباه است یا فایل آسیب دیده است'); return; }
+  }
+  if(!obj || obj.format !== FB_FORMAT || !obj.data){ toast('این فایل «پشتیبان کامل» نیست (برای فایل‌های قدیمی از «وارد کردن فایل پشتیبان» استفاده کنید)'); return; }
+  const d = obj.data, c = obj.counts || {};
+  if(!confirm('پشتیبان کامل — '+(obj.createdAt||'').slice(0,10)+'\\nنوبت: '+(c.appts||0)+' | مراجع: '+(c.clients||0)+' | شرح درمان: '+(c.sessionNotes||0)+' | کاربران: '+(c.appUsers||0)+
+              '\\n\\nاین اطلاعات با اطلاعات فعلی «ادغام» می‌شود (چیزی حذف نمی‌شود؛ در صورت تفاوت، نسخهٔ فایل ارجح است). ادامه می‌دهید؟')) return;
+  const merge = (local, incoming, keyFn)=>{ const m = new Map(); (local||[]).forEach(x=>m.set(keyFn(x), x)); (incoming||[]).forEach(x=>m.set(keyFn(x), x)); return Array.from(m.values()); };
+  const before = { appts:appts.length, clients:clients.length, notes:sessionNotes.length, users:appUsers.length };
+  if(Array.isArray(d.clients)) clients = merge(clients, d.clients, x=>x.code||('p'+x.phone));
+  if(Array.isArray(d.appts)) appts = merge(appts, d.appts, x=>x.id);
+  if(Array.isArray(d.sessionNotes)) sessionNotes = merge(sessionNotes, d.sessionNotes, x=>x.id);
+  if(Array.isArray(d.settlements)) settlements = merge(settlements, d.settlements, x=>x.id);
+  if(Array.isArray(d.bookingRequests)) bookingRequests = merge(bookingRequests, d.bookingRequests, x=>x.id).filter(x=>x.status==='pending');
+  if(Array.isArray(d.bookingRequestsBale)) bookingRequestsBale = merge(bookingRequestsBale, d.bookingRequestsBale, x=>x.id).filter(x=>x.status==='pending');
+  if(Array.isArray(d.screenings)) screenings = merge(screenings, d.screenings, x=>x.id).sort((a,b)=>String(b.created).localeCompare(String(a.created)));
+  if(Array.isArray(d.reminderLog)) reminderLog = merge(reminderLog, d.reminderLog, x=>x.id||(x.created_at+'|'+x.appt_id+'|'+x.channel)).sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||''))).slice(0,100);
+  if(d.settings && typeof d.settings==='object'){
+    settings = Object.assign({}, settings, d.settings, {
+      therapists: (d.settings.therapists && d.settings.therapists.length) ? d.settings.therapists : settings.therapists,
+      clinics: (d.settings.clinics && d.settings.clinics.length) ? d.settings.clinics : settings.clinics });
+  }
+  if(Array.isArray(d.appUsers)) appUsers = merge(appUsers, d.appUsers, u=>u.username);
+  normalizeUsers();
+  if(d.reminderSettings && typeof d.reminderSettings==='object') reminderSettings = Object.assign({}, reminderSettings, d.reminderSettings);
+  if(d.gcalClientId) gcalClientId = d.gcalClientId;
+  migrateClinicsShape();
+  LS.set('clients',clients); LS.set('appts',appts); LS.set('sessionNotes',sessionNotes); LS.set('settlements',settlements);
+  LS.set('bookingRequests',bookingRequests); LS.set('bookingRequestsBale',bookingRequestsBale); LS.set('reminderLog',reminderLog); LS.set('screenings',screenings);
+  LS.set('settings',settings); LS.set('appUsers',appUsers); LS.set('reminderSettings',reminderSettings); LS.set('gcalClientId',gcalClientId);
+  if(d.appTheme) applyTheme(d.appTheme);
+  renderAll(); fillTreatmentClientSelect(); fillClinicSelects();
+  fillClinicSettingInputs(); fillTherapistSettingInputs(); loadSettingsToUI(); renderUsersList();
+  if(typeof renderReminderLog==='function') renderReminderLog();
+  if(typeof renderSettlementSummary==='function') renderSettlementSummary();
+  renderScreenings(); updateScreeningBadge();
+  applyRolePermissions();
+  const failed = await fbPushAll(d);
+  alert('✅ بازیابی پشتیبان کامل انجام شد (ادغام)\\n\\nنوبت: +'+(appts.length-before.appts)+' | مراجع: +'+(clients.length-before.clients)+' | شرح درمان: +'+(sessionNotes.length-before.notes)+' | کاربر: +'+(appUsers.length-before.users)+
+        (supa ? (failed.length ? '\\n\\n⚠️ ارسال به Supabase کامل نشد:\\n'+failed.join('\\n') : '\\n\\n☁️ همه چیز در Supabase هم ذخیره شد.') : '\\n\\nℹ️ به Supabase متصل نیستید؛ اطلاعات فقط روی همین دستگاه ذخیره شد.'));
+}
+document.getElementById('importFullFile').addEventListener('change', async (e)=>{
+  const f = e.target.files[0]; e.target.value = '';
+  if(f) await fbRestoreFile(f);
+});
+
+
 /* ================= TABS NAV ================= */
 document.querySelectorAll('nav.tabbar button').forEach(btn=>{
   btn.addEventListener('click', ()=>{
+    if(currentUser && !canTab(btn.dataset.t)){ toast('⛔ شما به این بخش دسترسی ندارید'); return; }
     document.querySelectorAll('nav.tabbar button').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('section.tab').forEach(s=>s.classList.remove('active'));
     btn.classList.add('active');
@@ -3357,7 +4951,7 @@ document.querySelectorAll('nav.tabbar button').forEach(btn=>{
 function renderHeader(){
   const t = todayStr();
   document.getElementById('todayFa').textContent = formatFaDate(t)+' - '+weekdayName(t);
-  const count = appts.filter(a=>a.date===t).length;
+  const count = scopedAppts().filter(a=>a.date===t).length;
   document.getElementById('todayCount').textContent = faDigits(count)+' نوبت امروز';
 }
 
@@ -3383,6 +4977,7 @@ function renderAll(){
   renderRecordCounter();
 }
 fillClinicSettingInputs();
+fillTherapistSettingInputs();
 loadSettingsToUI();
 renderUsersList();
 document.getElementById('fDate').value = todayStr();
@@ -3392,6 +4987,8 @@ if(gcalClientId){
   document.getElementById('gcalStatus').textContent = 'Client ID ذخیره شده — برای اتصال دوباره دکمه بالا را بزنید (نیاز به تأیید هویت گوگل در هر جلسه مرورگر).';
   setupTokenClient();
 }
+initNoteFormStatic();
+scrRenderDefsLine();
 initSupabase();
 if(currentUser){
   document.body.classList.remove('locked');
