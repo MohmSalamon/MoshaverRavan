@@ -126,7 +126,9 @@ nav.tabbar button{
   display:flex; flex-direction:column; align-items:center; gap:3px;
 }
 nav.tabbar button .ic{font-size:19px;}
-nav.tabbar button.active{color:var(--teal);font-weight:700;}
+nav.tabbar{padding:5px 6px 0;gap:4px;}
+nav.tabbar button{border-radius:14px 14px 0 0;transition:background .15s ease,color .15s ease;}
+nav.tabbar button.active{background:var(--teal);color:#fff;font-weight:700;box-shadow:inset 0 -3px 0 rgba(255,255,255,.6);}
 
 main{padding:14px 14px 10px;max-width:520px;margin:0 auto;}
 section.tab{display:none;animation:fadein .18s ease;}
@@ -468,6 +470,7 @@ body.locked #loginOverlay{display:flex;}
       <label>شماره موبایل</label>
       <input type="tel" id="fPhone" placeholder="09xxxxxxxxx" maxlength="11">
       <div id="codeBox" style="display:none" class="code-chip">🆔 <span id="codeText"></span></div>
+      <button type="button" id="fScrBtn" class="btn ghost small" style="display:none;margin-top:8px" onmousedown="event.preventDefault()" onclick="openFormScreenings()">🧠 نتایج پرسشنامه‌های این مراجع <span id="fScrCount"></span></button>
       <input type="hidden" id="fSelectedCode">
       <div id="phoneFamilyPicker" class="suggestions-list"></div>
 
@@ -532,6 +535,7 @@ body.locked #loginOverlay{display:flex;}
       <button data-lg="requestsBale" onclick="switchListGroup('requestsBale')">📥 درخواست از بله <span id="bookingReqBaleBadge" style="display:none"></span></button>
       <button data-lg="notes" onclick="switchListGroup('notes')">🩺 شرح درمان</button>
       <button data-lg="screenings" onclick="switchListGroup('screenings')">🧠 ارزیابی‌ها <span id="scrBadge" style="display:none"></span></button>
+      <button data-lg="clients" onclick="switchListGroup('clients')">🗂 مراجعین</button>
     </div>
 
     <div id="listGroupRequests" style="display:none">
@@ -550,11 +554,28 @@ body.locked #loginOverlay{display:flex;}
     </div>
     </div>
 
+    <div id="listGroupClients" style="display:none">
+    <div class="card">
+      <h2>🗂 مراجعین و حذف کامل اطلاعات</h2>
+      <p class="hint">همهٔ افراد ثبت‌شده در برنامه، حتی کسانی که فقط نوبت، شرح درمان، ارزیابی یا درخواست ربات دارند. «حذف کامل» تمام اطلاعات یک مراجع را از برنامه و از Supabase پاک می‌کند: پرونده، نوبت‌ها، شرح درمان، ارزیابی‌ها، درخواست‌های ربات‌ها و گزارش پیام‌ها. این کار برگشت‌پذیر نیست (می‌توانید قبل از حذف یک فایل پشتیبان از همان اطلاعات بگیرید). مناسب پاک‌کردن اطلاعات آزمایشی.</p>
+      <div class="row2">
+        <input type="text" id="clSearch" placeholder="🔍 نام، موبایل یا کد" oninput="renderPeople()">
+        <select id="clFilter" onchange="renderPeople()"><option value="all">همه</option><option value="nofile">بدون پروندهٔ مراجع</option><option value="noappt">بدون هیچ نوبت</option><option value="hasscr">دارای ارزیابی</option></select>
+      </div>
+      <div id="clBulkBar" class="tn-meta" style="margin:8px 0"></div>
+      <div id="clList"></div>
+    </div>
+    </div>
+
     <div id="listGroupScreenings" style="display:none">
     <div class="card">
       <h2>🧠 ارزیابی و پایش سلامت روان</h2>
       <p class="hint">نتیجهٔ پرسشنامه‌هایی که مراجعین در ربات‌های تلگرام و بله تکمیل می‌کنند (از منوی «ارزیابی و پایش سلامت روان» یا با دستور مستقیم مثل /GAD) اینجا می‌آید. «ثبت در پرونده» نتیجه را به پروندهٔ مراجع وصل می‌کند و در گزارش درمان و فرم شرح درمان قابل‌استفاده است. اینها نتیجهٔ غربالگری‌اند و تشخیص نیستند.</p>
       <p class="hint" id="scrDefsLine"></p>
+      <div class="tn-meta" style="margin:8px 0">
+        <div id="scrStatusLine" style="font-size:12.5px;line-height:1.9"></div>
+        <button type="button" class="btn ghost small" style="width:auto;margin:6px 0 0" onclick="pullScreenings(true)">🔄 بروزرسانی و بررسی اتصال</button>
+      </div>
       <div class="row2">
         <select id="scrFilter" onchange="renderScreenings()"><option value="new">🆕 جدید</option><option value="urgent">🚨 اولویت بالا</option><option value="filed">✅ ثبت‌شده در پرونده</option><option value="all">همه</option></select>
         <input type="text" id="scrSearch" placeholder="🔍 نام یا موبایل" oninput="renderScreenings()">
@@ -968,6 +989,28 @@ body.locked #loginOverlay{display:flex;}
   </div>
 </div>
 
+<div id="purgeOverlay" class="modal-overlay">
+  <div class="modal-sheet">
+    <h2 style="margin:0 0 8px;color:var(--danger)">🗑 حذف کامل اطلاعات</h2>
+    <div id="purgeSummary"></div>
+    <p class="hint" style="color:#b3402a">⚠️ این اطلاعات از برنامه و از Supabase (و از روی دستگاه‌های دیگر) برای همیشه پاک می‌شود. رویدادهای Google Calendar حذف نمی‌شوند.</p>
+    <label class="tn-chk"><input type="checkbox" id="purgeBackup" checked> قبل از حذف، یک فایل پشتیبان از همین اطلاعات ذخیره شود (قابل بازیابی با «بازیابی پشتیبان کامل»)</label>
+    <label>برای تأیید، کلمهٔ «حذف» را تایپ کنید</label>
+    <input type="text" id="purgeConfirm" autocomplete="off" oninput="purgeConfirmChanged()" placeholder="حذف">
+    <button class="btn" id="purgeGo" style="background:var(--danger)" disabled onclick="runPurge()">🗑 حذف کامل برای همیشه</button>
+    <button class="btn ghost" onclick="closePurgeModal()">انصراف</button>
+  </div>
+</div>
+
+<div id="scrPersonOverlay" class="modal-overlay">
+  <div class="modal-sheet">
+    <h2 style="margin:0 0 4px">🧠 نتایج پرسشنامه‌ها</h2>
+    <p class="hint" id="spLabel" style="margin-top:0"></p>
+    <div id="spList"></div>
+    <button class="btn ghost" onclick="closePersonScreenings()">بستن</button>
+  </div>
+</div>
+
 <div id="clientHistoryOverlay" class="modal-overlay">
   <div class="modal-sheet">
     <h2 style="margin:0 0 4px">📜 سابقهٔ درمان</h2>
@@ -1211,6 +1254,7 @@ function applyRolePermissions(){
   const clin = canClinical();
   const notesBtn = document.querySelector('[data-lg="notes"]'); if(notesBtn) notesBtn.style.display = clin ? '' : 'none';
   const scrBtn = document.querySelector('[data-lg="screenings"]'); if(scrBtn) scrBtn.style.display = clin ? '' : 'none';
+  const clBtn = document.querySelector('[data-lg="clients"]'); if(clBtn) clBtn.style.display = canPurge() ? '' : 'none';
   if(typeof updateScreeningBadge==='function') updateScreeningBadge();
   const trBtn = document.querySelector('[data-rg="treatment"]'); if(trBtn) trBtn.style.display = clin ? '' : 'none';
   // a user linked to a therapist: hide the therapist filters (they only ever see their own) and the clinic-settlement card
@@ -2601,6 +2645,7 @@ function editAppt(id){
   document.getElementById('saveBtn').textContent = 'بروزرسانی نوبت';
   document.getElementById('cancelEditBtn').style.display='block';
   renderTherapistBusy();
+  updateFormScreeningsBtn();
   document.querySelector('nav.tabbar button[data-t="new"]').click();
   window.scrollTo({top:0,behavior:'smooth'});
   toast('در حال ویرایش نوبت — اطلاعات را تغییر دهید و «بروزرسانی نوبت» را بزنید');
@@ -2613,6 +2658,7 @@ function cancelEdit(){
   document.getElementById('cancelEditBtn').style.display='none';
   document.getElementById('conflictWarn').classList.remove('show');
   document.getElementById('outsideWarn').classList.remove('show');
+  updateFormScreeningsBtn();
 }
 
 document.getElementById('saveBtn').addEventListener('click', async ()=>{
@@ -3186,7 +3232,8 @@ function switchSettingsGroup(which){
 }
 function switchListGroup(which){
   if((which==='notes' || which==='screenings') && !canClinical()){ toast('⛔ شما به این بخش دسترسی ندارید'); which = 'confirmed'; }
-  const groups = {confirmed:'listGroupConfirmed', requests:'listGroupRequests', requestsBale:'listGroupRequestsBale', notes:'listGroupNotes', screenings:'listGroupScreenings'};
+  if(which==='clients' && !canPurge()){ toast('⛔ این بخش فقط برای مدیر (بدون محدودیت) است'); which = 'confirmed'; }
+  const groups = {confirmed:'listGroupConfirmed', requests:'listGroupRequests', requestsBale:'listGroupRequestsBale', notes:'listGroupNotes', screenings:'listGroupScreenings', clients:'listGroupClients'};
   Object.keys(groups).forEach(key=>{
     const el = document.getElementById(groups[key]);
     const btn = document.querySelector('[data-lg="'+key+'"]');
@@ -3197,6 +3244,7 @@ function switchListGroup(which){
   else if(which==='requestsBale') renderBookingRequestsBale();
   else if(which==='notes') renderNoteList();
   else if(which==='screenings') renderScreenings();
+  else if(which==='clients') renderPeople();
   else renderList();
 }
 function switchReportGroup(which){
@@ -4517,13 +4565,16 @@ async function pushScreeningToSupabase(s){
   if(error) toast('❌ ذخیرهٔ آنلاین ارزیابی ناموفق بود: '+error.message);
 }
 async function deleteScreeningFromSupabase(id){ if(supa) await supa.from('screenings').delete().eq('id', id); }
-async function pullScreenings(){
-  if(!supa) return;
+async function pullScreenings(manual){
+  if(!supa){ SCR_STATUS = { ok:false, at:new Date(), count:screenings.length, error:'NOSUPA' }; renderScrStatus(); if(manual) toast('به Supabase وصل نیستید'); return; }
   let data = null;
-  try{ data = await fbFetchAll('screenings', ['id']); }catch(e){ return; } // table not created yet → nothing to show
+  try{ data = await fbFetchAll('screenings', ['id']); }
+  catch(e){ SCR_STATUS = { ok:false, at:new Date(), count:screenings.length, error:String(e.message||e) }; renderScrStatus(); if(manual) toast('❌ '+scrExplainError(SCR_STATUS.error).slice(0,90)); return; }
   screenings = data.map(rowToScreening).sort((a,b)=>String(b.created).localeCompare(String(a.created)));
   LS.set('screenings', screenings);
-  renderScreenings(); updateScreeningBadge();
+  SCR_STATUS = { ok:true, at:new Date(), count:screenings.length, error:'' };
+  renderScrStatus(); renderScreenings(); updateScreeningBadge();
+  if(manual) toast('✅ '+faDigits(screenings.length)+' نتیجه در دیتابیس');
 }
 function subscribeScreenings(){
   if(!supa) return;
@@ -4598,6 +4649,7 @@ function scrGroups(list){
   return groups;
 }
 function renderScreenings(){
+  renderPersonScreenings();                       // keep the per-client popup in sync when it is open
   const wrap = document.getElementById('scrList'); if(!wrap) return;
   if(!canClinical()){ wrap.innerHTML = ''; return; }
   const q = (document.getElementById('scrSearch').value||'').trim();
@@ -4610,7 +4662,9 @@ function renderScreenings(){
   const groups = scrGroups(list);
   if(!groups.length){ wrap.innerHTML = '<div class="empty">ارزیابی‌ای یافت نشد</div>'; return; }
   const mine = scopedClients().filter(c=>c.name);
-  wrap.innerHTML = groups.slice(0,80).map(g=>{
+  wrap.innerHTML = groups.slice(0,80).map(g=>scrCardHtml(g, mine)).join('');
+}
+function scrCardHtml(g, mine){
     const ids = g.items.map(s=>s.id).join(',');
     const urgent = g.items.some(s=>s.urgent);
     const filed = g.items.every(s=>s.status==='filed');
@@ -4643,7 +4697,6 @@ function renderScreenings(){
         <button class="danger" onclick="deleteScreenings('${ids}')">🗑 حذف</button>
       </div>
     </div>`;
-  }).join('');
 }
 function scrByIds(idsStr){ const ids = String(idsStr).split(','); return screenings.filter(s=>ids.includes(s.id)); }
 function scrCommit(items){ LS.set('screenings', screenings); items.forEach(pushScreeningToSupabase); renderScreenings(); updateScreeningBadge(); }
@@ -4683,7 +4736,7 @@ function deleteScreenings(idsStr){
 /* ---- inside the session-note editor: show what the client sent and let the therapist copy it into this session ---- */
 function renderScreeningBox(a){
   const box = document.getElementById('tnScreenBox'); if(!box) return;
-  const list = a && a.code ? screeningsOfClient(a.code) : [];
+  const list = a ? screeningsOfPerson({ code:a.code||'', name:a.name, phone:a.phone }).slice().reverse() : [];   // oldest → newest, like before
   if(!list.length){ box.innerHTML = ''; return; }
   const insts = Array.from(new Set(list.map(s=>s.instrument))).sort((a,b)=>(a==='GAD7'?0:a==='PHQ9'?1:2)-(b==='GAD7'?0:b==='PHQ9'?1:2));
   const lines = insts.map(inst=>{
@@ -4694,13 +4747,13 @@ function renderScreeningBox(a){
       ${(inst==='GAD7'||inst==='PHQ9') ? `<button type="button" class="btn ghost small" style="width:auto;margin:0" onclick="useScreening('${s.id}')">📥 استفاده در این جلسه</button>` : ''}
     </div>${s.urgent ? '<div style="color:#b71c1c;font-size:12px;margin-top:2px">🚨 پاسخ سؤال ۹ (افکار آسیب به خود) مثبت بوده — در «ارزیابی خطر» بررسی و ثبت کنید.</div>' : ''}`;
   }).join('');
-  box.innerHTML = `<div class="tn-meta" style="margin-top:8px;border:1.5px dashed #8e24aa;background:#f3e5f5"><b style="color:#8e24aa">🧠 ارزیابی خودگزارشی ارسال‌شده توسط مراجع (ربات)</b>${lines}</div>`;
+  box.innerHTML = `<div class="tn-meta" style="margin-top:8px;border:1.5px dashed #8e24aa;background:#f3e5f5"><b style="color:#8e24aa">🧠 ارزیابی خودگزارشی ارسال‌شده توسط مراجع (ربات)</b>${lines}<div style="margin-top:8px"><button type="button" class="btn ghost small" style="width:auto;margin:0" onclick="openNoteScreenings()">🔎 مشاهدهٔ همهٔ نتایج و پاسخ‌ها</button></div></div>`;
 }
 function useScreening(id){
   const s = screenings.find(x=>x.id===id); if(!s) return;
   const key = s.instrument==='GAD7' ? 'gad7' : 'phq9';
-  const code = (tnCtx && tnCtx.a && tnCtx.a.code) || '';
-  const earlier = (code ? screeningsOfClient(code) : []).filter(x=>x.instrument===s.instrument && String(x.created) < String(s.created));
+  const pa = (tnCtx && tnCtx.a) || {};
+  const earlier = screeningsOfPerson({ code:pa.code||'', name:pa.name, phone:pa.phone }).slice().reverse().filter(x=>x.instrument===s.instrument && String(x.created) < String(s.created));
   document.getElementById('tn_'+key+'Now').value = s.total;
   if(earlier.length && document.getElementById('tn_'+key+'Prev').value==='') document.getElementById('tn_'+key+'Prev').value = earlier[earlier.length-1].total;
   tnRefreshDerived();
@@ -4963,6 +5016,255 @@ function renderRecordCounter(){
   el.textContent = faDigits(n)+' از '+faDigits(MAX_RECORDS)+' رکورد استفاده شده';
   el.style.color = n >= MAX_RECORDS ? 'var(--danger)' : 'var(--teal-dark)';
 }
+/* ================= حذف کامل اطلاعات یک مراجع (لیست نوبت‌ها ← 🗂 مراجعین) ================= */
+const PEOPLE_SEL = new Set();
+let PEOPLE_VIEW = [];
+let PURGE_KEYS = [];
+function canPurge(){ return canTab('settings') && !myTherapist(); }       // فقط مدیرِ بدون محدودیت
+function screeningKey(s){ const c = screeningClient(s); return c ? c.code : 'NM:'+phoneKey(s.phone)+'|'+normName(s.name); }
+function reqKey(r){
+  const nm = normName(r.name), pk = phoneKey(r.phone);
+  const c = (pk && nm) ? clients.find(x=>x.code && phoneKey(x.phone)===pk && normName(x.name)===nm) : null;
+  return c ? c.code : 'NM:'+pk+'|'+nm;
+}
+function digitsOf(s){ return String(s||'').replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/\D/g,''); }
+
+/* هر «فرد» = یک پروندهٔ مراجع، یا کسی که فقط نوبت/شرح/ارزیابی/درخواست دارد (بدون پروندهٔ مراجع).
+   هویت = کد مراجع؛ در غیر این صورت «موبایل + نام» (موبایل به‌تنهایی کافی نیست) */
+function peopleIndex(){
+  const map = new Map();
+  const get = (key, name, phone)=>{
+    let p = map.get(key);
+    if(!p){ p = { key, code:/^(NM:|ID:)/.test(key) ? null : key, name:'', phone:'', hasClient:false, appts:[], notes:[], scr:[], reqs:[], last:'' }; map.set(key, p); }
+    if(name && !p.name) p.name = name;
+    if(phone && !p.phone) p.phone = phone;
+    return p;
+  };
+  const upd = (p, d)=>{ if(d && d > p.last) p.last = d; };
+  clients.forEach(c=>{ if(c.code){ const p = get(c.code, c.name, c.phone); p.hasClient = true; if(c.name) p.name = c.name; if(c.phone) p.phone = c.phone; } });
+  appts.forEach(a=>{ const p = get(apptClientKey(a), a.name, a.phone); p.appts.push(a); upd(p, a.date); });
+  sessionNotes.forEach(s=>{ const p = get(noteClientCode(s), s.clientName, s.phone); p.notes.push(s); upd(p, s.date); });
+  screenings.forEach(s=>{ const p = get(screeningKey(s), s.name, s.phone); p.scr.push(s); upd(p, scrLocalDate(s.created).date); });
+  bookingRequests.forEach(r=>{ const p = get(reqKey(r), r.name, r.phone); p.reqs.push({t:'booking_requests', r}); upd(p, r.date); });
+  bookingRequestsBale.forEach(r=>{ const p = get(reqKey(r), r.name, r.phone); p.reqs.push({t:'bale_booking_requests', r}); upd(p, r.date); });
+  return Array.from(map.values());
+}
+function renderPeople(){
+  const wrap = document.getElementById('clList'); if(!wrap) return;
+  if(!canPurge()){ wrap.innerHTML = '<div class="empty">⛔ این بخش فقط برای مدیر (بدون محدودیت) در دسترس است</div>'; PEOPLE_VIEW = []; renderPeopleBar(); return; }
+  const q = (document.getElementById('clSearch').value||'').trim().toLowerCase();
+  const qd = digitsOf(q), f = document.getElementById('clFilter').value;
+  let list = peopleIndex();
+  if(q) list = list.filter(p=>(p.name||'').toLowerCase().indexOf(q)>-1 || (qd.length>=3 && digitsOf(p.phone).indexOf(qd)>-1) || (p.code||'').toLowerCase().indexOf(q)>-1);
+  if(f==='nofile') list = list.filter(p=>!p.hasClient);
+  else if(f==='noappt') list = list.filter(p=>!p.appts.length);
+  else if(f==='hasscr') list = list.filter(p=>p.scr.length);
+  list.sort((a,b)=>String(b.last).localeCompare(String(a.last)) || String(a.name).localeCompare(String(b.name),'fa'));
+  PEOPLE_VIEW = list.map(p=>p.key);
+  renderPeopleBar();
+  if(!list.length){ wrap.innerHTML = '<div class="empty">موردی یافت نشد</div>'; return; }
+  wrap.innerHTML = list.slice(0,120).map(p=>{
+    const lastTxt = p.last ? formatFaDate(p.last) : '—';
+    const canScr = p.scr.length && canClinical();
+    return `<div class="appt" style="border-right:5px solid ${p.hasClient?'var(--teal)':'#e65100'}">
+      <div class="appt-top">
+        <label style="display:flex;align-items:center;gap:8px;margin:0;font-weight:700;color:inherit;cursor:pointer">
+          <input type="checkbox" data-k="${escAttr(p.key)}" ${PEOPLE_SEL.has(p.key)?'checked':''} onchange="togglePersonSel(this.dataset.k, this.checked)" style="width:20px;height:20px;flex-shrink:0">
+          <span class="appt-name">${escHtml(p.name||'— بدون نام —')}</span>
+        </label>
+        <div class="appt-time">${lastTxt}</div>
+      </div>
+      <div class="appt-meta">
+        <span>📞 ${escHtml(p.phone||'—')}</span>
+        ${p.hasClient ? `<span class="th-chip">📁 ${escHtml(p.code)}</span>` : '<span class="th-chip none">📁 بدون پروندهٔ مراجع</span>'}
+      </div>
+      <div class="appt-meta">
+        <span>📅 نوبت: ${faDigits(p.appts.length)}</span><span>🩺 شرح: ${faDigits(p.notes.length)}</span><span>🧠 ارزیابی: ${faDigits(p.scr.length)}</span><span>📥 درخواست: ${faDigits(p.reqs.length)}</span>
+      </div>
+      <div class="appt-actions">
+        ${canScr ? `<button data-c="${escAttr(p.code||'')}" data-n="${escAttr(p.name)}" data-p="${escAttr(p.phone)}" onclick="openPersonScreenings({code:this.dataset.c, name:this.dataset.n, phone:this.dataset.p})">🧠 نتایج پرسشنامه‌ها</button>` : ''}
+        <button class="danger" data-k="${escAttr(p.key)}" onclick="openPurgeModal([this.dataset.k])">🗑 حذف کامل</button>
+      </div>
+    </div>`;
+  }).join('') + (list.length>120 ? `<div class="hint" style="text-align:center">${faDigits(120)} مورد از ${faDigits(list.length)} نمایش داده شد — برای یافتن بقیه جست‌وجو کنید.</div>` : '');
+}
+function renderPeopleBar(){
+  const bar = document.getElementById('clBulkBar'); if(!bar) return;
+  const inView = PEOPLE_VIEW.filter(k=>PEOPLE_SEL.has(k)).length;
+  const total = PEOPLE_SEL.size;
+  bar.innerHTML = `<label style="display:flex;align-items:center;gap:8px;margin:0;font-weight:600;cursor:pointer"><input type="checkbox" ${PEOPLE_VIEW.length && inView===PEOPLE_VIEW.length ? 'checked':''} onchange="selectAllPeople(this.checked)" style="width:20px;height:20px"> انتخاب همهٔ نتایج (${faDigits(PEOPLE_VIEW.length)})</label>
+    <button class="btn ${total?'':'ghost'}" style="margin:8px 0 0;${total?'background:var(--danger)':''}" ${total?'':'disabled'} onclick="openPurgeModal(Array.from(PEOPLE_SEL))">🗑 حذف کامل انتخاب‌شده‌ها (${faDigits(total)})</button>`;
+}
+function togglePersonSel(key, on){ if(on) PEOPLE_SEL.add(key); else PEOPLE_SEL.delete(key); renderPeopleBar(); }
+function selectAllPeople(on){ PEOPLE_VIEW.forEach(k=>{ if(on) PEOPLE_SEL.add(k); else PEOPLE_SEL.delete(k); }); renderPeople(); }
+
+/* همهٔ رکوردهای وابسته به مراجع‌های انتخاب‌شده */
+function purgeCollect(keys){
+  const K = new Set(keys), idx = new Map(peopleIndex().map(p=>[p.key,p]));
+  const d = { people:[], clients:[], appts:[], notes:[], screenings:[], reqTg:[], reqBale:[], logs:[], pairs:[] };
+  keys.forEach(k=>{ const p = idx.get(k); if(p){ d.people.push(p); if(p.name && p.phone) d.pairs.push({name:p.name, phone:p.phone}); } });
+  clients.forEach(c=>{ if(c.code && K.has(c.code)) d.clients.push(c); });
+  appts.forEach(a=>{ if(K.has(apptClientKey(a))) d.appts.push(a); });
+  sessionNotes.forEach(s=>{ if(K.has(noteClientCode(s))) d.notes.push(s); });
+  screenings.forEach(s=>{ if(K.has(screeningKey(s))) d.screenings.push(s); });
+  bookingRequests.forEach(r=>{ if(K.has(reqKey(r))) d.reqTg.push(r); });
+  bookingRequestsBale.forEach(r=>{ if(K.has(reqKey(r))) d.reqBale.push(r); });
+  const ids = new Set(d.appts.map(a=>a.id));
+  reminderLog.forEach(e=>{ if(ids.has(e.appt_id)) d.logs.push(e); });
+  return d;
+}
+function openPurgeModal(keys){
+  if(!canPurge()){ toast('⛔ حذف کامل فقط برای مدیر (بدون محدودیت) در دسترس است'); return; }
+  keys = (keys||[]).filter(Boolean);
+  if(!keys.length){ toast('مراجعی انتخاب نشده است'); return; }
+  PURGE_KEYS = keys;
+  const d = purgeCollect(keys);
+  const names = d.people.slice(0,8).map(p=>`<li><b>${escHtml(p.name||'— بدون نام —')}</b> <span style="color:#6d7977">(${escHtml(p.phone||'—')})</span> — نوبت ${faDigits(p.appts.length)}، شرح ${faDigits(p.notes.length)}، ارزیابی ${faDigits(p.scr.length)}، درخواست ${faDigits(p.reqs.length)}</li>`).join('');
+  document.getElementById('purgeSummary').innerHTML =
+    `<div style="font-weight:700;margin-bottom:6px">${faDigits(d.people.length)} مراجع انتخاب شده است:</div><ul style="margin:0 0 10px;padding-inline-start:18px;line-height:1.9;font-size:13px">${names}${d.people.length>8?`<li>و ${faDigits(d.people.length-8)} نفر دیگر …</li>`:''}</ul>
+     <div class="tn-meta">برای همیشه حذف می‌شود: <b>${faDigits(d.clients.length)}</b> پروندهٔ مراجع · <b>${faDigits(d.appts.length)}</b> نوبت · <b>${faDigits(d.notes.length)}</b> شرح درمان · <b>${faDigits(d.screenings.length)}</b> ارزیابی · <b>${faDigits(d.reqTg.length+d.reqBale.length)}</b> درخواست ربات · <b>${faDigits(d.logs.length)}</b> ردیف گزارش پیام</div>`;
+  document.getElementById('purgeConfirm').value = '';
+  document.getElementById('purgeBackup').checked = true;
+  document.getElementById('purgeGo').disabled = true;
+  document.getElementById('purgeOverlay').classList.add('show');
+}
+function closePurgeModal(){ document.getElementById('purgeOverlay').classList.remove('show'); }
+function purgeConfirmChanged(){ document.getElementById('purgeGo').disabled = (document.getElementById('purgeConfirm').value.trim() !== 'حذف'); }
+
+async function cloudDeleteIn(table, col, ids){
+  if(!ids.length) return '';
+  for(let i=0;i<ids.length;i+=100){
+    const part = ids.slice(i,i+100);
+    const { error } = await supa.from(table).delete().in(col, part);
+    if(error) return error.message || String(error);
+    // Supabase reports success even when a policy silently blocks the delete → read back to be sure
+    const chk = await supa.from(table).select(col).in(col, part);
+    if(!chk.error && chk.data && chk.data.length) return faDigits(chk.data.length)+' ردیف در Supabase حذف نشد (اجازهٔ حذف روی این جدول بسته است؟)';
+  }
+  return '';
+}
+function purgeBackupText(d){
+  return JSON.stringify({ format:FB_FORMAT, version:1, createdAt:new Date().toISOString(), source:'purge-backup',
+    note:'نسخهٔ پشتیبان اطلاعاتی که حذف شد — با «بازیابی پشتیبان کامل (ادغام)» قابل برگشت است',
+    counts:{ clients:d.clients.length, appts:d.appts.length, sessionNotes:d.notes.length, screenings:d.screenings.length },
+    data:{ clients:d.clients, appts:d.appts, sessionNotes:d.notes, screenings:d.screenings, settlements:[], bookingRequests:d.reqTg, bookingRequestsBale:d.reqBale, reminderLog:d.logs } });
+}
+async function runPurge(){
+  if(!canPurge()) return;
+  if(document.getElementById('purgeConfirm').value.trim() !== 'حذف'){ toast('برای تأیید، کلمهٔ «حذف» را تایپ کنید'); return; }
+  const d = purgeCollect(PURGE_KEYS);
+  const btn = document.getElementById('purgeGo'); btn.disabled = true;
+  if(document.getElementById('purgeBackup').checked){ try{ fbDownload(purgeBackupText(d), 'clinic-DELETED-records-'+todayStr()+'.json'); }catch(e){ console.error(e); } }
+  toast('⏳ در حال حذف…');
+  const ids = { appts:d.appts.map(x=>x.id), notes:d.notes.map(x=>x.id), scr:d.screenings.map(x=>x.id), tg:d.reqTg.map(x=>x.id), bale:d.reqBale.map(x=>x.id), codes:d.clients.map(x=>x.code) };
+  const fail = {};                       // table → error text (a table is "ok" when missing from this object)
+  if(supa){
+    const run = async (name, fn)=>{ try{ const e = await fn(); if(e) fail[name] = e; }catch(e){ fail[name] = e.message||String(e); } };
+    await run('reminder_log',  ()=>cloudDeleteIn('reminder_log','appt_id', ids.appts));
+    await run('session_notes', ()=>cloudDeleteIn('session_notes','id', ids.notes));
+    await run('screenings',    ()=>cloudDeleteIn('screenings','id', ids.scr));
+    await run('booking_requests',      async()=>{ let e = await cloudDeleteIn('booking_requests','id', ids.tg); for(const p of d.pairs){ await supa.from('booking_requests').delete().eq('name',p.name).eq('phone',p.phone); } return e; });
+    await run('bale_booking_requests', async()=>{ let e = await cloudDeleteIn('bale_booking_requests','id', ids.bale); for(const p of d.pairs){ await supa.from('bale_booking_requests').delete().eq('name',p.name).eq('phone',p.phone); } return e; });
+    await run('appointments',  ()=>cloudDeleteIn('appointments','id', ids.appts));
+    await run('clients',       ()=>cloudDeleteIn('clients','code', ids.codes));
+  }
+  // local copies: removed only where the cloud deletion succeeded (or there is no cloud)
+  if(!fail.appointments){ const s = new Set(ids.appts); appts = appts.filter(a=>!s.has(a.id)); LS.set('appts', appts); }
+  if(!fail.reminder_log){ const s = new Set(ids.appts); reminderLog = reminderLog.filter(e=>!s.has(e.appt_id)); LS.set('reminderLog', reminderLog); }
+  if(!fail.session_notes){ const s = new Set(ids.notes); sessionNotes = sessionNotes.filter(n=>!s.has(n.id)); LS.set('sessionNotes', sessionNotes); }
+  if(!fail.screenings){ const s = new Set(ids.scr); screenings = screenings.filter(x=>!s.has(x.id)); LS.set('screenings', screenings); }
+  if(!fail.booking_requests){ const s = new Set(ids.tg); bookingRequests = bookingRequests.filter(r=>!s.has(r.id)); LS.set('bookingRequests', bookingRequests); }
+  if(!fail.bale_booking_requests){ const s = new Set(ids.bale); bookingRequestsBale = bookingRequestsBale.filter(r=>!s.has(r.id)); LS.set('bookingRequestsBale', bookingRequestsBale); }
+  if(!fail.clients){ const s = new Set(ids.codes); clients = clients.filter(c=>!s.has(c.code)); LS.set('clients', clients); }
+  PURGE_KEYS.forEach(k=>PEOPLE_SEL.delete(k));
+  closePurgeModal();
+  renderAll(); renderPeople(); renderScreenings(); updateScreeningBadge(); fillTreatmentClientSelect();
+  const n = d.people.length;
+  if(Object.keys(fail).length){
+    alert('⚠️ حذف از Supabase برای این بخش‌ها کامل نشد (همان‌ها در برنامه هم باقی ماندند):\n\n'+Object.entries(fail).map(([t,e])=>'• '+t+': '+e).join('\n')+'\n\nبقیه بخش‌ها حذف شدند. اگر پیام دربارهٔ «اجازهٔ حذف» است، در Supabase برای آن جدول policy حذف (DELETE) بسازید و دوباره تلاش کنید.');
+  } else {
+    toast('✅ اطلاعات '+faDigits(n)+' مراجع برای همیشه حذف شد'+(supa?' (برنامه + Supabase)':' (فقط همین دستگاه — به Supabase وصل نیستید)'));
+    if(d.appts.some(a=>a.gcalEventId)) setTimeout(()=>toast('ℹ️ رویدادهای Google Calendar این نوبت‌ها حذف نمی‌شوند؛ در خود تقویم پاک کنید'), 2500);
+  }
+}
+
+/* ================= نتایج پرسشنامه‌های یک مراجع (از فرم ثبت/ویرایش نوبت، فرم شرح درمان یا لیست مراجعین) ================= */
+let SP_CTX = null;
+function screeningsOfPerson(ctx){
+  if(!ctx) return [];
+  const pk = phoneKey(ctx.phone), nm = normName(ctx.name);
+  let code = ctx.code || '';
+  if(!code && pk && nm){ const c = clients.find(x=>x.code && phoneKey(x.phone)===pk && normName(x.name)===nm); if(c) code = c.code; }
+  if(!code && !nm) return [];
+  const key = code || ('NM:'+pk+'|'+nm);
+  return scopedScreenings().filter(s=>screeningKey(s)===key).sort((a,b)=>String(b.created).localeCompare(String(a.created)));
+}
+function openPersonScreenings(ctx){
+  if(!canClinical()){ toast('⛔ شما به نتایج پرسشنامه‌ها دسترسی ندارید'); return; }
+  SP_CTX = ctx || null;
+  document.getElementById('spLabel').textContent = SP_CTX ? ((SP_CTX.name||'—')+(SP_CTX.phone?' — '+SP_CTX.phone:'')) : '';
+  document.getElementById('scrPersonOverlay').classList.add('show');
+  renderPersonScreenings();
+}
+function closePersonScreenings(){ document.getElementById('scrPersonOverlay').classList.remove('show'); SP_CTX = null; }
+function renderPersonScreenings(){
+  const ov = document.getElementById('scrPersonOverlay'); if(!ov || !ov.classList.contains('show')) return;
+  const list = screeningsOfPerson(SP_CTX);
+  const wrap = document.getElementById('spList');
+  if(!list.length){ wrap.innerHTML = '<div class="empty">برای این مراجع هنوز نتیجهٔ پرسشنامه‌ای دریافت نشده است.<br><span class="hint">(جست‌وجو بر اساس پروندهٔ مراجع، یا «نام + موبایل» با هم)</span></div>'; return; }
+  const mine = scopedClients().filter(c=>c.name);
+  wrap.innerHTML = scrGroups(list).map(g=>scrCardHtml(g, mine)).join('');
+}
+/* who is currently typed in the form? the selected/edited client's code is used only while name + phone still match that client */
+function formPersonCtx(){
+  const name = document.getElementById('fName').value, phone = document.getElementById('fPhone').value;
+  const ea = editingId ? (appts.find(a=>a.id===editingId)||null) : null;
+  let code = document.getElementById('fSelectedCode').value || (ea ? (ea.code||'') : '');
+  if(code){
+    const src = clients.find(x=>x.code===code) || (ea && ea.code===code ? ea : null);
+    if(src && (phoneKey(src.phone)!==phoneKey(phone) || (normName(name) && normName(src.name)!==normName(name)))) code = '';
+  }
+  return { code, name, phone };
+}
+function openFormScreenings(){ openPersonScreenings(formPersonCtx()); }
+function openNoteScreenings(){
+  const a = tnCtx && tnCtx.a; if(!a) return;
+  openPersonScreenings({ code:a.code||'', name:a.name, phone:a.phone });
+}
+function updateFormScreeningsBtn(){
+  const btn = document.getElementById('fScrBtn'); if(!btn) return;
+  if(!canClinical()){ btn.style.display = 'none'; return; }
+  const ctx = formPersonCtx();
+  if(!ctx.code && !(normName(ctx.name) && phoneKey(ctx.phone))){ btn.style.display = 'none'; return; }
+  btn.style.display = '';
+  document.getElementById('fScrCount').textContent = '('+faDigits(screeningsOfPerson(ctx).length)+')';
+}
+(function(){
+  let t = null;
+  const go = ()=>{ clearTimeout(t); t = setTimeout(updateFormScreeningsBtn, 160); };
+  const tab = document.getElementById('tab-new');
+  if(tab){ ['input','change','click'].forEach(ev=>tab.addEventListener(ev, go)); }
+})();
+
+/* ================= وضعیت دریافت ارزیابی‌ها از دیتابیس (برای اینکه معلوم باشد نتیجه‌ها کجا می‌روند) ================= */
+let SCR_STATUS = null;
+function scrExplainError(msg){
+  const m = String(msg||'');
+  if(m==='NOSUPA') return 'به Supabase وصل نیستید. نتیجهٔ پرسشنامه‌ها را ربات در Supabase ذخیره می‌کند و فقط از آنجا به اپ می‌رسد (تنظیمات ← اتصالات).';
+  if(/relation|does not exist|schema cache|42P01|PGRST205|404/i.test(m)) return 'جدول screenings در Supabase ساخته نشده است. فایل therapist-migration.sql را در Supabase ← SQL Editor اجرا کنید؛ بدون آن ربات نمی‌تواند نتیجه را ذخیره کند.';
+  if(/permission|policy|row-level|RLS|401|403|42501|JWT/i.test(m)) return 'دسترسی به جدول screenings بسته است (Row Level Security). بخش آخر فایل therapist-migration.sql (policy) را اجرا کنید.';
+  return m;
+}
+function renderScrStatus(){
+  const el = document.getElementById('scrStatusLine'); if(!el) return;
+  const st = SCR_STATUS;
+  if(!st){ el.innerHTML = ''; return; }
+  const hm = st.at ? st.at.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'}) : '';
+  el.innerHTML = st.ok
+    ? `☁️ در دیتابیس (جدول <span dir="ltr">screenings</span>) <b>${faDigits(st.count)}</b> نتیجه هست — آخرین بروزرسانی ${hm}${st.count===0?'<br>هنوز نتیجه‌ای ذخیره نشده: مراجع باید پرسشنامه را تا آخر (تا پیام «نتیجه») پر کند.':''}`
+    : `<span style="color:#b3402a">❌ ${escHtml(scrExplainError(st.error))}</span>`;
+}
+
 function renderAll(){
   fillClinicSelects();
   renderList();
@@ -4975,6 +5277,7 @@ function renderAll(){
   renderBookingRequestsBale();
   renderHeader();
   renderRecordCounter();
+  if(document.getElementById('listGroupClients') && document.getElementById('listGroupClients').style.display!=='none') renderPeople();
 }
 fillClinicSettingInputs();
 fillTherapistSettingInputs();
