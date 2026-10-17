@@ -23,8 +23,9 @@
   --ink:#1c2b2a;
   --paper:#f4f7f6;
   --card:#ffffff;
-  --teal:#1f4b4a;
-  --teal-dark:#123332;
+  --teal:#628180;
+  --teal-dark:#597070;
+  --tint:#e3efee; --tint-line:#d9e8e6;
   --amber:#c98a3e;
   --amber-soft:#f4e3c8;
   --line:#e1e8e6;
@@ -35,25 +36,29 @@
 }
 body.theme-navy{
   --ink:#1a2433; --paper:#f5f6f8; --card:#ffffff;
-  --teal:#1e3a5f; --teal-dark:#12253d;
+  --teal:#62758f; --teal-dark:#596677;
+  --tint:#e4eaf1; --tint-line:#d6dfe9;
   --amber:#c9a227; --amber-soft:#f0e6c8;
   --line:#e2e6ec; --danger:#b3453f; --ok:#3f7d5c;
 }
 body.theme-olive{
   --ink:#26301f; --paper:#f6f6f2; --card:#ffffff;
   --teal:#4a5d3a; --teal-dark:#333f28;
+  --tint:#e6ebdf; --tint-line:#d9e0cf;
   --amber:#c1694f; --amber-soft:#f3ddd3;
   --line:#e4e6dc; --danger:#b3453f; --ok:#3f7d5c;
 }
 body.theme-plum{
   --ink:#2a1f2c; --paper:#f7f5f7; --card:#ffffff;
   --teal:#5b3a5c; --teal-dark:#3d2640;
+  --tint:#ece3ec; --tint-line:#e0d3e0;
   --amber:#caa156; --amber-soft:#f0e2c8;
   --line:#e8e2e8; --danger:#b3453f; --ok:#3f7d5c;
 }
 body.theme-slate{
   --ink:#212b2e; --paper:#f4f6f6; --card:#ffffff;
   --teal:#37474f; --teal-dark:#22292d;
+  --tint:#e3e9eb; --tint-line:#d6dee1;
   --amber:#4d9a92; --amber-soft:#d9ede9;
   --line:#e1e6e7; --danger:#b3453f; --ok:#3f7d5c;
 }
@@ -85,17 +90,21 @@ header.app-head::after{
   width:140px;height:140px;border-radius:50%;
   background:rgba(255,255,255,.06);
 }
+/* solid white pill + dark theme-coloured text: readable and prominent on every theme (the header colour changes, the pill does not) */
 #logoutBtn{
-  display:inline-block;
-  background:rgba(255,255,255,.14);
-  color:var(--amber);
-  border:1.5px solid var(--amber);
-  border-radius:20px;
-  padding:6px 16px;
-  font-size:14px;
-  font-weight:700;
+  display:inline-flex;align-items:center;gap:7px;
+  background:#fff;
+  color:var(--teal-dark);
+  border:2px solid #fff;
+  border-radius:22px;
+  padding:7px 18px;
+  font-size:14.5px;
+  font-weight:800;
+  box-shadow:0 2px 8px rgba(0,0,0,.30);
+  cursor:pointer;
 }
-#logoutBtn:active{background:rgba(255,255,255,.26);}
+#logoutBtn::before{content:'🚪';font-size:15px;}
+#logoutBtn:active{background:var(--amber-soft);border-color:var(--amber-soft);transform:scale(.96);}
 .head-row{display:flex;justify-content:space-between;align-items:flex-start;}
 .head-title{font-size:19px;font-weight:700;letter-spacing:.2px;}
 .head-sub{font-size:12.5px;opacity:.8;margin-top:3px;}
@@ -165,7 +174,7 @@ input[type=text],input[type=tel],input[type=password],input[type=number],input[t
 input:focus,select:focus,textarea:focus{border-color:var(--teal);background:#fff;}
 textarea{resize:vertical;min-height:60px;}
 #fClinic,#fTherapist,#fDateDisplay,#fTime,#filClinic,#filTherapist,#filDateDisplay{
-  background:#e3efee;border-color:var(--teal);color:var(--teal-dark);font-weight:700;
+  background:var(--tint);border-color:var(--teal);color:var(--teal-dark);font-weight:700;
 }
 .row2{display:flex;gap:10px;}
 .row2>*{flex:1;}
@@ -223,8 +232,8 @@ textarea{resize:vertical;min-height:60px;}
   background:var(--teal);color:#fff;
 }
 .btn:active{transform:scale(.98);}
-.btn.secondary{background:#e3efee;color:var(--teal-dark);border:1.5px solid var(--teal);font-weight:700;}
-.btn.ghost{background:#d9e8e6;color:var(--teal-dark);border:1.5px solid var(--teal);font-weight:700;}
+.btn.secondary{background:var(--tint);color:var(--teal-dark);border:1.5px solid var(--teal);font-weight:700;}
+.btn.ghost{background:var(--tint-line);color:var(--teal-dark);border:1.5px solid var(--teal);font-weight:700;}
 .btn.amber{background:var(--amber);}
 .btn.viewtoggle{background:#eef0fb;color:#3d4bb0;border:1.5px solid #c7cdf0;}
 .btn.viewtoggle.active{background:#3d4bb0;color:#fff;border-color:#3d4bb0;}
@@ -264,7 +273,7 @@ textarea{resize:vertical;min-height:60px;}
 }
 .appt-meta{font-size:12px;color:#6d7977;margin-top:6px;display:flex;flex-wrap:wrap;gap:8px;}
 .appt-meta span{background:#f1f4f3;padding:2px 8px;border-radius:8px;}
-.appt-meta span.th-chip{background:#e3efee;color:var(--teal-dark);font-weight:700;}
+.appt-meta span.th-chip{background:var(--tint);color:var(--teal-dark);font-weight:700;}
 .appt-meta span.th-chip.none{background:#f1f4f3;color:#93a09e;font-weight:400;}
 details.tn-sec{border:1.5px solid var(--line);border-radius:12px;margin:10px 0;background:#fff;}
 details.tn-sec>summary{padding:11px 12px;font-weight:700;font-size:14px;cursor:pointer;color:var(--teal-dark);list-style:none;}
@@ -283,7 +292,7 @@ details.tn-sec>summary{color:var(--sc,var(--teal-dark));background:var(--st,#fff
 details.tn-sec[open]>summary{border-bottom:1.5px solid var(--sc,var(--line));border-radius:10px 10px 0 0;}
 details.tn-sec>div.tn-body>label:not(.tn-chk), details.tn-sec .row2 label:not(.tn-chk){color:var(--sc,#5c6c6a);}
 details.tn-sec input[type=checkbox], details.tn-sec input[type=radio]{accent-color:var(--sc,var(--teal));}
-details.tn-sec input:focus, details.tn-sec textarea:focus, details.tn-sec select:focus{border-color:var(--sc,var(--teal))!important;box-shadow:0 0 0 3px var(--st,#e3efee);outline:none;}
+details.tn-sec input:focus, details.tn-sec textarea:focus, details.tn-sec select:focus{border-color:var(--sc,var(--teal))!important;box-shadow:0 0 0 3px var(--st,var(--tint));outline:none;}
 details.tn-sec .tn-hw{border-color:var(--sc,var(--line));background:var(--st,#fff);}
 details.tn-sec select.sev-g{background:#e6f4ea;border-color:#66bb6a;color:#1b5e20;}
 details.tn-sec select.sev-y{background:#fffde7;border-color:#e6c200;color:#7a6200;}
@@ -317,7 +326,7 @@ table.tn-kv th{border:1px solid #c9c9c9;padding:4px 6px;font-size:11px;backgroun
 .report-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
 .report-tabs button{
   flex:1;min-width:110px;padding:9px;border-radius:9px;border:1.5px solid var(--teal);
-  background:#e3efee;color:var(--teal-dark);font-size:12.5px;font-weight:700;
+  background:var(--tint);color:var(--teal-dark);font-size:12.5px;font-weight:700;
 }
 .report-tabs button.active{background:var(--teal);border-color:var(--teal);color:#fff;}
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
@@ -355,7 +364,7 @@ table.rep td{padding:7px;border-bottom:1px solid var(--line);text-align:center;}
 .jp-sheet{background:#fff;border-radius:18px 18px 0 0;padding:16px 16px 20px;width:100%;max-width:440px;box-shadow:0 -6px 24px rgba(0,0,0,.2);}
 .jp-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px;}
 .jp-head select{padding:7px 8px;border-radius:8px;border:1.5px solid var(--line);font-size:13px;background:#fbfcfc;flex:1;}
-.jp-nav{border:none;background:#d9e8e6;color:var(--teal-dark);border-radius:9px;width:38px;height:38px;font-size:15px;font-weight:700;flex-shrink:0;}
+.jp-nav{border:none;background:var(--tint-line);color:var(--teal-dark);border-radius:9px;width:38px;height:38px;font-size:15px;font-weight:700;flex-shrink:0;}
 .jp-week{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:11px;color:#8a9694;margin-bottom:6px;}
 .jp-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
 .jp-day{padding:9px 0;border:none;border-radius:9px;font-size:13.5px;background:#f7f9f8;color:var(--ink);}
@@ -381,6 +390,9 @@ body.locked #loginOverlay{display:flex;}
 .login-card{background:#fff;border-radius:18px;padding:26px 22px;width:100%;max-width:360px;box-shadow:0 10px 30px rgba(0,0,0,.3);}
 .login-card h1{font-size:17px;color:var(--teal-dark);margin:0 0 4px;text-align:center;}
 .login-card p{font-size:12.5px;color:#7d8987;text-align:center;margin:0 0 18px;}
+.login-actions{display:flex;gap:10px;margin-top:14px;}
+.login-actions .btn{margin-top:0;flex:1;padding:12px 8px;}
+.login-actions .btn:first-child{flex:1.5;}
 .login-error{color:var(--danger);font-size:12.5px;text-align:center;margin-top:10px;display:none;}
 .login-error.show{display:block;}
 
@@ -409,7 +421,16 @@ body.locked #loginOverlay{display:flex;}
   border:2px solid transparent;border-radius:12px;padding:6px 4px 8px;
   background:#fbfcfc;cursor:pointer;text-align:center;
 }
-.theme-swatch.active{border-color:var(--teal);}
+.theme-swatch{position:relative;transition:transform .12s ease,box-shadow .12s ease,background .12s ease;}
+.theme-swatch:active{transform:scale(.94);}
+.theme-swatch.active{border-color:var(--teal);background:var(--tint);box-shadow:0 2px 8px rgba(0,0,0,.14);}
+.theme-swatch.active::after{content:'✓';position:absolute;top:-8px;left:-6px;width:20px;height:20px;border-radius:50%;background:var(--teal);color:#fff;font-size:12px;line-height:20px;text-align:center;font-weight:700;}
+.theme-preview{margin-top:12px;border:1.5px solid var(--tint-line);border-radius:14px;overflow:hidden;background:var(--card);}
+.theme-preview .tp-head{background:linear-gradient(135deg,var(--teal) 0%,var(--teal-dark) 100%);color:#fff;padding:12px 14px;font-weight:700;font-size:14px;display:flex;justify-content:space-between;align-items:center;}
+.theme-preview .tp-body{padding:12px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--paper);}
+.theme-preview .tp-btn{background:var(--teal);color:#fff;border-radius:10px;padding:7px 14px;font-size:13px;font-weight:700;}
+.theme-preview .tp-chip{background:var(--tint);color:var(--teal-dark);border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;}
+.theme-preview .tp-acc{background:var(--amber-soft);color:var(--ink);border-radius:8px;padding:5px 10px;font-size:12px;}
 .theme-swatch .dots{display:flex;justify-content:center;gap:3px;margin-bottom:5px;}
 .theme-swatch .dot{width:16px;height:16px;border-radius:50%;}
 .theme-swatch .lbl{font-size:10.5px;color:#5c6c6a;}
@@ -428,8 +449,12 @@ body.locked #loginOverlay{display:flex;}
     <input type="text" id="loginUser" placeholder="نام کاربری" autocomplete="username">
     <label>رمز عبور</label>
     <input type="password" id="loginPass" placeholder="رمز عبور" autocomplete="current-password">
-    <button class="btn" onclick="tryLogin()">ورود</button>
+    <div class="login-actions">
+      <button class="btn" onclick="tryLogin()">ورود</button>
+      <button type="button" class="btn ghost" id="loginCancelBtn" onclick="cancelLogin()">انصراف</button>
+    </div>
     <div class="login-error" id="loginError">نام کاربری یا رمز عبور اشتباه است</div>
+    <div class="hint" id="loginMsg" style="display:none;text-align:center;margin-top:10px"></div>
   </div>
 </div>
 
@@ -450,7 +475,7 @@ body.locked #loginOverlay{display:flex;}
 </header>
 
 <nav class="tabbar">
-  <button data-t="new" class="active"><span class="ic">➕</span>نوبت جدید</button>
+  <button data-t="new" class="active"><span class="ic">✍️</span>نوبت جدید</button>
   <button data-t="list"><span class="ic">📅</span>لیست نوبت‌ها</button>
   <button data-t="report"><span class="ic">📊</span>گزارشات</button>
   <button data-t="settings"><span class="ic">⚙️</span>تنظیمات</button>
@@ -816,8 +841,9 @@ body.locked #loginOverlay{display:flex;}
     <div class="card" id="usersCard">
       <h2>👥 کاربران و دسترسی</h2>
       <p class="hint">برای هر کاربر مشخص کنید کدام منوها را ببیند (نوبت جدید، لیست نوبت‌ها، گزارشات، تنظیمات) و آیا به «شرح درمان» (اطلاعات بالینی) دسترسی دارد. اگر «درمانگر مرتبط» انتخاب شود، آن کاربر فقط نوبت‌ها، مراجعین، پیام‌ها و شرح درمانِ همان درمانگر را می‌بیند و فقط برای او نوبت ثبت می‌کند. برای هر درمانگر یک حساب جدا (نام کاربری و رمز مخصوص خودش) بسازید.</p>
+      <div id="therapistAccountStatus" class="tn-meta" style="margin-bottom:12px"></div>
       <div id="usersList"></div>
-      <button class="btn ghost" onclick="addUserRow()">➕ افزودن کاربر</button>
+      <button class="btn ghost" onclick="addUserRow()">✍️ افزودن کاربر</button>
       <button class="btn ghost" onclick="createTherapistAccounts()">👨‍⚕️ ساخت حساب برای درمانگرانِ بدون حساب</button>
       <button class="btn secondary" onclick="saveUsers()">ذخیره کاربران</button>
       <p class="hint">⚠️ این یک لایهٔ حفاظتی سبک برای جلوگیری از دسترسی افراد غیرمرتبط است، نه رمزنگاری امنیتی سطح‌بالا (رمزها به‌صورت ساده روی همین دستگاه ذخیره می‌شوند). رمزهای پیش‌فرض را همین حالا تغییر دهید و آن‌ها را محرمانه نگه دارید.</p>
@@ -829,19 +855,26 @@ body.locked #loginOverlay{display:flex;}
       <h2>🎨 تم رنگی</h2>
       <p class="hint">این تنظیم فقط روی همین گوشی اعمال می‌شود؛ هرکدام از ۴ نفر می‌توانند تم دلخواه خودشان را جداگانه انتخاب کنند.</p>
       <div class="theme-grid" id="themeGrid"></div>
+      <div class="theme-preview" id="themePreview">
+        <div class="tp-head"><span>🎨 پیش‌نمایش زندهٔ تم</span><span style="font-size:12px;font-weight:400">نوبت‌دهی کلینیک</span></div>
+        <div class="tp-body"><span class="tp-btn">دکمهٔ اصلی</span><span class="tp-chip">برچسب</span><span class="tp-acc">رنگ مکمل</span></div>
+      </div>
     </div>
 
     <div class="card">
       <h2>🏥 اطلاعات کلینیک‌ها و ساعت کاری</h2>
-      <label>نام درمانگر</label>
-      <input type="text" id="setDrName" placeholder="دکتر ...">
+      <label>عنوان برنامه (بالای صفحه)</label>
+      <input type="text" id="setAppTitle" placeholder="نوبت‌دهی کلینیک مشاوره">
+      <label>زیرعنوان (اختیاری)</label>
+      <input type="text" id="setAppSubtitle" placeholder="مثلاً: مرکز مشاوره و روان‌درمانی …">
+      <p class="hint">این دو فقط عنوانِ نمایش‌داده‌شده در بالای برنامه‌اند. نام درمانگران را پایین‌تر، در بخش «درمانگران» وارد کنید.</p>
       <div class="section-divider">۵ کلینیک و درصد سهم هرکدام</div>
       <p class="hint">درصدی که وارد می‌کنید همان سهمی است که آن کلینیک از هزینهٔ هر جلسه برمی‌دارد؛ باقی‌مانده به‌عنوان سهم خالص شما در گزارش درآمد محاسبه می‌شود.</p>
       <div id="clinicInputs"></div>
       <div class="section-divider">👨‍⚕️ درمانگران</div>
       <p class="hint">نام، تخصص و راه‌های ارتباطی (موبایل، Chat ID تلگرام و بله) هر درمانگر را وارد کنید؛ پس از ثبت یا تأیید نهایی نوبت، خبر آن به همان درمانگر هم ارسال می‌شود. همین فهرست در فرم ثبت نوبت، فیلتر لیست، گزارش‌ها و ربات‌های تلگرام/بله نمایش داده می‌شود. اگر نام یک درمانگر را تغییر دهید، می‌توانید نوبت‌های قبلی او را هم به نام جدید تغییر دهید.</p>
       <div id="therapistInputs"></div>
-      <button class="btn ghost small" onclick="addTherapistRow()">➕ افزودن درمانگر</button>
+      <button class="btn ghost small" onclick="addTherapistRow()">✍️ افزودن درمانگر</button>
       <div class="section-divider">ساعات کاری</div>
       <div class="row2">
         <div><label>شروع صبح</label><input type="time" id="setMorningStart" value="08:00"></div>
@@ -1033,8 +1066,8 @@ const LS = {
 
 /* ================= THEMES (per-device, not synced) ================= */
 const THEMES = [
-  { id:'classic', label:'کلاسیک',  dots:['#1f4b4a','#c98a3e'] },
-  { id:'navy',    label:'سرمه‌ای', dots:['#1e3a5f','#c9a227'] },
+  { id:'classic', label:'کلاسیک',  dots:['#628180','#c98a3e'] },
+  { id:'navy',    label:'سرمه‌ای', dots:['#62758f','#c9a227'] },
   { id:'olive',   label:'زیتونی',  dots:['#4a5d3a','#c1694f'] },
   { id:'plum',    label:'بنفش',    dots:['#5b3a5c','#caa156'] },
   { id:'slate',   label:'دودی',    dots:['#37474f','#4d9a92'] }
@@ -1045,12 +1078,19 @@ function applyTheme(id){
   LS.set('appTheme', id);
   renderThemeGrid();
 }
+/* user tapped a swatch: apply + clear, immediate feedback (the header is usually scrolled out of view on the settings page) */
+function pickTheme(id){
+  applyTheme(id);
+  const t = THEMES.find(x=>x.id===id);
+  toast('🎨 تم «'+(t?t.label:id)+'» اعمال شد');
+  try{ if(navigator.vibrate) navigator.vibrate(15); }catch(e){}
+}
 function renderThemeGrid(){
   const wrap = document.getElementById('themeGrid');
   if(!wrap) return;
   const current = LS.get('appTheme','classic');
   wrap.innerHTML = THEMES.map(t=>`
-    <div class="theme-swatch ${t.id===current?'active':''}" onclick="applyTheme('${t.id}')">
+    <div class="theme-swatch ${t.id===current?'active':''}" onclick="pickTheme('${t.id}')">
       <div class="dots">${t.dots.map(c=>`<span class="dot" style="background:${c}"></span>`).join('')}</div>
       <div class="lbl">${t.label}</div>
     </div>
@@ -1079,6 +1119,9 @@ let settings = LS.get('settings', {
 });
 // migrate old versions where clinics was a plain array of name strings (local device, and also re-run after cloud pulls)
 function migrateClinicsShape(){
+  // app title: the old «نام درمانگر» field became the program title; keep the header looking the same after the upgrade
+  if(settings.appTitle===undefined) settings.appTitle = 'نوبت‌دهی کلینیک مشاوره';
+  if(settings.appSubtitle===undefined) settings.appSubtitle = settings.drName ? ('دکتر '+settings.drName+' — روان‌درمانگر (Ph.D)') : 'روان‌درمانگر (Ph.D)';
   if(Array.isArray(settings.clinics) && settings.clinics.length && typeof settings.clinics[0]==='string'){
     settings.clinics = settings.clinics.map(name=>({name, commission:0}));
   }
@@ -1120,7 +1163,7 @@ let currentUser = (()=>{ try{ return JSON.parse(sessionStorage.getItem('session'
 
 /* Access levels per user: one flag for each of the 4 main menus + one for clinical notes (شرح درمان).
    A user linked to a therapist ("درمانگر مرتبط") only sees that therapist's appointments, clients and notes. */
-const ACCESS_KEYS = [['new','➕ نوبت جدید'],['list','📅 لیست نوبت‌ها'],['report','📊 گزارشات'],['settings','⚙️ تنظیمات'],['clinical','🩺 شرح درمان']];
+const ACCESS_KEYS = [['new','✍️ نوبت جدید'],['list','📅 لیست نوبت‌ها'],['report','📊 گزارشات'],['settings','⚙️ تنظیمات'],['clinical','🩺 شرح درمان']];
 function normalizeUsers(){
   if(!Array.isArray(appUsers)) appUsers = [];
   appUsers.forEach(u=>{
@@ -1274,11 +1317,10 @@ function applyRolePermissions(){
     else toast('هیچ سطح دسترسی‌ای برای این حساب تعریف نشده — با مدیر تماس بگیرید');
   }
 }
-function renderUsersList(){
-  const wrap = document.getElementById('usersList');
-  if(!wrap) return;
-  wrap.innerHTML = appUsers.map((u,i)=>`
-    <div class="user-row">
+function userRowHtml(u, i, badge){
+  return `
+    <div class="user-row" data-ui="${i}">
+      ${badge ? `<div style="margin-bottom:8px"><span class="th-chip" style="padding:3px 10px;border-radius:8px;display:inline-block">${badge}</span></div>` : ''}
       <div class="row2">
         <input type="text" data-f="name" data-i="${i}" value="${u.name}" placeholder="نام نمایشی">
         <input type="text" data-f="username" data-i="${i}" value="${u.username}" placeholder="نام کاربری">
@@ -1302,8 +1344,33 @@ function renderUsersList(){
       <input type="text" data-f="baleChatId" data-i="${i}" value="${u.baleChatId||''}" placeholder="Chat ID بله" style="margin-top:8px">
       <div class="hint" style="margin-top:6px">این فیلدها اختیاری‌اند؛ فقط برای دریافت پیام خودکار «مراجع جدید/ویرایش‌شده» توسط همین شخص لازم است.</div>
       <button class="btn ghost small" onclick="removeUserRow(${i})">حذف این کاربر</button>
-    </div>
-  `).join('');
+    </div>`;
+}
+function renderUsersList(){
+  const wrap = document.getElementById('usersList');
+  if(!wrap) return;
+  const names = therapistNames();
+  const used = new Set();
+  let html = '';
+  if(names.length){
+    html += '<div class="section-divider">👨‍⚕️ حساب و دسترسی هر درمانگر</div>';
+    names.forEach(n=>{
+      const accs = appUsers.map((u,i)=>({u,i})).filter(x=>x.u.therapist===n);
+      if(accs.length){ accs.forEach(x=>{ used.add(x.i); html += userRowHtml(x.u, x.i, '👨‍⚕️ درمانگر: '+escHtml(n)); }); }
+      else html += `<div class="user-row" style="border-style:dashed">
+        <div style="font-weight:700;margin-bottom:4px">❌ ${escHtml(n)} — هنوز حسابی ندارد</div>
+        <div class="hint" style="margin:0 0 8px">برای تعیین رمز ورود و سطح دسترسی به منوها، همین‌جا حساب بسازید.</div>
+        <button type="button" class="btn small" style="margin:0" data-n="${escAttr(n)}" onclick="createTherapistAccounts(this.dataset.n)">✍️ ساخت حساب برای ${escHtml(n)}</button>
+      </div>`;
+    });
+  }
+  const others = appUsers.map((u,i)=>({u,i})).filter(x=>!used.has(x.i));
+  if(others.length){
+    html += '<div class="section-divider">👥 سایر کاربران (مدیر، منشی و …)</div>';
+    others.forEach(x=>{ html += userRowHtml(x.u, x.i, x.u.therapist ? '⚠️ درمانگرِ حذف‌شده از فهرست: '+escHtml(x.u.therapist) : ''); });
+  }
+  wrap.innerHTML = html;
+  renderTherapistAccountStatus();
 }
 function readUsersFromDOM(){
   document.querySelectorAll('#usersList [data-f]').forEach(el=>{
@@ -1328,10 +1395,11 @@ function removeUserRow(i){
   renderUsersList();
 }
 /* one login per therapist: username/password are generated (change them freely), access = new/list/report/clinical on THEIR clients only */
-function createTherapistAccounts(){
+function createTherapistAccounts(onlyName){
   readUsersFromDOM();
   const made = [];
   therapistNames().forEach((name,idx)=>{
+    if(typeof onlyName==='string' && onlyName && name!==onlyName) return;
     if(appUsers.some(u=>u.therapist===name)) return;
     let un = 'dr'+(idx+1), n = 1;
     while(appUsers.some(u=>u.username===un)) un = 'dr'+(idx+1)+'_'+(++n);
@@ -1342,6 +1410,27 @@ function createTherapistAccounts(){
   renderUsersList();
   if(made.length) alert('حساب‌های ساخته‌شده (بعد از «ذخیره» فعال می‌شوند — این رمزها را یادداشت و به هر درمانگر بدهید):\n\n'+made.join('\n'));
   else toast('برای همهٔ درمانگران حساب وجود دارد');
+}
+/* which therapist has which login — and accounts whose link points to a therapist that is no longer in the list */
+function renderTherapistAccountStatus(){
+  const box = document.getElementById('therapistAccountStatus'); if(!box) return;
+  const names = therapistNames();
+  const accOf = n=>appUsers.filter(u=>u.therapist===n);
+  const missing = names.filter(n=>!accOf(n).length);
+  const orphans = appUsers.map((u,i)=>({u,i})).filter(x=>x.u.therapist && !names.includes(x.u.therapist));
+  const warn = orphans.map(x=>`<div style="margin:6px 0;color:#b3402a;line-height:1.9">⚠️ حساب «${escHtml(x.u.username)}» به درمانگری وصل است که در فهرست نیست («${escHtml(x.u.therapist)}») — احتمالاً نام درمانگر عوض شده است.
+      ${missing.map(n=>`<button type="button" class="btn ghost small" style="width:auto;margin:2px 0" data-i="${x.i}" data-n="${escAttr(n)}" onclick="relinkUser(Number(this.dataset.i), this.dataset.n)">اتصال به «${escHtml(n)}»</button>`).join(' ')}</div>`).join('');
+  box.style.display = warn ? '' : 'none';
+  box.innerHTML = warn;
+}function jumpToUser(i){
+  const el = document.querySelector('#usersList .user-row[data-ui="'+i+'"]'); if(!el) return;
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+  el.style.outline = '3px solid var(--teal)'; el.style.outlineOffset = '2px';
+  setTimeout(()=>{ el.style.outline = ''; }, 2400);
+}
+function relinkUser(i, name){
+  readUsersFromDOM();
+  if(appUsers[i]){ appUsers[i].therapist = name; renderUsersList(); toast('حساب «'+appUsers[i].username+'» به «'+name+'» وصل شد — «ذخیره کاربران» را بزنید'); }
 }
 function saveUsers(){
   readUsersFromDOM();
@@ -2361,7 +2450,8 @@ function removeTherapistRow(i){
   toast('برای اعمال نهایی، «ذخیره تنظیمات» را بزنید');
 }
 function loadSettingsToUI(){
-  document.getElementById('setDrName').value = settings.drName||'';
+  document.getElementById('setAppTitle').value = settings.appTitle||'';
+  document.getElementById('setAppSubtitle').value = settings.appSubtitle||'';
   document.getElementById('setMorningStart').value = settings.morningStart;
   document.getElementById('setMorningEnd').value = settings.morningEnd;
   document.getElementById('setEveningStart').value = settings.eveningStart;
@@ -2376,12 +2466,16 @@ function loadSettingsToUI(){
     document.getElementById('supaUrl').value = supaConfig.url||'';
     document.getElementById('supaKey').value = supaConfig.key||'';
   }
-  const dr = settings.drName? ('دکتر '+settings.drName+' — روان‌درمانگر (Ph.D)') : 'روان‌درمانگر (Ph.D)';
-  document.getElementById('drName').textContent = dr;
+const ttl = settings.appTitle || 'نوبت‌دهی کلینیک مشاوره';
+  const ht = document.querySelector('.head-title'); if(ht) ht.textContent = '📋 ' + ttl;
+  document.title = ttl;
+  const sub = document.getElementById('drName');
+  sub.textContent = settings.appSubtitle || ''; sub.style.display = settings.appSubtitle ? '' : 'none';
 }
 
 function saveSettings(){
-  settings.drName = document.getElementById('setDrName').value.trim();
+  settings.appTitle = document.getElementById('setAppTitle').value.trim() || 'نوبت‌دهی کلینیک مشاوره';
+  settings.appSubtitle = document.getElementById('setAppSubtitle').value.trim();
   const nameInputs = document.querySelectorAll('#clinicInputs [data-f="name"]');
   settings.clinics = Array.from(nameInputs).map(el=>{
     const i = el.dataset.ci;
@@ -2392,13 +2486,19 @@ function saveSettings(){
   const dupe = thRows.find((r,i)=>thRows.findIndex(x=>x.name===r.name)!==i);
   if(dupe){ toast('نام درمانگران نباید تکراری باشد: '+dupe.name); return; }
   // renamed therapist → optionally carry old appointments over to the new name
-  const renamed = thRows.filter(r=>r.old && r.old!==r.name && appts.some(a=>a.therapist===r.old));
+  const renamed = thRows.filter(r=>r.old && r.old!==r.name);
   renamed.forEach(r=>{
     const n = appts.filter(a=>a.therapist===r.old).length;
-    if(confirm('نام «'+r.old+'» به «'+r.name+'» تغییر کرد. '+faDigits(n)+' نوبت قبلی هم به نام جدید تغییر کند؟')){
+    let carry = true;
+    if(n) carry = confirm('نام «'+r.old+'» به «'+r.name+'» تغییر کرد. '+faDigits(n)+' نوبت قبلی (و شرح درمان‌های آن‌ها) هم به نام جدید تغییر کند؟');
+    if(carry){
       appts.forEach(a=>{ if(a.therapist===r.old){ a.therapist = r.name; pushToSupabase(a); } });
-      LS.set('appts', appts);
+      sessionNotes.forEach(s=>{ if(s.therapist===r.old){ s.therapist = r.name; pushSessionNoteToSupabase(s); } });
+      LS.set('appts', appts); LS.set('sessionNotes', sessionNotes);
     }
+    // a login linked to the old name must follow the new name, otherwise that therapist loses access to his own clients
+    let moved = 0; appUsers.forEach(u=>{ if(u.therapist===r.old){ u.therapist = r.name; moved++; } });
+    if(moved){ LS.set('appUsers', appUsers); pushSettingsRow('appUsers', appUsers); }
   });
   settings.therapists = thRows.map(r=>({name:r.name, specialty:r.specialty, phone:r.phone, tgChatId:r.tgChatId, baleChatId:r.baleChatId}));
   settings.morningStart = document.getElementById('setMorningStart').value;
@@ -2459,7 +2559,7 @@ function populateClientFieldsFromPhone(phone, autoCreate){
           <span class="s-name">${c.name||'(بدون نام)'}</span>
           <span class="s-meta">${c.code}</span>
         </div>
-      `).join('') + `<div class="suggestion-item" onclick="createNewFamilyMember('${phone}')"><span class="s-name">➕ مراجع جدید با همین شماره</span></div>`;
+      `).join('') + `<div class="suggestion-item" onclick="createNewFamilyMember('${phone}')"><span class="s-name">✍️ مراجع جدید با همین شماره</span></div>`;
       picker.classList.add('show');
     }
     box.style.display='none';
@@ -3848,7 +3948,7 @@ function tnFieldHTML(f){
     case 'symptoms': return `${lab}<div class="tn-grid"><span class="tn-h">علامت</span><span class="tn-h">جلسهٔ قبل</span><span class="tn-h">این جلسه</span></div>` +
       TN_SYMPTOMS.map(([k,l])=>`<div class="tn-grid"><span>${l}</span><input type="number" min="0" max="10" id="tn_sym_${k}_prev"><input type="number" min="0" max="10" id="tn_sym_${k}_now"></div>`).join('');
     case 'score2': return `${lab}<div class="row2"><input type="number" id="${id}Now" min="0" max="${f.max}" placeholder="این جلسه"><input type="number" id="${id}Prev" min="0" max="${f.max}" placeholder="قبلاً"></div><div class="hint" id="${id}Info"></div>`;
-    case 'rows': return `${lab}<div id="${id}"></div><button type="button" class="btn ghost small" onclick="tnAddRow('${f.k}')">➕ ${f.add}</button>`;
+    case 'rows': return `${lab}<div id="${id}"></div><button type="button" class="btn ghost small" onclick="tnAddRow('${f.k}')">✍️ ${f.add}</button>`;
     case 'cc': return `<details class="tn-sec" style="margin:6px 0"><summary>${f.l}</summary><div class="tn-body">
       <p class="hint">هر حوزه را برای «۲ هفتهٔ گذشته» از ۰ تا ۴ نمره بدهید. پیشنهاد بررسی تکمیلی (سطح ۲) طبق آستانه‌های DSM-5-TR خودکار نشان داده می‌شود.</p>
       ${TN_CC.map(([k,l])=>`<div class="tn-grid" style="grid-template-columns:1fr 1.6fr"><span>${l}</span><select id="tn_cc_${k}">${TN_CC_OPTS.map(([v,t])=>`<option value="${v}">${t}</option>`).join('')}</select></div>`).join('')}
@@ -4407,7 +4507,7 @@ function exportExcel(){
   xlSheet(wb, 'تسویه‌ها', settlements.map(s=>({'شناسه':s.id,'کلینیک':s.clinic,'تاریخ (میلادی YYYY-MM-DD)':s.date,'مبلغ':s.amount,'روش':s.method||'','کد پیگیری':s.trackingCode||'','یادداشت':s.note||''})), [18,24,16,12,14,16,30]);
   xlSheet(wb, 'درمانگران', (settings.therapists||[]).map(t=>({'نام':t.name,'تخصص':t.specialty||'','موبایل':t.phone||'','Chat ID تلگرام':t.tgChatId||'','Chat ID بله':t.baleChatId||''})), [24,30,14,16,16]);
   xlSheet(wb, 'کلینیک‌ها', (settings.clinics||[]).map(c=>({'نام':c.name,'سهم کلینیک (٪)':c.commission||0})), [28,14]);
-  const setKeys = ['drName','morningStart','morningEnd','eveningStart','eveningEnd','dayOff'];
+  const setKeys = ['appTitle','appSubtitle','drName','morningStart','morningEnd','eveningStart','eveningEnd','dayOff'];
   xlSheet(wb, 'تنظیمات', setKeys.map(k=>({'کلید':k,'مقدار':(settings[k]===undefined||settings[k]===null) ? '' : (typeof settings[k]==='object' ? JSON.stringify(settings[k]) : settings[k])})), [18,24]);
   XLSX.writeFile(wb, 'clinic-backup-'+todayStr()+'.xlsx');
   toast('فایل Excel کامل ذخیره شد ('+faDigits(appts.length)+' نوبت، '+faDigits(clients.length)+' مراجع، '+faDigits(sessionNotes.length)+' شرح درمان)');
@@ -5304,14 +5404,26 @@ if('serviceWorker' in navigator){
 
 /* ================= CONFIRM BEFORE EXIT (Android back button) — custom modal, no native confirm() ================= */
 let historyGuardActive = true;
-history.pushState({guard:true}, '', location.href);
+/* On the login screen (after «خروج» or before signing in) there is nothing to lose, so Back leaves directly.
+   Set to true if you want the «آیا می‌خواهید از اپ خارج شوید؟» question there as well. While signed in the question is always asked. */
+const CONFIRM_EXIT_ON_LOGIN = false;
+const HISTORY_LOAD_T0 = Date.now();
+/* after a reload (e.g. «خروج») the guard entry already exists — don't stack another one on every reload */
+if(!(history.state && history.state.guard)) history.pushState({guard:true}, '', location.href);
 
-window.addEventListener('popstate', function(){
+window.addEventListener('popstate', function(ev){
+  /* Some Android browsers fire a popstate right after a page reload; its state is still our guard entry because nobody pressed Back.
+     Without this the «آیا می‌خواهید از اپ خارج شوید؟» dialog popped up over the login page after logging out. */
+  if(ev && ev.state && ev.state.guard && (Date.now() - HISTORY_LOAD_T0) < 2500) return;
   // If a modal/overlay (like the Jalali date picker) is open, close it first instead of asking to exit
   const picker = document.getElementById('jalaliPickerOverlay');
   if(picker && picker.classList.contains('show')){
     closeJalaliPicker();
     history.pushState({guard:true}, '', location.href);
+    return;
+  }
+  if(document.body.classList.contains('locked') && !CONFIRM_EXIT_ON_LOGIN){
+    leaveApp();                     // leave the app right away: logout → Back is now a single step
     return;
   }
   if(!historyGuardActive){
@@ -5320,6 +5432,28 @@ window.addEventListener('popstate', function(){
   }
   document.getElementById('exitConfirmOverlay').classList.add('show');
 });
+/* leave the app (same path as «بله، خروج»). If the browser has nowhere to go back to, the page stays: re-arm the guard and say what to do. */
+function leaveApp(){
+  historyGuardActive = false;
+  history.back();
+  setTimeout(function(){
+    historyGuardActive = true;
+    if(!(history.state && history.state.guard)) history.pushState({guard:true}, '', location.href);
+    const m = document.getElementById('loginMsg');
+    if(m && document.body.classList.contains('locked')){
+      m.textContent = 'مرورگر صفحهٔ قبلی ندارد؛ برای بستن برنامه از دکمهٔ چندوظیفه‌ای (▢) یا Home گوشی استفاده کنید.';
+      m.style.display = 'block';
+      setTimeout(function(){ m.style.display = 'none'; }, 7000);
+    }
+  }, 800);
+}
+/* «انصراف» on the login screen: clear what was typed and leave — exactly like pressing Back there */
+function cancelLogin(){
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  const er = document.getElementById('loginError'); if(er) er.classList.remove('show');
+  history.back();
+}
 function confirmExit(shouldExit){
   document.getElementById('exitConfirmOverlay').classList.remove('show');
   if(shouldExit){
