@@ -454,6 +454,14 @@ body.locked #loginOverlay{display:flex;}
       <button type="button" class="btn ghost" id="loginCancelBtn" onclick="cancelLogin()">انصراف</button>
     </div>
     <div class="login-error" id="loginError">نام کاربری یا رمز عبور اشتباه است</div>
+    <div class="hint" id="loginModeText" style="text-align:center;margin-top:10px"></div>
+    <div class="hint" id="loginLocalWarn" style="display:none;text-align:center;margin-top:10px;color:#a5671a">⚠️ به سرور وصل نیستید: ورود فقط محلی است و امنیت واقعی ندارد. برای ورود امن، اتصال زیر را انجام دهید.</div>
+    <details id="loginConnect" style="display:none;margin-top:10px">
+      <summary style="cursor:pointer;font-weight:700;color:var(--teal-dark)">🔌 اتصال به سرور (Supabase)</summary>
+      <input type="text" id="loginSupaUrl" dir="ltr" placeholder="https://xxxx.supabase.co" style="margin-top:8px" autocomplete="off">
+      <input type="text" id="loginSupaKey" dir="ltr" placeholder="کلید عمومی (publishable / anon)" style="margin-top:8px" autocomplete="off">
+      <button type="button" class="btn small" style="margin-top:8px" onclick="connectFromLogin()">ذخیره و اتصال</button>
+    </details>
     <div class="hint" id="loginMsg" style="display:none;text-align:center;margin-top:10px"></div>
   </div>
 </div>
@@ -1260,7 +1268,7 @@ document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) checkCo
 window.addEventListener('online', checkConnectivity);
 window.addEventListener('offline', checkConnectivity);
 
-function tryLogin(){
+function tryLoginLocal(){
   if(!isOnlineStatus){
     document.getElementById('offlineWarning').classList.add('show');
   }
@@ -1276,10 +1284,6 @@ function tryLogin(){
   document.getElementById('loginUser').value=''; document.getElementById('loginPass').value='';
   applyRolePermissions();
   renderAll();
-}
-function logout(){
-  sessionStorage.removeItem('session');
-  location.reload();
 }
 function applyRolePermissions(){
   const me = getMe();
@@ -1317,31 +1321,36 @@ function applyRolePermissions(){
     else toast('هیچ سطح دسترسی‌ای برای این حساب تعریف نشده — با مدیر تماس بگیرید');
   }
 }
+function addUserRow(){ return AUTH_MODE ? authAddUserRow() : addUserRowLocal(); }
+function removeUserRow(i){ return AUTH_MODE ? authRemoveUser(i) : removeUserRowLocal(i); }
+function saveUsers(){ return AUTH_MODE ? authSaveUsers() : saveUsersLocal(); }
+function createTherapistAccounts(onlyName){ return AUTH_MODE ? authCreateTherapistAccounts(onlyName) : createTherapistAccountsLocal(onlyName); }
 function userRowHtml(u, i, badge){
   return `
     <div class="user-row" data-ui="${i}">
       ${badge ? `<div style="margin-bottom:8px"><span class="th-chip" style="padding:3px 10px;border-radius:8px;display:inline-block">${badge}</span></div>` : ''}
       <div class="row2">
-        <input type="text" data-f="name" data-i="${i}" value="${u.name}" placeholder="نام نمایشی">
-        <input type="text" data-f="username" data-i="${i}" value="${u.username}" placeholder="نام کاربری">
+        <input type="text" data-f="name" data-i="${i}" value="${escAttr(u.name)}" placeholder="نام نمایشی">
+        <input type="text" data-f="username" data-i="${i}" value="${escAttr(u.username)}" placeholder="${AUTH_MODE ? 'نام کاربری (a-z 0-9 . _ -)' : 'نام کاربری'}" dir="ltr" ${AUTH_MODE && u.id ? 'readonly style="background:#f1f4f3"' : ''} autocomplete="off">
       </div>
       <div class="row2" style="margin-top:8px">
-        <input type="text" data-f="password" data-i="${i}" value="${u.password}" placeholder="رمز عبور">
+        ${AUTH_MODE ? `<input type="password" data-f="password" data-i="${i}" value="${escAttr(u.password||'')}" placeholder="${u.id ? 'رمز جدید (خالی = بدون تغییر)' : 'رمز (حداقل ۸ کاراکتر)'}" autocomplete="new-password" dir="ltr">` : `<input type="text" data-f="password" data-i="${i}" value="${escAttr(u.password)}" placeholder="رمز عبور">`}
         <select data-f="therapist" data-i="${i}">
           <option value="">👥 بدون محدودیت (همهٔ مراجعین)</option>
           ${therapistNames().map(n=>`<option value="${escAttr(n)}" ${u.therapist===n?'selected':''}>👨‍⚕️ فقط مراجعین ${escHtml(n)}</option>`).join('')}
           ${u.therapist && !therapistNames().includes(u.therapist) ? `<option value="${escAttr(u.therapist)}" selected>👨‍⚕️ ${escHtml(u.therapist)} (حذف‌شده از فهرست)</option>` : ''}
         </select>
       </div>
+      ${AUTH_MODE ? `<label style="display:flex;align-items:center;gap:8px;margin:10px 0 0;font-weight:600;cursor:pointer"><input type="checkbox" data-act="1" data-i="${i}" ${u.active!==false?'checked':''} style="width:18px;height:18px"> ✅ حساب فعال (غیرفعال = ورود و دسترسی بسته)</label>` : ''}
       <div class="hint" style="margin:8px 0 4px;font-weight:700;color:#5c6c6a">سطح دسترسی</div>
       <div style="display:flex;flex-wrap:wrap;gap:6px 14px">
         ${ACCESS_KEYS.map(([k,lbl])=>`<label style="display:flex;align-items:center;gap:6px;margin:0;font-weight:400;cursor:pointer"><input type="checkbox" data-acc="${k}" data-i="${i}" ${u.access && u.access[k]?'checked':''} style="width:18px;height:18px"> ${lbl}</label>`).join('')}
       </div>
       <div class="row2" style="margin-top:8px">
-        <input type="tel" data-f="phone" data-i="${i}" value="${u.phone||''}" placeholder="موبایل (برای پیامک)">
-        <input type="text" data-f="tgChatId" data-i="${i}" value="${u.tgChatId||''}" placeholder="Chat ID تلگرام">
+        <input type="tel" data-f="phone" data-i="${i}" value="${escAttr(u.phone||'')}" placeholder="موبایل (برای پیامک)">
+        <input type="text" data-f="tgChatId" data-i="${i}" value="${escAttr(u.tgChatId||'')}" placeholder="Chat ID تلگرام">
       </div>
-      <input type="text" data-f="baleChatId" data-i="${i}" value="${u.baleChatId||''}" placeholder="Chat ID بله" style="margin-top:8px">
+      <input type="text" data-f="baleChatId" data-i="${i}" value="${escAttr(u.baleChatId||'')}" placeholder="Chat ID بله" style="margin-top:8px">
       <div class="hint" style="margin-top:6px">این فیلدها اختیاری‌اند؛ فقط برای دریافت پیام خودکار «مراجع جدید/ویرایش‌شده» توسط همین شخص لازم است.</div>
       <button class="btn ghost small" onclick="removeUserRow(${i})">حذف این کاربر</button>
     </div>`;
@@ -1376,6 +1385,7 @@ function readUsersFromDOM(){
   document.querySelectorAll('#usersList [data-f]').forEach(el=>{
     const u = appUsers[Number(el.dataset.i)]; if(u) u[el.dataset.f] = el.value.trim();
   });
+  document.querySelectorAll('#usersList [data-act]').forEach(el=>{ const u = appUsers[Number(el.dataset.i)]; if(u) u.active = el.checked; });
   document.querySelectorAll('#usersList [data-acc]').forEach(el=>{
     const u = appUsers[Number(el.dataset.i)]; if(!u) return;
     if(!u.access) u.access = {};
@@ -1383,19 +1393,19 @@ function readUsersFromDOM(){
   });
   normalizeUsers();
 }
-function addUserRow(){
+function addUserRowLocal(){
   readUsersFromDOM();
   appUsers.push({username:'', password:'', name:'', role:'scheduler', access:{new:true,list:true,report:false,settings:false,clinical:false}, therapist:'', phone:'', tgChatId:'', baleChatId:''});
   renderUsersList();
 }
-function removeUserRow(i){
+function removeUserRowLocal(i){
   readUsersFromDOM();
   if(appUsers.length<=1){ toast('حداقل یک کاربر باید باقی بماند'); return; }
   appUsers.splice(i,1);
   renderUsersList();
 }
 /* one login per therapist: username/password are generated (change them freely), access = new/list/report/clinical on THEIR clients only */
-function createTherapistAccounts(onlyName){
+function createTherapistAccountsLocal(onlyName){
   readUsersFromDOM();
   const made = [];
   therapistNames().forEach((name,idx)=>{
@@ -1432,7 +1442,7 @@ function relinkUser(i, name){
   readUsersFromDOM();
   if(appUsers[i]){ appUsers[i].therapist = name; renderUsersList(); toast('حساب «'+appUsers[i].username+'» به «'+name+'» وصل شد — «ذخیره کاربران» را بزنید'); }
 }
-function saveUsers(){
+function saveUsersLocal(){
   readUsersFromDOM();
   if(appUsers.some(u=>!u.username || !u.password || !u.name)){
     toast('نام، نام کاربری و رمز عبور نباید خالی باشد');
@@ -1821,13 +1831,13 @@ async function pullSettingsRows(){
       if(row.key==='questionnaires'){ scrApplyDefs(val); return; }   // published by Questionnaire.gs
       if(row.key==='settings') settings = val;
       if(row.key==='reminderSettings') reminderSettings = val;
-      if(row.key==='appUsers'){ appUsers = val; normalizeUsers(); }
+      if(row.key==='appUsers' && !AUTH_MODE){ appUsers = val; normalizeUsers(); }
       if(row.key==='gcalClientId') gcalClientId = val;
     }catch(e){}
   });
   LS.set('settings', settings);
   LS.set('reminderSettings', reminderSettings);
-  LS.set('appUsers', appUsers);
+  if(!AUTH_MODE) LS.set('appUsers', appUsers);
   LS.set('gcalClientId', gcalClientId);
   migrateClinicsShape();
   fillClinicSettingInputs();
@@ -1837,24 +1847,249 @@ async function pullSettingsRows(){
   renderUsersList();
 }
 
+/* ================= ورود امن (Supabase Auth) =================
+   • وقتی برنامه به Supabase وصل است (AUTH_MODE)، ورود فقط با حساب Supabase انجام می‌شود (رمز در سرور هش می‌شود).
+   • هیچ داده‌ای قبل از ورود خوانده نمی‌شود؛ دسترسی هر کاربر را خودِ دیتابیس (RLS) تعیین می‌کند، نه فقط این صفحه.
+   • بدون اتصال به سرور، همان حالت محلیِ قبلی (بدون امنیت واقعی) کار می‌کند. */
+const AUTH_EMAIL_DOMAIN = 'clinic.local';            // باید با AUTH_EMAIL_DOMAIN_ در Security.gs یکی باشد
+const IDLE_LOGOUT_MIN = 30;                          // خروج خودکار بعد از این‌همه دقیقه بی‌فعالیتی (فقط در حالت امن)
+const LOCAL_SENSITIVE_KEYS = ['clients','appts','sessionNotes','screenings','settlements','bookingRequests','bookingRequestsBale','reminderLog','reminderSettings','appUsers','gcalClientId'];
+let AUTH_MODE = false;
+let authSession = null;
+let myProfile = null;
+let USERS_SNAP = {};
+let loginFails = 0, idleTimer = null;
+
+function usernameToEmail(u){ return String(u||'').trim().toLowerCase() + '@' + AUTH_EMAIL_DOMAIN; }
+function profileToUser(p){
+  return { id:p.user_id, username:p.username, name:p.name||p.username, phone:p.phone||'', tgChatId:p.tg_chat_id||'', baleChatId:p.bale_chat_id||'',
+           therapist:p.therapist||'', access:p.access||{}, active:p.active!==false };
+}
+function userSnapOf(u){
+  return JSON.stringify({ name:u.name||'', phone:u.phone||'', tg:u.tgChatId||'', bale:u.baleChatId||'', th:u.therapist||'',
+                          acc:ACCESS_KEYS.map(([k])=>!!(u.access && u.access[k])), act:u.active!==false });
+}
+function randomPassword(n){
+  const chars = 'abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789', a = new Uint32Array(n||12);
+  (window.crypto || {getRandomValues:x=>x.forEach((_,i)=>{ x[i]=Math.floor(Math.random()*4294967295); })}).getRandomValues(a);
+  return Array.from(a).map(v=>chars[v % chars.length]).join('') + '7';
+}
+/* JWT کاربر واردشده برای رله‌های Apps Script (پیامک/تلگرام/بله) و API مدیر */
+async function relayJwt(){
+  if(!AUTH_MODE || !supa) return '';
+  try{ const { data } = await supa.auth.getSession(); return (data && data.session) ? data.session.access_token : ''; }catch(e){ return ''; }
+}
+async function adminApi(action, payload){
+  // همان آدرس «Webhook رله (پیامک + تلگرام)» = آدرس Web App در Apps Script؛ API مدیر هم روی همان است
+  const url = ((reminderSettings && reminderSettings.smsWebhook) || '').trim();
+  if(!url) throw new Error('آدرس «Webhook رله» (Apps Script) در تنظیمات ← اتصالات ← یادآوری وارد نشده است');
+  const jwt = await relayJwt();
+  if(!jwt) throw new Error('نشست ورود منقضی شده؛ دوباره وارد شوید');
+  let res;
+  try{ res = await fetch(url, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(Object.assign({ action, jwt }, payload||{})) }); }
+  catch(e){ throw new Error('ارتباط با Apps Script برقرار نشد'); }
+  let j = null; try{ j = await res.json(); }catch(e){}
+  if(!j) throw new Error('پاسخ نامعتبر از Apps Script');
+  if(!j.ok) throw new Error(j.description || j.error || 'خطا');
+  return j;
+}
+
+function showLoginError(msg){
+  const er = document.getElementById('loginError');
+  er.textContent = msg || 'نام کاربری یا رمز عبور اشتباه است';
+  er.classList.add('show');
+}
+function setLoginBusy(on){
+  const b = document.querySelector('.login-actions .btn:not(.ghost)');
+  if(b){ b.disabled = !!on; b.textContent = on ? '⏳ در حال ورود…' : 'ورود'; }
+}
+function renderLoginMode(){
+  const connect = document.getElementById('loginConnect'), warn = document.getElementById('loginLocalWarn'), mode = document.getElementById('loginModeText');
+  if(connect) connect.style.display = AUTH_MODE ? 'none' : '';
+  if(warn) warn.style.display = AUTH_MODE ? 'none' : '';
+  if(mode) mode.textContent = AUTH_MODE ? '🔒 ورود امن — رمز شما فقط در سرور (هش‌شده) نگه‌داری می‌شود' : '';
+}
+function connectFromLogin(){
+  const url = document.getElementById('loginSupaUrl').value.trim(), key = document.getElementById('loginSupaKey').value.trim();
+  if(!/^https:\/\/.+/.test(url) || !key){ showLoginError('آدرس (https://…) و کلید عمومی را وارد کنید'); return; }
+  LS.set('supaConfig', { url: url.replace(/\/+$/,''), key });
+  location.reload();
+}
+/* اطلاعات حساس بیمارانی که روی این دستگاه ذخیره شده (کش) پاک شود */
+function wipeLocalData(){ LOCAL_SENSITIVE_KEYS.forEach(k=>{ try{ localStorage.removeItem(k); }catch(e){} }); }
+function handleForcedSignOut(){ wipeLocalData(); try{ sessionStorage.removeItem('session'); }catch(e){} location.reload(); }
+
+function idleLimitMs(){ return window.__IDLE_MS || IDLE_LOGOUT_MIN * 60000; }
+function resetIdle(){
+  if(!AUTH_MODE || !currentUser) return;
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(()=>{ toast('⏱ به‌دلیل بی‌فعالیتی از حساب خارج شدید'); setTimeout(()=>logout(true), 800); }, idleLimitMs());
+}
+['click','keydown','touchstart','scroll'].forEach(ev=>document.addEventListener(ev, resetIdle, { passive:true }));
+
+async function loadProfiles(){
+  if(!supa) return;
+  const { data, error } = await supa.from('profiles').select('*');
+  if(error || !data) return;
+  appUsers = data.map(profileToUser);
+  normalizeUsers();
+  USERS_SNAP = {}; appUsers.forEach(u=>{ USERS_SNAP[u.id] = userSnapOf(u); });
+}
+async function afterSignIn(){
+  const uid = authSession && authSession.user && authSession.user.id;
+  let data = null, error = null;
+  try{ ({ data, error } = await supa.from('profiles').select('*').eq('user_id', uid)); }catch(e){ error = e; }
+  const p = data && data[0];
+  if(error || !p || p.active === false){
+    showLoginError('این حساب فعال نیست یا هنوز پروفایلی ندارد — با مدیر تماس بگیرید');
+    return false;
+  }
+  myProfile = p;
+  currentUser = { username:p.username, name:p.name||p.username };
+  await loadProfiles();
+  if(!appUsers.some(u=>u.username===p.username)){ appUsers.push(profileToUser(p)); normalizeUsers(); }
+  document.getElementById('loginError').classList.remove('show');
+  document.body.classList.remove('locked');
+  applyRolePermissions();
+  startCloudSync();
+  renderAll();
+  resetIdle();
+  return true;
+}
+function startCloudSync(){
+  document.getElementById('supaStatus').textContent = '✅ متصل و واردشده — اطلاعات بر اساس سطح دسترسی شما، امن و زنده همگام می‌شود.';
+  pullFromSupabase();
+  pullClientsFromSupabase();
+  pullSettingsRows();
+  pullSettlementsFromSupabase();
+  pullReminderLog();
+  pullSessionNotesFromSupabase();
+  pullBookingRequests();
+  pullBookingRequestsBale();
+  pullScreenings();
+  subscribeRealtime();
+}
+
 function initSupabase(){
-  if(!supaConfig || !supaConfig.url || !supaConfig.key) return;
+  AUTH_MODE = !!(supaConfig && supaConfig.url && supaConfig.key);
+  renderLoginMode();
+  if(!AUTH_MODE) return;
+  currentUser = null;                                       // در حالت امن فقط نشست Supabase معتبر است
+  try{ sessionStorage.removeItem('session'); localStorage.removeItem('appUsers'); }catch(e){}   // رمزهای متنیِ قدیمیِ روی دستگاه هم پاک شود
   try{
-    supa = window.supabase.createClient(supaConfig.url, supaConfig.key);
-    document.getElementById('supaStatus').textContent = '✅ متصل به Supabase — نوبت‌ها و تنظیمات به‌صورت آنلاین و زنده بین همهٔ دستگاه‌ها همگام می‌شوند (حداکثر ۵۰۰ رکورد نوبت).';
-    pullFromSupabase();
-    pullClientsFromSupabase();
-    pullSettingsRows();
-    pullSettlementsFromSupabase();
-    pullReminderLog();
-    pullSessionNotesFromSupabase();
-    pullBookingRequests();
-    pullBookingRequestsBale();
-    pullScreenings();
-    subscribeRealtime();
+    supa = window.supabase.createClient(supaConfig.url, supaConfig.key, { auth:{ persistSession:true, autoRefreshToken:true, storage:window.sessionStorage } });
   }catch(e){
     document.getElementById('supaStatus').textContent = '❌ خطا در اتصال: ' + e.message;
+    showLoginError('اتصال به سرور برقرار نشد (کتابخانه بارگذاری نشد). اینترنت را بررسی کنید و صفحه را دوباره باز کنید.');
+    return;
   }
+  supa.auth.onAuthStateChange((evt)=>{ if(evt === 'SIGNED_OUT' && currentUser) handleForcedSignOut(); });
+  supa.auth.getSession().then(async ({ data })=>{
+    if(data && data.session){
+      authSession = data.session;
+      const ok = await afterSignIn();
+      if(!ok){ try{ await supa.auth.signOut(); }catch(e){} }
+    }
+  }).catch(()=>{});
+}
+
+async function tryLogin(){
+  if(!AUTH_MODE) return tryLoginLocal();
+  const username = document.getElementById('loginUser').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPass').value;
+  document.getElementById('loginError').classList.remove('show');
+  if(!supa){ showLoginError('اتصال به سرور برقرار نیست'); return; }
+  if(!username || !pass){ showLoginError('نام کاربری و رمز عبور را وارد کنید'); return; }
+  if(loginFails >= 5){ showLoginError('تلاش‌های ناموفق زیاد بود؛ چند لحظه صبر کنید'); return; }
+  setLoginBusy(true);
+  let res;
+  try{ res = await supa.auth.signInWithPassword({ email: usernameToEmail(username), password: pass }); }
+  catch(e){ res = { error:e }; }
+  document.getElementById('loginPass').value = '';
+  if(!res || res.error || !res.data || !res.data.session){
+    setLoginBusy(false);
+    if(++loginFails >= 5){ setTimeout(()=>{ loginFails = 0; }, 30000); }
+    const m = String((res && res.error && res.error.message) || '');
+    showLoginError(/fetch|network|failed to|timeout/i.test(m) ? 'ارتباط با سرور برقرار نشد؛ اینترنت را بررسی کنید' : 'نام کاربری یا رمز عبور اشتباه است');
+    return;
+  }
+  loginFails = 0;
+  authSession = res.data.session;
+  const ok = await afterSignIn();
+  setLoginBusy(false);
+  if(!ok){ try{ await supa.auth.signOut(); }catch(e){} }
+}
+
+async function logout(force){
+  if(AUTH_MODE && force !== true){
+    const pend = sessionNotes.filter(s=>s._pending).length;
+    if(pend && !confirm(faDigits(pend)+' شرح درمان هنوز به سرور ارسال نشده و با خروج از این دستگاه پاک می‌شود. با این حال خارج می‌شوید؟')) return;
+  }
+  try{ if(AUTH_MODE && supa) await Promise.race([ supa.auth.signOut(), new Promise(r=>setTimeout(r,1500)) ]); }catch(e){}
+  if(AUTH_MODE) wipeLocalData();
+  sessionStorage.removeItem('session');
+  location.reload();
+}
+
+/* ---------------- مدیریت کاربران در حالت امن (از طریق API مدیر در Apps Script) ---------------- */
+function authAddUserRow(){
+  readUsersFromDOM();
+  appUsers.push({ id:'', username:'', name:'', phone:'', tgChatId:'', baleChatId:'', therapist:'', access:{ 'new':true, list:true, report:false, settings:false, clinical:false }, active:true, password:'' });
+  renderUsersList();
+}
+async function authRemoveUser(i){
+  readUsersFromDOM();
+  const u = appUsers[i]; if(!u) return;
+  if(!u.id){ appUsers.splice(i,1); renderUsersList(); return; }
+  if(!confirm('کاربر «'+(u.name||u.username)+'» برای همیشه حذف شود؟ (حساب ورود او هم پاک می‌شود)')) return;
+  try{ await adminApi('admin_delete_user', { user_id:u.id }); toast('✅ کاربر حذف شد'); }
+  catch(e){ alert('❌ '+e.message); }
+  await loadProfiles(); renderUsersList();
+}
+async function authSaveUsers(){
+  readUsersFromDOM();
+  const problems = [], done = [];
+  for(const u of appUsers.slice()){
+    const username = String(u.username||'').trim().toLowerCase(), pw = String(u.password||'');
+    if(!u.id){
+      if(!username && !pw && !String(u.name||'').trim()) continue;                         // ردیف خالیِ پیش‌نویس
+      if(!/^[a-z0-9._-]{3,32}$/.test(username)){ problems.push('نام کاربری «'+(u.username||'')+'» معتبر نیست (۳ تا ۳۲ حرف لاتین کوچک، عدد یا . _ -)'); continue; }
+      if(pw.length < 8){ problems.push('رمز «'+username+'» باید حداقل ۸ کاراکتر باشد'); continue; }
+    } else {
+      if(USERS_SNAP[u.id] === userSnapOf(u) && !pw) continue;                               // تغییری نکرده
+      if(pw && pw.length < 8){ problems.push('رمز جدید «'+username+'» باید حداقل ۸ کاراکتر باشد'); continue; }
+    }
+    try{
+      await adminApi('admin_save_user', { user:{ user_id:u.id||undefined, username, password:pw||undefined, name:u.name, phone:u.phone, tgChatId:u.tgChatId,
+                                                  baleChatId:u.baleChatId, therapist:u.therapist||'', access:u.access, active:u.active!==false } });
+      done.push(username);
+    }catch(e){ problems.push('«'+(username||u.name)+'»: '+e.message); }
+  }
+  await loadProfiles(); renderUsersList(); applyRolePermissions();
+  if(problems.length) alert('⚠️ برخی تغییرات ذخیره نشد:\n\n'+problems.join('\n'));
+  if(done.length) toast('✅ '+faDigits(done.length)+' کاربر ذخیره شد');
+  else if(!problems.length) toast('تغییری برای ذخیره نبود');
+}
+async function authCreateTherapistAccounts(onlyName){
+  readUsersFromDOM();
+  const created = [], problems = [], all = therapistNames();
+  for(let idx=0; idx<all.length; idx++){
+    const name = all[idx];
+    if(onlyName && name !== onlyName) continue;
+    if(appUsers.some(u=>u.therapist===name)) continue;
+    let un = 'dr'+(idx+1), n = 1;
+    while(appUsers.some(u=>u.username===un)) un = 'dr'+(idx+1)+'_'+(++n);
+    const pw = randomPassword(12);
+    try{
+      await adminApi('admin_save_user', { user:{ username:un, password:pw, name, therapist:name, access:{ 'new':true, list:true, report:true, settings:false, clinical:true }, active:true } });
+      created.push(name+':  '+un+'  /  '+pw);
+      appUsers.push({ id:'x', username:un, therapist:name });
+    }catch(e){ problems.push(name+': '+e.message); }
+  }
+  await loadProfiles(); renderUsersList();
+  if(created.length) alert('✅ حساب‌های ساخته‌شده — رمزها را همین حالا یادداشت کنید (دوباره نمایش داده نمی‌شود):\n\n'+created.join('\n'));
+  if(problems.length) alert('⚠️ ساخته نشد:\n\n'+problems.join('\n'));
+  if(!created.length && !problems.length) toast('برای همهٔ درمانگران حساب وجود دارد');
 }
 async function pushToSupabase(appt){
   if(!supa) return;
@@ -2083,7 +2318,7 @@ function subscribeRealtime(){
         if(row.key==='questionnaires'){ scrApplyDefs(val); return; }   // published by Questionnaire.gs (no toast: not a user setting)
         if(row.key==='settings'){ settings=val; migrateClinicsShape(); LS.set('settings',settings); fillClinicSettingInputs(); fillTherapistSettingInputs(); loadSettingsToUI(); fillClinicSelects(); }
         if(row.key==='reminderSettings'){ reminderSettings=val; LS.set('reminderSettings',reminderSettings); loadSettingsToUI(); }
-        if(row.key==='appUsers'){ appUsers=val; normalizeUsers(); LS.set('appUsers',appUsers); renderUsersList(); if(currentUser) applyRolePermissions(); }
+        if(row.key==='appUsers' && !AUTH_MODE){ appUsers=val; normalizeUsers(); LS.set('appUsers',appUsers); renderUsersList(); if(currentUser) applyRolePermissions(); }
         if(row.key==='gcalClientId'){ gcalClientId=val; LS.set('gcalClientId',gcalClientId); document.getElementById('gcalClientId').value=gcalClientId||''; }
         toast('🔄 تنظیمات به‌روزرسانی شد');
       }catch(e){}
@@ -2497,8 +2732,13 @@ function saveSettings(){
       LS.set('appts', appts); LS.set('sessionNotes', sessionNotes);
     }
     // a login linked to the old name must follow the new name, otherwise that therapist loses access to his own clients
-    let moved = 0; appUsers.forEach(u=>{ if(u.therapist===r.old){ u.therapist = r.name; moved++; } });
-    if(moved){ LS.set('appUsers', appUsers); pushSettingsRow('appUsers', appUsers); }
+    let moved = 0; const movedUsers = [];
+    appUsers.forEach(u=>{ if(u.therapist===r.old){ u.therapist = r.name; moved++; movedUsers.push(u); } });
+    if(moved && AUTH_MODE){
+      // secure mode: the account's therapist link lives in Supabase (profiles) → update it through the admin API
+      movedUsers.forEach(u=>{ if(u.id) adminApi('admin_save_user', { user:{ user_id:u.id, therapist:r.name } }).then(()=>loadProfiles())
+        .catch(e=>alert('⚠️ حساب «'+u.username+'» به نام جدید درمانگر منتقل نشد: '+e.message+'\nاز تنظیمات ← کاربران دستی اصلاح کنید؛ تا آن موقع این کاربر اطلاعات خود را نمی‌بیند.')); });
+    } else if(moved){ LS.set('appUsers', appUsers); pushSettingsRow('appUsers', appUsers); }
   });
   settings.therapists = thRows.map(r=>({name:r.name, specialty:r.specialty, phone:r.phone, tgChatId:r.tgChatId, baleChatId:r.baleChatId}));
   settings.morningStart = document.getElementById('setMorningStart').value;
@@ -2520,7 +2760,8 @@ function saveSupabase(){
     key: document.getElementById('supaKey').value.trim()
   };
   LS.set('supaConfig', supaConfig);
-  initSupabase();
+  toast('✅ ذخیره شد — صفحه دوباره بارگذاری می‌شود؛ با حساب Supabase وارد شوید');
+  setTimeout(()=>location.reload(), 900);
 }
 function saveReminderSettings(silent){
   const newToken = document.getElementById('tgToken').value.trim();
@@ -3051,7 +3292,7 @@ async function tgSend(chatId, text){
     try{
       const res = await fetch(reminderSettings.smsWebhook, {
         method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
-        body: JSON.stringify({ type:'telegram', token: reminderSettings.tgToken, chatId, text })
+        body: JSON.stringify({ jwt: await relayJwt(), type:'telegram', token: reminderSettings.tgToken, chatId, text })
       });
       const raw = await res.text();
       logDebug('[تلگرام/رله] HTTP status: '+res.status+' | پاسخ خام: '+raw);
@@ -3117,7 +3358,7 @@ async function baSend(chatId, text){
     try{
       const res = await fetch(reminderSettings.smsWebhook, {
         method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
-        body: JSON.stringify({ type:'bale', token: reminderSettings.baleToken, chatId, text })
+        body: JSON.stringify({ jwt: await relayJwt(), type:'bale', token: reminderSettings.baleToken, chatId, text })
       });
       const raw = await res.text();
       logDebug('[بله/رله] HTTP status: '+res.status+' | پاسخ خام: '+raw);
@@ -3184,11 +3425,12 @@ async function notifyStaffClientChange(client, type){
   });
 
   if(reminderSettings.smsWebhook){
+    const _smsJwt = await relayJwt();
     appUsers.forEach(u=>{
       if(u.phone){
         fetch(reminderSettings.smsWebhook, {
           method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
-          body: JSON.stringify({phone:u.phone, message:msg})
+          body: JSON.stringify({type:'sms', phone:u.phone, message:msg, jwt:_smsJwt})
         }).catch(()=>{});
       }
     });
@@ -3218,7 +3460,7 @@ async function sendToTherapist(therapistName, apptId, msg){
       try{
         const res = await fetch(reminderSettings.smsWebhook, {
           method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
-          body: JSON.stringify({phone:t.phone, message:msg})
+          body: JSON.stringify({type:'sms', phone:t.phone, message:msg, jwt: await relayJwt()})
         });
         const j = JSON.parse(await res.text());
         const st = j.result && j.result.return && j.result.return.status;
@@ -3284,7 +3526,7 @@ async function sendSmsWebhook(id){
   try{
     const res = await fetch(reminderSettings.smsWebhook,{
       method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'},
-      body: JSON.stringify({phone:a.phone, message:msg})
+      body: JSON.stringify({type:'sms', phone:a.phone, message:msg, jwt: await relayJwt()})
     });
     const raw = await res.text();
     logDebug('[پیامک/رله] HTTP status: '+res.status+' | پاسخ خام: '+raw);
@@ -4922,7 +5164,7 @@ async function fbBuild(){
   const data = {
     clients: clients.slice(), appts: appts.slice(), sessionNotes: sessionNotes.map(clean), settlements: settlements.slice(),
     bookingRequests: bookingRequests.slice(), bookingRequestsBale: bookingRequestsBale.slice(), reminderLog: reminderLog.slice(), screenings: screenings.slice(),
-    settings: settings, appUsers: appUsers, reminderSettings: reminderSettings, gcalClientId: gcalClientId, appTheme: LS.get('appTheme','classic')
+    settings: settings, appUsers: AUTH_MODE ? appUsers.map(u=>{ const c = Object.assign({}, u); delete c.password; return c; }) : appUsers, reminderSettings: reminderSettings, gcalClientId: gcalClientId, appTheme: LS.get('appTheme','classic')
   };
   const info = { source: supa ? 'cloud' : 'local', failed: [], localOnly: 0 };
   if(supa){
@@ -4953,7 +5195,7 @@ async function fbBuild(){
         try{
           const v = JSON.parse(r.value);
           if(r.key==='settings') data.settings = v;
-          else if(r.key==='appUsers') data.appUsers = v;
+          else if(r.key==='appUsers' && !AUTH_MODE) data.appUsers = v;
           else if(r.key==='reminderSettings') data.reminderSettings = v;
           else if(r.key==='gcalClientId') data.gcalClientId = v;
         }catch(e){}
@@ -5027,7 +5269,7 @@ async function fbPushAll(d){
   await send('screenings', screenings.map(screeningToRow));
   try{
     await pushSettingsRow('settings', settings);
-    await pushSettingsRow('appUsers', appUsers);
+    if(!AUTH_MODE) await pushSettingsRow('appUsers', appUsers);
     await pushSettingsRow('reminderSettings', reminderSettings);
     if(gcalClientId) await pushSettingsRow('gcalClientId', gcalClientId);
   }catch(e){ failed.push('app_settings: '+(e.message||e)); }
@@ -5062,14 +5304,14 @@ async function fbRestoreFile(file){
       therapists: (d.settings.therapists && d.settings.therapists.length) ? d.settings.therapists : settings.therapists,
       clinics: (d.settings.clinics && d.settings.clinics.length) ? d.settings.clinics : settings.clinics });
   }
-  if(Array.isArray(d.appUsers)) appUsers = merge(appUsers, d.appUsers, u=>u.username);
+  if(Array.isArray(d.appUsers) && !AUTH_MODE) appUsers = merge(appUsers, d.appUsers, u=>u.username);   // در حالت امن کاربران در Supabase Auth هستند، نه در فایل
   normalizeUsers();
   if(d.reminderSettings && typeof d.reminderSettings==='object') reminderSettings = Object.assign({}, reminderSettings, d.reminderSettings);
   if(d.gcalClientId) gcalClientId = d.gcalClientId;
   migrateClinicsShape();
   LS.set('clients',clients); LS.set('appts',appts); LS.set('sessionNotes',sessionNotes); LS.set('settlements',settlements);
   LS.set('bookingRequests',bookingRequests); LS.set('bookingRequestsBale',bookingRequestsBale); LS.set('reminderLog',reminderLog); LS.set('screenings',screenings);
-  LS.set('settings',settings); LS.set('appUsers',appUsers); LS.set('reminderSettings',reminderSettings); LS.set('gcalClientId',gcalClientId);
+  LS.set('settings',settings); if(!AUTH_MODE) LS.set('appUsers',appUsers); LS.set('reminderSettings',reminderSettings); LS.set('gcalClientId',gcalClientId);
   if(d.appTheme) applyTheme(d.appTheme);
   renderAll(); fillTreatmentClientSelect(); fillClinicSelects();
   fillClinicSettingInputs(); fillTherapistSettingInputs(); loadSettingsToUI(); renderUsersList();
