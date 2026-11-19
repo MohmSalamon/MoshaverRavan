@@ -471,7 +471,8 @@ body.locked #loginOverlay{display:flex;}
     <div>
       <div class="head-title">📋 نوبت‌دهی کلینیک مشاوره</div>
       <div class="head-sub" id="drName">دکتر — روان‌درمانگر (Ph.D)</div>
-      <div style="font-size:11px;opacity:.85;margin-top:3px;">کاربر: <span id="loggedUserName">—</span></div>
+      <div style="font-size:11px;opacity:.85;margin-top:3px;">کاربر: <span id="loggedUserName">—</span>
+        <button id="changePwBtn" type="button" onclick="openChangePw()" style="display:none;background:none;border:none;color:#fff;text-decoration:underline;font-size:11px;padding:4px 6px;cursor:pointer;font-family:inherit">🔑 تغییر رمز</button></div>
     </div>
     <div class="head-date">
       <b id="todayFa">—</b>
@@ -1027,6 +1028,21 @@ body.locked #loginOverlay{display:flex;}
       <button type="button" class="btn secondary small" style="margin:0;flex:1" onclick="jpToday()">امروز</button>
       <button type="button" class="btn ghost small" style="margin:0;flex:1" onclick="closeJalaliPicker()">بستن</button>
     </div>
+  </div>
+</div>
+
+<div id="changePwOverlay" class="modal-overlay">
+  <div class="modal-sheet">
+    <h2 style="margin:0 0 8px">🔑 تغییر رمز من</h2>
+    <label>رمز فعلی</label>
+    <input type="password" id="cpCur" autocomplete="current-password" dir="ltr">
+    <label>رمز جدید (حداقل ۸ کاراکتر)</label>
+    <input type="password" id="cpNew" autocomplete="new-password" dir="ltr">
+    <label>تکرار رمز جدید</label>
+    <input type="password" id="cpNew2" autocomplete="new-password" dir="ltr">
+    <div class="login-error" id="cpMsg"></div>
+    <button class="btn" id="cpGo" onclick="changeMyPassword()">ذخیرهٔ رمز جدید</button>
+    <button class="btn ghost" onclick="closeChangePw()">انصراف</button>
   </div>
 </div>
 
@@ -1950,6 +1966,7 @@ async function afterSignIn(){
   if(!appUsers.some(u=>u.username===p.username)){ appUsers.push(profileToUser(p)); normalizeUsers(); }
   document.getElementById('loginError').classList.remove('show');
   document.body.classList.remove('locked');
+  document.getElementById('changePwBtn').style.display = '';
   applyRolePermissions();
   startCloudSync();
   renderAll();
@@ -2020,6 +2037,32 @@ async function tryLogin(){
   if(!ok){ try{ await supa.auth.signOut(); }catch(e){} }
 }
 
+/* هر کاربر رمز خودش را عوض می‌کند (بعد از گرفتن رمز موقت از مدیر) */
+function openChangePw(){
+  ['cpCur','cpNew','cpNew2'].forEach(id=>{ document.getElementById(id).value = ''; });
+  document.getElementById('cpMsg').classList.remove('show');
+  document.getElementById('changePwOverlay').classList.add('show');
+}
+function closeChangePw(){ document.getElementById('changePwOverlay').classList.remove('show'); }
+function cpError(msg){ const m = document.getElementById('cpMsg'); m.textContent = msg; m.classList.add('show'); }
+async function changeMyPassword(){
+  if(!AUTH_MODE || !supa || !currentUser) return;
+  const cur = document.getElementById('cpCur').value, n1 = document.getElementById('cpNew').value, n2 = document.getElementById('cpNew2').value;
+  if(!cur){ cpError('رمز فعلی را وارد کنید'); return; }
+  if(n1.length < 8){ cpError('رمز جدید باید حداقل ۸ کاراکتر باشد'); return; }
+  if(n1 !== n2){ cpError('تکرار رمز جدید یکسان نیست'); return; }
+  if(n1 === cur){ cpError('رمز جدید باید با رمز فعلی فرق کند'); return; }
+  const btn = document.getElementById('cpGo'); btn.disabled = true;
+  try{
+    // رمز فعلی دوباره تأیید می‌شود (اگر کسی گوشی باز را دست بگیرد نمی‌تواند رمز را عوض کند)
+    const chk = await supa.auth.signInWithPassword({ email: usernameToEmail(currentUser.username), password: cur });
+    if(chk.error){ cpError('رمز فعلی اشتباه است'); return; }
+    const up = await supa.auth.updateUser({ password: n1 });
+    if(up.error){ cpError('تغییر رمز انجام نشد: ' + up.error.message); return; }
+    closeChangePw(); toast('✅ رمز شما تغییر کرد');
+  }catch(e){ cpError('ارتباط با سرور برقرار نشد'); }
+  finally{ btn.disabled = false; ['cpCur','cpNew','cpNew2'].forEach(id=>{ document.getElementById(id).value = ''; }); }
+}
 async function logout(force){
   if(AUTH_MODE && force !== true){
     const pend = sessionNotes.filter(s=>s._pending).length;
