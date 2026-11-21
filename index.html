@@ -472,7 +472,8 @@ body.locked #loginOverlay{display:flex;}
       <div class="head-title">📋 نوبت‌دهی کلینیک مشاوره</div>
       <div class="head-sub" id="drName">دکتر — روان‌درمانگر (Ph.D)</div>
       <div style="font-size:11px;opacity:.85;margin-top:3px;">کاربر: <span id="loggedUserName">—</span>
-        <button id="changePwBtn" type="button" onclick="openChangePw()" style="display:none;background:none;border:none;color:#fff;text-decoration:underline;font-size:11px;padding:4px 6px;cursor:pointer;font-family:inherit">🔑 تغییر رمز</button></div>
+        <span id="modeBadge" style="font-size:11px;margin-inline-start:6px"></span>
+        <button id="changePwBtn" type="button" onclick="openChangePw()" style="display:none;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.55);border-radius:12px;color:#fff;font-size:12px;padding:2px 10px;margin-inline-start:6px;cursor:pointer;font-family:inherit">🔑 تغییر رمز</button></div>
     </div>
     <div class="head-date">
       <b id="todayFa">—</b>
@@ -814,6 +815,12 @@ body.locked #loginOverlay{display:flex;}
 
   <!-- ===================== TAB 4: SETTINGS ===================== -->
   <section class="tab" id="tab-settings">
+
+    <div class="card" id="myAccountCard" style="margin-bottom:14px">
+      <h2>🔑 حساب من</h2>
+      <p class="hint" id="myAccountText"></p>
+      <button class="btn" id="myAccountPwBtn" onclick="openChangePw()">🔑 تغییر رمز من</button>
+    </div>
 
     <div class="report-tabs" style="margin-bottom:14px">
       <button data-sg="clients" class="active" onclick="switchSettingsGroup('clients')">👤 مراجعین</button>
@@ -1313,6 +1320,7 @@ function applyRolePermissions(){
     if(b) b.style.display = canTab(t) ? '' : 'none';
   });
   document.getElementById('loggedUserName').textContent = me ? (me.name + (me.therapist ? ' (درمانگر)' : '')) : '—';
+  updateAccountUi();
   // clinical notes: sub-menu in the list tab + the treatment report tab
   const clin = canClinical();
   const notesBtn = document.querySelector('[data-lg="notes"]'); if(notesBtn) notesBtn.style.display = clin ? '' : 'none';
@@ -1868,6 +1876,9 @@ async function pullSettingsRows(){
    • هیچ داده‌ای قبل از ورود خوانده نمی‌شود؛ دسترسی هر کاربر را خودِ دیتابیس (RLS) تعیین می‌کند، نه فقط این صفحه.
    • بدون اتصال به سرور، همان حالت محلیِ قبلی (بدون امنیت واقعی) کار می‌کند. */
 const AUTH_EMAIL_DOMAIN = 'clinic.local';            // باید با AUTH_EMAIL_DOMAIN_ در Security.gs یکی باشد
+/* اتصال پیش‌فرض به سرور. حافظهٔ مرورگر برای هر فایل/مسیر جداست؛ بدون این مقدار، فایلی که از مسیر دیگری باز شود «حالت محلی» می‌شود.
+   آدرس پروژه و کلید «publishable» عمومی‌اند (امنیت را RLS و ورود تأمین می‌کند). هرگز کلید Secret را اینجا نگذارید. */
+const DEFAULT_SUPABASE = { url:'https://sxnyrmdxhkjtalblmrth.supabase.co', key:'sb_publishable_yXbq2n3EqwuiCttlzup1xg_eK7s392u' };
 const IDLE_LOGOUT_MIN = 30;                          // خروج خودکار بعد از این‌همه دقیقه بی‌فعالیتی (فقط در حالت امن)
 const LOCAL_SENSITIVE_KEYS = ['clients','appts','sessionNotes','screenings','settlements','bookingRequests','bookingRequestsBale','reminderLog','reminderSettings','appUsers','gcalClientId'];
 let AUTH_MODE = false;
@@ -1919,6 +1930,23 @@ function setLoginBusy(on){
   const b = document.querySelector('.login-actions .btn:not(.ghost)');
   if(b){ b.disabled = !!on; b.textContent = on ? '⏳ در حال ورود…' : 'ورود'; }
 }
+function updateAccountUi(){
+  const secure = !!(AUTH_MODE && currentUser);
+  const btn = document.getElementById('changePwBtn'), badge = document.getElementById('modeBadge');
+  const txt = document.getElementById('myAccountText'), cardBtn = document.getElementById('myAccountPwBtn');
+  if(btn) btn.style.display = secure ? '' : 'none';
+  if(badge){
+    badge.textContent = AUTH_MODE ? '🔒' : '⚠️ محلی';
+    badge.title = AUTH_MODE ? 'ورود امن (Supabase)' : 'به سرور وصل نیستید؛ ورود فقط محلی و بدون امنیت واقعی است';
+  }
+  if(txt){
+    const me = (typeof getMe === 'function') ? getMe() : null;
+    txt.textContent = secure
+      ? ('کاربر: ' + ((me && me.name) || currentUser.name) + ' — نام کاربری: ' + currentUser.username + ' — ورود امن (Supabase)')
+      : 'ورود امن فعال نیست (به سرور وصل نیستید). برای تغییر رمز، از صفحهٔ ورود «اتصال به سرور» را انجام دهید و با حساب Supabase وارد شوید.';
+  }
+  if(cardBtn) cardBtn.disabled = !secure;
+}
 function renderLoginMode(){
   const connect = document.getElementById('loginConnect'), warn = document.getElementById('loginLocalWarn'), mode = document.getElementById('loginModeText');
   if(connect) connect.style.display = AUTH_MODE ? 'none' : '';
@@ -1966,7 +1994,6 @@ async function afterSignIn(){
   if(!appUsers.some(u=>u.username===p.username)){ appUsers.push(profileToUser(p)); normalizeUsers(); }
   document.getElementById('loginError').classList.remove('show');
   document.body.classList.remove('locked');
-  document.getElementById('changePwBtn').style.display = '';
   applyRolePermissions();
   startCloudSync();
   renderAll();
@@ -1988,6 +2015,10 @@ function startCloudSync(){
 }
 
 function initSupabase(){
+  if(!(supaConfig && supaConfig.url && supaConfig.key) && DEFAULT_SUPABASE.url && DEFAULT_SUPABASE.key){
+    supaConfig = { url: DEFAULT_SUPABASE.url, key: DEFAULT_SUPABASE.key };
+    LS.set('supaConfig', supaConfig);
+  }
   AUTH_MODE = !!(supaConfig && supaConfig.url && supaConfig.key);
   renderLoginMode();
   if(!AUTH_MODE) return;
